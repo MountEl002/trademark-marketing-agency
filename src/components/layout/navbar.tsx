@@ -66,7 +66,7 @@ const Navbar: React.FC = () => {
   ];
 
   return (
-    <nav className="bg-black md:bg-opacity-50 absolute top-0 left-0 right-0 z-50 md:backdrop-blur-none backdrop-blur-sm">
+    <nav className="absolute top-0 left-0 right-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-24 items-center">
           <div className="flex-shrink-0">
@@ -144,6 +144,24 @@ const Navbar: React.FC = () => {
               onClick={handleItemClick}
             >
               GET A QUOTE
+            </Link>
+          </div>
+
+          {/* Sign Up and Log in Buttons */}
+          <div className="flex flex-row gap-4">
+            <Link
+              href="/contact_us"
+              className="text-white bg-blue-600 py-2 px-6 md:mx-0 mx-8 font-bold text-sm rounded-full hover:bg-blue-900 hover:scale-105 transition duration-500 text-center"
+              onClick={handleItemClick}
+            >
+              Sign Up
+            </Link>
+            <Link
+              href="/contact_us"
+              className="text-white bg-blue-600 py-2 px-6 md:mx-0 mx-8 font-bold text-sm rounded-full hover:bg-blue-900 hover:scale-105 transition duration-500 text-center"
+              onClick={handleItemClick}
+            >
+              Log In
             </Link>
           </div>
         </div>
