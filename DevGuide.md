@@ -6,7 +6,7 @@
 2. Secondary - gry-200
 3. Tertiary - gray-200
 4. Quaternary - white
-5. Quinary - gray-50
+5. Quinary - blue-500
 6. Unique-cases - blue-900
 
 ## Text Colors

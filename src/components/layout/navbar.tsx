@@ -43,32 +43,39 @@ const Navbar: React.FC = () => {
   };
 
   const navItems = [
-    { href: "/", label: "Home" },
-    { href: "/about_us", label: "About" },
-    { href: "/coverage", label: "Coverage" },
-    { href: "/contact_us", label: "Contact" },
+    { href: "/how_it_works", label: "How it work" },
+    { href: "/writers", label: "Writers" },
+    { href: "/prices", label: "Prices" },
+    { href: "/reviews", label: "Reviews" },
+    { href: "/blog", label: "Blog" },
+    { href: "/resources", label: "Resources" },
     // { href: "/blog", label: "Blog" },
   ];
 
   const serviceItems = [
-    {
-      href: "/sampling_and_data_collection",
-      label: "Sampling and Data Collection",
-    },
-    { href: "/survey_solutions", label: "Survey Solutions" },
-    { href: "/panel_build_management", label: "Panel Build Management" },
-    { href: "/cati_research", label: "CATI Research" },
-    { href: "/project_management", label: "Project Management" },
-    { href: "/affiliate_marketing", label: "Affiliate Marketing" },
-    { href: "/qualitative_research", label: "Qualitative Research" },
-    { href: "/quantitative_research", label: "Quantitative Research" },
-    { href: "/lead_generation", label: "Lead Generation" },
+    { href: "/college_essay_writing", label: "College Essay Writing" },
+    { href: "/course_work_writing", label: "Coursework Writing" },
+    { href: "/research_paper_writing", label: "Research Paper Writing" },
+    { href: "/dissertation_writing", label: "Dissertation Writing" },
+    { href: "/college_paper_writing", label: "College Paper Writing" },
+    { href: "/case_study_writing", label: "Case Study Writing" },
+    { href: "/services", label: "View All Writing Services" },
+  ];
+
+  const serviceItemscol2 = [
+    { href: "/college_essay_writing", label: "Scholarship Essay Writing" },
+    { href: "/course_work_writing", label: "Personal Statement Writing" },
+    { href: "/research_paper_writing", label: "Write my Term Paper" },
+    { href: "/services", label: "Write My Dissertation" },
+    { href: "/dissertation_writing", label: "Buy Research Paper" },
+    { href: "/college_paper_writing", label: "Buy Collage Essays" },
+    { href: "/case_study_writing", label: "Buy Essay" },
   ];
 
   return (
-    <nav className="absolute top-0 left-0 right-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-24 items-center">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-gray-50 shadow-md">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-16 items-center">
           <div className="flex-shrink-0">
             <Logo />
           </div>
@@ -76,7 +83,7 @@ const Navbar: React.FC = () => {
           <div className="md:hidden">
             <button
               onClick={toggleMobileMenu}
-              className="text-white hover:text-blue-600 transition-colors duration-200"
+              className="text-gray-900 hover:text-blue-600 transition-colors duration-200"
             >
               {isMobileMenuOpen ? (
                 <X className="h-6 w-6" />
@@ -86,29 +93,24 @@ const Navbar: React.FC = () => {
             </button>
           </div>
 
-          <div
-            ref={navRef}
-            className={`${
-              isMobileMenuOpen ? "flex flex-col bg-black" : "hidden"
-            } md:flex md:flex-row absolute md:relative top-16 md:top-0 left-0 right-0 p-4 md:p-0 space-y-4 md:space-y-0 md:space-x-8`}
-          >
+          <div ref={navRef} className="flex flex-row space-x-8">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="text-sm text-white py-2 md:pl-0 pl-4 relative group"
+                className="text-sm text-gray-900 py-2 md:pl-0 pl-4 relative group"
                 onClick={handleItemClick}
               >
                 {item.label}
-                <span className="absolute bottom-0 left-0 w-full h-1 bg-white transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200 md:block hidden"></span>
+                <span className="absolute bottom-0 left-0 w-full h-1 bg-gray-900 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200 md:block hidden"></span>
                 <span className="absolute left-0 top-0 h-full w-1 bg-white transform scale-y-0 group-hover:scale-y-100 transition-transform duration-200 md:hidden block"></span>
               </Link>
             ))}
 
-            <div className="relative py-2" ref={servicesRef}>
+            <div className="py-2" ref={servicesRef}>
               <Link
                 href="#"
-                className="flex items-center px-2 space-x-1 text-white text-sm w-full md:w-auto justify-between md:justify-start relative group"
+                className="flex items-center px-2 space-x-1 text-gray-900 text-sm w-full md:w-auto justify-between md:justify-start relative group"
                 onClick={() => setIsServicesOpen(!isServicesOpen)}
                 onMouseEnter={() => setIsServicesOpen(true)}
               >
@@ -120,45 +122,59 @@ const Navbar: React.FC = () => {
 
               {isServicesOpen && (
                 <div
-                  className="md:absolute md:top-full md:left-0 w-full md:w-72 py-2 mt-2 bg-black md:bg-transparent md:backdrop-filter-none"
+                  className="absolute w-[500px] py-2 mt-5 right-16 rounded-lg bg-gray-100 shadow-md"
                   onMouseLeave={closeDropdown}
                 >
-                  {serviceItems.map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className="block px-4 py-2 text-base text-white md:text-black md:bg-white/50 md:backdrop-blur-sm transition-colors duration-200 relative group"
-                      onClick={handleItemClick}
-                    >
-                      {item.label}
-                      <span className="absolute left-0 top-0 h-full w-1 bg-white md:bg-blue-950 transform scale-y-0 group-hover:scale-y-100 transition-transform duration-200"></span>
-                    </Link>
-                  ))}
+                  <h1 className="text-gray-900 text-2xl font-bold py-2 px-4">
+                    Popular Services
+                  </h1>
+                  <div className="flex flex-row gap-6">
+                    <div>
+                      {" "}
+                      {serviceItems.map((item) => (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          className="block px-4 py-2 text-base text-gray-900 transition-colors duration-200 relative group"
+                          onClick={handleItemClick}
+                        >
+                          {item.label}
+                          <span className="absolute left-0 top-0 h-full w-1 bg-white md:bg-blue-950 transform scale-y-0 group-hover:scale-y-100 transition-transform duration-200"></span>
+                        </Link>
+                      ))}
+                    </div>
+                    <div>
+                      {" "}
+                      {serviceItemscol2.map((item) => (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          className="block px-4 py-2 text-base text-gray-900 transition-colors duration-200 relative group"
+                          onClick={handleItemClick}
+                        >
+                          {item.label}
+                          <span className="absolute left-0 top-0 h-full w-1 bg-white md:bg-blue-950 transform scale-y-0 group-hover:scale-y-100 transition-transform duration-200"></span>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
-
-            <Link
-              href="/contact_us"
-              className="text-white bg-blue-600 py-2 px-6 md:mx-0 mx-8 font-bold text-sm rounded-full hover:bg-blue-900 hover:scale-105 transition duration-500 text-center"
-              onClick={handleItemClick}
-            >
-              GET A QUOTE
-            </Link>
           </div>
 
           {/* Sign Up and Log in Buttons */}
           <div className="flex flex-row gap-4">
             <Link
-              href="/contact_us"
-              className="text-white bg-blue-600 py-2 px-6 md:mx-0 mx-8 font-bold text-sm rounded-full hover:bg-blue-900 hover:scale-105 transition duration-500 text-center"
+              href="/sign_up"
+              className="w-28 text-white bg-blue-500 py-2 px-6 md:mx-0 mx-8 font-bold text-sm rounded-full hover:bg-blue-900 hover:scale-105 transition duration-500 text-center"
               onClick={handleItemClick}
             >
               Sign Up
             </Link>
             <Link
-              href="/contact_us"
-              className="text-white bg-blue-600 py-2 px-6 md:mx-0 mx-8 font-bold text-sm rounded-full hover:bg-blue-900 hover:scale-105 transition duration-500 text-center"
+              href="/log_in"
+              className="w-28 text-white bg-blue-800 py-2 px-6 md:mx-0 mx-8 font-bold text-sm rounded-full hover:bg-blue-950 hover:scale-105 transition duration-500 text-center"
               onClick={handleItemClick}
             >
               Log In
