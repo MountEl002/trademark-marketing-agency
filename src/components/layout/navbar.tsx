@@ -3,7 +3,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { ChevronDown, Menu, X } from "lucide-react";
 import Link from "next/link";
-import Logo from "../common/logo";
+import Logo from "../common/lightLogo";
+import LightLogo from "../common/lightLogo";
 
 const Navbar: React.FC = () => {
   const [isServicesOpen, setIsServicesOpen] = useState(false);
@@ -74,12 +75,9 @@ const Navbar: React.FC = () => {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-gray-50 shadow-md">
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative max-w-5xl mx-auto">
         <div className="flex justify-between h-16 items-center">
-          <div className="flex-shrink-0">
-            <Logo />
-          </div>
-
+          <LightLogo />
           <div className="md:hidden">
             <button
               onClick={toggleMobileMenu}

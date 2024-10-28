@@ -25,7 +25,7 @@ const SocialMedia = () => {
           key={label}
           href={href}
           aria-label={label}
-          className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center transition-colors hover:bg-blue-600"
+          className="w-10 h-10 rounded-full flex items-center justify-center transition-colors hover:bg-blue-600"
         >
           <Icon className="w-5 h-5 text-white" />
         </a>

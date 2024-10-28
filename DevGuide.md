@@ -24,3 +24,12 @@
 2. Green
 3. Red
 4. yellow
+
+## Import Logo and make the company name color fit
+
+      <div className="flex flex-shrink-0 items-center">
+        {/* import Logo here */}
+        <span className="ml-1 text-base font-medium text-gray-900">
+          HighQualityEssay
+        </span>
+      </div>
