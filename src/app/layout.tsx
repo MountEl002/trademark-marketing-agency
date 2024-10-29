@@ -1,23 +1,27 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import "./globals.css";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
+import ScrollToTop from "@/components/common/backToTop";
+import { Roboto, Lato } from "next/font/google";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
+const roboto = Roboto({
+  subsets: ["latin"],
+  weight: ["100", "300", "400", "500", "700", "900"],
+  variable: "--font-roboto",
+  display: "swap",
 });
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
+
+const lato = Lato({
+  subsets: ["latin"],
+  variable: "--font-lato",
+  weight: ["400", "700", "900"], // Adding different weights for headings
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "High-Quality Essay",
-  description: "Offering High Quality Essay Services",
+  title: "Affordable High-Quality Essays",
+  description: "Offering Affordable High Quality Essay Services",
 };
 
 export default function RootLayout({
@@ -26,14 +30,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    <html lang="en" className={`${roboto.variable} ${lato.variable}`}>
+      <body className="font-sans">
         <header>
           <Navbar />
         </header>
-        {children}
+        <main className="min-h-screen bg-white">
+          <ScrollToTop />
+          {children}
+        </main>
         <footer>
           <Footer />
         </footer>{" "}

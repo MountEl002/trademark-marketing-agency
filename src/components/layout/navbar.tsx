@@ -3,7 +3,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { ChevronDown, Menu, X } from "lucide-react";
 import Link from "next/link";
-import Logo from "../common/lightLogo";
 import LightLogo from "../common/lightLogo";
 
 const Navbar: React.FC = () => {
@@ -44,8 +43,7 @@ const Navbar: React.FC = () => {
   };
 
   const navItems = [
-    { href: "/how_it_works", label: "How it work" },
-    { href: "/writers", label: "Writers" },
+    { href: "/how_it_works", label: "How to Order" },
     { href: "/prices", label: "Prices" },
     { href: "/reviews", label: "Reviews" },
     { href: "/blog", label: "Blog" },
@@ -91,7 +89,7 @@ const Navbar: React.FC = () => {
             </button>
           </div>
 
-          <div ref={navRef} className="flex flex-row space-x-8">
+          <div ref={navRef} className="flex flex-row space-x-4">
             {navItems.map((item) => (
               <Link
                 key={item.href}

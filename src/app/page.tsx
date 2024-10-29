@@ -1,17 +1,29 @@
-import Image from "next/image";
+import OrderNow from "@/components/common/order/orderNow";
+import ContinueWithGoogle from "@/components/common/login/continueWithGoogle";
+import Priorities from "@/components/common/priorities";
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <Image
-        className="dark:invert"
-        src="/images/LogoAndFavIcon/fav icon.png"
-        alt="HQ Essay logo"
-        width={180}
-        height={38}
-        priority
-      />
-      <h1>High-Quality Essay Homepage</h1>
-    </div>
+    <>
+      {/* Here section */}
+      <section className="flex flex-col items-center max-w-5xl mt-16 text-center text-gray-600">
+        <h1 className="font-bold max-w-3xl">
+          Exemplary Essay Writing Services with Professional Writers at
+          Affordable Prices
+        </h1>
+        <h5 className="py-8 text-gray-500">
+          Get a professional essay for only
+          <span className="font-semibold">
+            <strong> $3.0/page </strong>
+          </span>
+          and get unique paper help
+        </h5>
+        <div className="horizontal gap-6 my-4">
+          <OrderNow />
+          <ContinueWithGoogle />
+        </div>
+        <Priorities />
+      </section>
+    </>
   );
 }
