@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <>
       {/* Here section */}
-      <section className="flex flex-col items-center max-w-5xl mt-16 text-center text-gray-600">
+      <section className="max-w-5xl mt-16 text-center text-gray-600">
         <h1 className="font-bold max-w-3xl">
           Exemplary Essay Writing Services with Professional Writers at
           Affordable Prices
@@ -23,6 +23,19 @@ export default function Home() {
           <ContinueWithGoogle />
         </div>
         <Priorities />
+      </section>
+
+      {/* Essay Writing services summary */}
+      <section className="bg-blue-50">
+        <div className="max-w-5xl text-center">
+          <h2>Premium Essay Writing Services</h2>
+          <h6>
+            Transform your academic journey with our professional essay writing
+            service. Simply tell us &quot;Write my essay&quot; and let our
+            experts handle the rest.
+          </h6>
+        </div>
+        <div></div>
       </section>
     </>
   );

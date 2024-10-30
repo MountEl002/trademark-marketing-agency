@@ -41,18 +41,18 @@ const Priorities = () => {
     },
   ];
   return (
-    <div className="grid grid-cols-2 gap-8 my-4">
+    <div className="grid grid-cols-4 gap-8 my-4">
       {customerPrioties.map((item) => (
         <div
           key={item.id}
-          className="bg-gray-50 p-4 rounded-lg shadow-lg h-52 w-52"
+          className="bg-gray-50 p-4 rounded-lg shadow-lg h-48 w-48"
         >
           <Image
             src={item.repImage}
             alt={item.imageAlt}
             className="object-contain h-[80%] w-full"
           />
-          <p className="pt-4 text-gray-700 text-sm">{item.name}</p>
+          <p className="pt-4 text-gray-800 text-xs">{item.name}</p>
         </div>
       ))}
     </div>
