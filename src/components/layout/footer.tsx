@@ -218,7 +218,7 @@ const Footer = () => {
         <p>
           High-Quality Essay offers writing and research services for limited
           use only. All the materials from our website and affiliates should be
-          used with proper references and in accordance with our
+          used with proper references and in accordance with our{" "}
           <a href="#">Terms & Conditions.</a>
         </p>
       </div>
