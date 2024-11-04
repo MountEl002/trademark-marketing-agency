@@ -15,6 +15,7 @@ import {
 import OrderAnEssay from "@/components/common/order/orderAnEssay";
 import OrderPaper from "@/components/common/order/orderPaper";
 import Testimonials from "@/components/testimonials";
+import CustomerReviews from "@/components/customerReviews";
 
 interface Benefit {
   id: number;
@@ -208,6 +209,9 @@ export default function Home() {
         <div className="max-w-5xl">
           <Testimonials />
         </div>
+      </section>
+      <section>
+        <CustomerReviews />
       </section>
     </>
   );

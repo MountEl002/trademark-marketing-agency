@@ -79,7 +79,7 @@ const Testimonials = () => {
               src={clientTestimonies[currentIndex].clientImage}
               alt="image of client"
               fill
-              className="object-cover rounded-2xl transition-opacity duration-1000 ease-in-out"
+              className="object-cover rounded-2xl transition-trasform ease-out duration-1000"
             />
           </div>
           <div className="transition-all duration-300 ease-in-out">
