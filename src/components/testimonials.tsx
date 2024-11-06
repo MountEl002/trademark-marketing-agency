@@ -1,17 +1,20 @@
 "use client";
 import Image, { StaticImageData } from "next/image";
-import React, { useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 import CLientOneImage from "@/assests/testimonies/clientOne.jpg";
 import CLientTwoImage from "@/assests/testimonies/clientTwo.jpg";
 import CLientThreeImage from "@/assests/testimonies/clientThree.jpg";
 import CLientFourImage from "@/assests/testimonies/clientFour.jpg";
+import DateDifference from "./dateDifference";
 
 interface ClientTestimony {
   id: number;
   clientImage: StaticImageData;
   orderDetails: string;
   statement: string;
+  daysAgo: string;
 }
 
 const Testimonials = () => {
@@ -20,6 +23,7 @@ const Testimonials = () => {
       id: 0,
       clientImage: CLientOneImage,
       orderDetails: "CLIENT #719844 HISTORY - 12 PAGES",
+      daysAgo: "2024-11-01",
       statement:
         "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
     },
@@ -27,6 +31,7 @@ const Testimonials = () => {
       id: 1,
       clientImage: CLientTwoImage,
       orderDetails: "CLIENT #719844 Business - 8 PAGES",
+      daysAgo: "2024-11-05",
       statement:
         "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
     },
@@ -34,6 +39,7 @@ const Testimonials = () => {
       id: 2,
       clientImage: CLientThreeImage,
       orderDetails: "CLIENT #719844 Psychology - 4 PAGES",
+      daysAgo: "2024-11-02",
       statement:
         "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
     },
@@ -41,71 +47,51 @@ const Testimonials = () => {
       id: 3,
       clientImage: CLientFourImage,
       orderDetails: "CLIENT #719844 Nursing - 7 PAGES",
+      daysAgo: "2024-11-03",
       statement:
         "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
     },
   ];
 
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  const prevTestimony = () => {
-    const isFisrtTestimony = currentIndex === 0;
-    const newIndex = isFisrtTestimony
-      ? clientTestimonies.length - 1
-      : currentIndex - 1;
-    setCurrentIndex(newIndex);
-  };
-
-  const nextTestimony = () => {
-    const isLastTestimony = currentIndex === clientTestimonies.length - 1;
-    const newIndex = isLastTestimony ? 0 : currentIndex + 1;
-    setCurrentIndex(newIndex);
-  };
-
-  const goToTestimony = (testimonyIndex: React.SetStateAction<number>) => {
-    setCurrentIndex(testimonyIndex);
+  const settings = {
+    dots: true,
+    infinite: true,
+    slidesToShow: 1,
+    slidesToScroll: 1,
   };
 
   return (
     <>
-      <div className="flex justify-between items-center">
-        <ChevronLeft
-          onClick={prevTestimony}
-          className="h-[6%] w-[6%] hover:bg-blue-500 hover:text-white rounded-[50%] transition-colors duration-500 cursor-pointer"
-        />
-        <div className="horizontal gap-6 mx-20">
-          <div className="relative h-[400px] w-[700px]">
-            <Image
-              src={clientTestimonies[currentIndex].clientImage}
-              alt="image of client"
-              fill
-              className="object-cover rounded-2xl transition-trasform ease-out duration-1000"
-            />
-          </div>
-          <div className="transition-all duration-300 ease-in-out">
-            <p className="text-blue-600 mb-4">
-              {clientTestimonies[currentIndex].orderDetails}
-            </p>
-            <p className="text-xl font-semibold">
-              {clientTestimonies[currentIndex].statement}
-            </p>
-          </div>
+      <div>
+        <div className="vertical">
+          <h3 className="text-center">What our Clients Say About Us?</h3>
+          <p className="text-center max-w-3xl">
+            Join 657K+ successful students who trust HighQualityEssay for their
+            academic needs. With 392 qualified writers, We build lasting
+            partnerships with our clients through exceptional service and
+            affordable rates, making academic excellence accessible to all.
+          </p>
         </div>
-        <ChevronRight
-          onClick={nextTestimony}
-          className="h-[6%] w-[6%] hover:bg-blue-500 hover:text-white rounded-[50%] transition-colors duration-500 cursor-pointer"
-        />
-      </div>
-      <div className="horizontal gap-2 p-4">
-        {clientTestimonies.map((item) => (
-          <div
-            key={item.id}
-            onClick={() => goToTestimony(item.id)}
-            className={`h-2 w-2 rounded-[50%] cursor-pointer ${
-              item.id === currentIndex ? "bg-blue-950" : "bg-blue-400"
-            }`}
-          ></div>
-        ))}
+        <Slider {...settings}>
+          {clientTestimonies.map((item) => (
+            <div key={item.id}>
+              <div className="horizontal gap-6 px-10">
+                <div className="horizontal h-[400px] w-[500px]">
+                  <Image
+                    src={item.clientImage}
+                    alt="image of client"
+                    className="object-cover rounded-2xl"
+                  />
+                </div>
+                <div className="">
+                  <DateDifference targetDateString={item.daysAgo} />
+                  <p className="text-blue-600 mb-4">{item.orderDetails}</p>
+                  <p className="text-3xl font-semibold">{item.statement}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </Slider>
       </div>
     </>
   );

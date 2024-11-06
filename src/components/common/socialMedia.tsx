@@ -1,21 +1,21 @@
 import React from "react";
 import {
-  Facebook,
-  Instagram,
-  Twitter,
-  Youtube,
-  Linkedin,
-  Music,
-} from "lucide-react";
+  FaFacebookF,
+  FaInstagram,
+  FaXTwitter,
+  FaTiktok,
+  FaYoutube,
+} from "react-icons/fa6";
+import { FaLinkedinIn } from "react-icons/fa";
 
 const SocialMedia = () => {
   const socialLinks = [
-    { icon: Facebook, href: "#", label: "Facebook" },
-    { icon: Instagram, href: "#", label: "Instagram" },
-    { icon: Twitter, href: "#", label: "Twitter" },
-    { icon: Music, href: "#", label: "TikTok" },
-    { icon: Youtube, href: "#", label: "YouTube" },
-    { icon: Linkedin, href: "#", label: "LinkedIn" },
+    { icon: FaFacebookF, href: "#", label: "Facebook" },
+    { icon: FaInstagram, href: "#", label: "Instagram" },
+    { icon: FaXTwitter, href: "#", label: "Twitter" },
+    { icon: FaTiktok, href: "#", label: "TikTok" },
+    { icon: FaYoutube, href: "#", label: "YouTube" },
+    { icon: FaLinkedinIn, href: "#", label: "LinkedIn" },
   ];
 
   return (

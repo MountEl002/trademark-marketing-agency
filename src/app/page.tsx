@@ -3,23 +3,20 @@ import ContinueWithGoogle from "@/components/common/login/continueWithGoogle";
 import Priorities from "@/components/common/priorities";
 import qualityControlImage from "@/assests/qualityControl2.png";
 import Image from "next/image";
-import {
-  Sparkles,
-  PhoneCall,
-  LockKeyhole,
-  CircleDollarSign,
-  Target,
-  ShieldCheck,
-  LucideIcon,
-} from "lucide-react";
+import { IoSparklesSharp, IoShieldCheckmark } from "react-icons/io5";
+import { FaPhoneVolume } from "react-icons/fa6";
+import { IoIosUnlock } from "react-icons/io";
+import { MdAttachMoney } from "react-icons/md";
+import { TbTargetArrow } from "react-icons/tb";
 import OrderAnEssay from "@/components/common/order/orderAnEssay";
 import OrderPaper from "@/components/common/order/orderPaper";
 import Testimonials from "@/components/testimonials";
 import CustomerReviews from "@/components/customerReviews";
+import { IconType } from "react-icons";
 
 interface Benefit {
   id: number;
-  repIcon: LucideIcon;
+  repIcon: IconType;
   name: string;
   description: string;
 }
@@ -35,42 +32,42 @@ export default function Home() {
   const ourBenefits: Benefit[] = [
     {
       id: 1,
-      repIcon: Sparkles,
+      repIcon: IoSparklesSharp,
       name: "Expert Academic Writers",
       description:
         "Our carefully vetted team of professional writers holds advanced degrees from leading universities. We match your assignment with the most qualified expert in your field to ensure exceptional quality.",
     },
     {
       id: 2,
-      repIcon: CircleDollarSign,
+      repIcon: MdAttachMoney,
       name: "Excellence at Affordable Rates",
       description:
         "Competitive pricing meets premium quality. Pay only after reviewing and approving your completed essay. Your satisfaction is our priority.",
     },
     {
       id: 3,
-      repIcon: LockKeyhole,
+      repIcon: IoIosUnlock,
       name: "100% Confidentiality & Security",
       description:
         "Your privacy matters. All interactions with our service are strictly confidential, and your personal information remains completely secure.",
     },
     {
       id: 4,
-      repIcon: ShieldCheck,
+      repIcon: IoShieldCheckmark,
       name: "Advanced Quality Assurance",
       description:
         "Every essay undergoes: Rigorous plagiarism checking, AI detection scanning, Professional editing, Quality control review. All quality checks are included free with your order.",
     },
     {
       id: 5,
-      repIcon: Target,
+      repIcon: TbTargetArrow,
       name: "Streamlined Ordering Process",
       description:
         "We've simplified excellence: Submit your requirements, Our team assigns the best-qualified expert, Receive your perfectly crafted essay, Review and approve, Release payment only when satisfied.",
     },
     {
       id: 6,
-      repIcon: PhoneCall,
+      repIcon: FaPhoneVolume,
       name: "24/7 Dedicated Support",
       description:
         "Our professional support team is available around the clock to assist you with any questions or concerns about your order.",
@@ -124,7 +121,7 @@ export default function Home() {
           Exemplary Essay Writing Services with Professional Writers at
           Affordable Prices
         </h1>
-        <h5 className="py-8 text-gray-500">
+        <h5 className="text-gray-500">
           Get a professional essay for only
           <span className="font-semibold">
             <strong> $3.0/page </strong>
@@ -141,8 +138,8 @@ export default function Home() {
       {/* Essay Writing services summary */}
       <section className="bg-blue-50">
         <div className="max-w-5xl text-center">
-          <h2 className="mb-6">Premium Essay Writing Services</h2>
-          <h6 className="mb-6">
+          <h2>Premium Essay Writing Services</h2>
+          <h6>
             Transform your academic journey with our professional essay writing
             service. Simply tell us &quot;Write my essay&quot; and let our
             experts handle the rest.
@@ -160,8 +157,8 @@ export default function Home() {
                 className="border-b-2 border-gray-400 text-justify"
               >
                 <div className="flex flex-row items-center gap-4 mb-4">
-                  <item.repIcon size={30} />
-                  <h4>{item.name}</h4>
+                  <item.repIcon size={30} cla />
+                  <h4 className="!mb-0">{item.name}</h4>
                 </div>
                 <p>{item.description}</p>
                 <br />
@@ -176,7 +173,7 @@ export default function Home() {
         <h2 className="mb-6">
           Smart students choose smarter writing solutions!
         </h2>
-        <h6 className="mb-6">
+        <h6 className="">
           Turn &lsquo;I need help writing my essay&rsquo; into{" "}
           <strong>&lsquo;I got everything I needed—and more!&rsquo;</strong>{" "}
           <br />

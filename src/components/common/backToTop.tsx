@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ArrowBigUp } from "lucide-react";
-
+import { FaArrowUp } from "react-icons/fa";
 const ScrollToTop = () => {
   const [isVisible, setIsVisible] = useState(false);
 
@@ -43,7 +42,7 @@ const ScrollToTop = () => {
                      transform hover:scale-110"
           aria-label="Scroll to top"
         >
-          <ArrowBigUp className="w-6 h-6" />
+          <FaArrowUp className="w-6 h-6" />
         </button>
       )}
     </>

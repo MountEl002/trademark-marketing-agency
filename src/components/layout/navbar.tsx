@@ -1,7 +1,9 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { ChevronDown, Menu, X } from "lucide-react";
+import { FaChevronDown } from "react-icons/fa";
+import { TiThMenu } from "react-icons/ti";
+import { IoClose } from "react-icons/io5";
 import Link from "next/link";
 import LightLogo from "../common/lightLogo";
 
@@ -82,9 +84,9 @@ const Navbar: React.FC = () => {
               className="text-gray-900 hover:text-blue-600 transition-colors duration-200"
             >
               {isMobileMenuOpen ? (
-                <X className="h-6 w-6" />
+                <IoClose className="h-6 w-6" />
               ) : (
-                <Menu className="h-6 w-6" />
+                <TiThMenu className="h-6 w-6" />
               )}
             </button>
           </div>
@@ -111,7 +113,7 @@ const Navbar: React.FC = () => {
                 onMouseEnter={() => setIsServicesOpen(true)}
               >
                 <span>Services</span>
-                <ChevronDown className="h-4 w-4" />
+                <FaChevronDown className="h-4 w-4" />
                 {/* <span className="absolute bottom-0 left-0 w-full h-1 bg-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200 md:block hidden"></span>
                 <span className="absolute left-0 top-0 h-full w-1 bg-blue-600 transform scale-y-0 group-hover:scale-y-100 transition-transform duration-200 md:hidden block"></span> */}
               </Link>

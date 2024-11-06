@@ -14,6 +14,10 @@ section {
   @apply flex flex-row items-center justify-center;
 }
 
+.vertical {
+  @apply flex flex-col items-center justify-center;
+}
+
 .buttonGradient {
   @apply bg-gradient-to-r from-yellow-600 to-orange-700 px-10 py-2 text-gray-50 rounded-full font-semibold;
 }
@@ -24,7 +28,7 @@ h3,
 h4,
 h5,
 h6 {
-  @apply font-heading;
+  @apply font-heading mb-6;
 }
 
 h1 {
@@ -53,7 +57,6 @@ h6 {
 
 @layer base {
   :root {
-
     --background: 0 0% 100%;
 
     --foreground: 0 0% 3.9%;
@@ -102,10 +105,9 @@ h6 {
 
     --chart-5: 27 87% 67%;
 
-    --radius: 0.5rem
+    --radius: 0.5rem;
   }
   .dark {
-
     --background: 0 0% 3.9%;
 
     --foreground: 0 0% 98%;
@@ -152,7 +154,7 @@ h6 {
 
     --chart-4: 280 65% 60%;
 
-    --chart-5: 340 75% 55%
+    --chart-5: 340 75% 55%;
   }
 }
 
