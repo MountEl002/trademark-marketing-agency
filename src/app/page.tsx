@@ -8,7 +8,7 @@ import { FaPhoneVolume } from "react-icons/fa6";
 import { IoIosUnlock } from "react-icons/io";
 import { MdAttachMoney } from "react-icons/md";
 import { TbTargetArrow } from "react-icons/tb";
-import OrderAnEssay from "@/components/common/order/orderAnEssay";
+// import OrderAnEssay from "@/components/common/order/orderAnEssay";
 import OrderPaper from "@/components/common/order/orderPaper";
 import Testimonials from "@/components/testimonials";
 import CustomerReviews from "@/components/customerReviews";
@@ -157,7 +157,7 @@ export default function Home() {
                 className="border-b-2 border-gray-400 text-justify"
               >
                 <div className="flex flex-row items-center gap-4 mb-4">
-                  <item.repIcon size={30} cla />
+                  <item.repIcon size={30} />
                   <h4 className="!mb-0">{item.name}</h4>
                 </div>
                 <p>{item.description}</p>
@@ -208,7 +208,9 @@ export default function Home() {
         </div>
       </section>
       <section>
-        <CustomerReviews />
+        <div className="max-w-5xl">
+          <CustomerReviews />
+        </div>
       </section>
     </>
   );

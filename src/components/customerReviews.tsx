@@ -1,18 +1,15 @@
 "use client";
-import Image, { StaticImageData } from "next/image";
-import CLientOneImage from "@/assests/testimonies/clientOne.jpg";
-import CLientTwoImage from "@/assests/testimonies/clientTwo.jpg";
-import CLientThreeImage from "@/assests/testimonies/clientThree.jpg";
-import CLientFourImage from "@/assests/testimonies/clientFour.jpg";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import DateDifference from "./dateDifference";
-
+import { FaUser } from "react-icons/fa";
+import { FaStar } from "react-icons/fa6";
+import { IconType } from "react-icons";
 interface ClientReview {
   id: number;
-  clientImage: StaticImageData;
-  orderDetails: string;
+  clientIcon: IconType;
+  clientDetails: string;
   statement: string;
   daysAgo: string;
   numOfStars: string;
@@ -24,8 +21,8 @@ const CustomerReviews = () => {
       id: 0,
       daysAgo: "2024-11-01",
       numOfStars: "10/10",
-      clientImage: CLientOneImage,
-      orderDetails: "CLIENT #719844 HISTORY - 12 PAGES",
+      clientIcon: FaUser,
+      clientDetails: "CLIENT #719844",
       statement:
         "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
     },
@@ -33,8 +30,8 @@ const CustomerReviews = () => {
       id: 1,
       daysAgo: "2024-11-01",
       numOfStars: "10/10",
-      clientImage: CLientTwoImage,
-      orderDetails: "CLIENT #719844 Business - 8 PAGES",
+      clientIcon: FaUser,
+      clientDetails: "CLIENT #719844",
       statement:
         "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
     },
@@ -42,8 +39,8 @@ const CustomerReviews = () => {
       id: 2,
       daysAgo: "2024-11-01",
       numOfStars: "10/10",
-      clientImage: CLientThreeImage,
-      orderDetails: "CLIENT #719844 Psychology - 4 PAGES",
+      clientIcon: FaUser,
+      clientDetails: "CLIENT #719844",
       statement:
         "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
     },
@@ -51,8 +48,143 @@ const CustomerReviews = () => {
       id: 3,
       daysAgo: "2024-11-01",
       numOfStars: "10/10",
-      clientImage: CLientFourImage,
-      orderDetails: "CLIENT #719844 Nursing - 7 PAGES",
+      clientIcon: FaUser,
+      clientDetails: "CLIENT #719844",
+      statement:
+        "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
+    },
+    {
+      id: 3,
+      daysAgo: "2024-11-01",
+      numOfStars: "10/10",
+      clientIcon: FaUser,
+      clientDetails: "CLIENT #719844",
+      statement:
+        "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
+    },
+    {
+      id: 3,
+      daysAgo: "2024-11-01",
+      numOfStars: "10/10",
+      clientIcon: FaUser,
+      clientDetails: "CLIENT #719844",
+      statement:
+        "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
+    },
+    {
+      id: 3,
+      daysAgo: "2024-11-01",
+      numOfStars: "10/10",
+      clientIcon: FaUser,
+      clientDetails: "CLIENT #719844",
+      statement:
+        "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
+    },
+    {
+      id: 3,
+      daysAgo: "2024-11-01",
+      numOfStars: "10/10",
+      clientIcon: FaUser,
+      clientDetails: "CLIENT #719844",
+      statement:
+        "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
+    },
+    {
+      id: 3,
+      daysAgo: "2024-11-01",
+      numOfStars: "10/10",
+      clientIcon: FaUser,
+      clientDetails: "CLIENT #719844",
+      statement:
+        "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
+    },
+    {
+      id: 3,
+      daysAgo: "2024-11-01",
+      numOfStars: "10/10",
+      clientIcon: FaUser,
+      clientDetails: "CLIENT #719844",
+      statement:
+        "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
+    },
+    {
+      id: 3,
+      daysAgo: "2024-11-01",
+      numOfStars: "10/10",
+      clientIcon: FaUser,
+      clientDetails: "CLIENT #719844",
+      statement:
+        "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
+    },
+    {
+      id: 3,
+      daysAgo: "2024-11-01",
+      numOfStars: "10/10",
+      clientIcon: FaUser,
+      clientDetails: "CLIENT #719844",
+      statement:
+        "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
+    },
+    {
+      id: 3,
+      daysAgo: "2024-11-01",
+      numOfStars: "10/10",
+      clientIcon: FaUser,
+      clientDetails: "CLIENT #719844",
+      statement:
+        "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
+    },
+    {
+      id: 3,
+      daysAgo: "2024-11-01",
+      numOfStars: "10/10",
+      clientIcon: FaUser,
+      clientDetails: "CLIENT #719844",
+      statement:
+        "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
+    },
+    {
+      id: 3,
+      daysAgo: "2024-11-01",
+      numOfStars: "10/10",
+      clientIcon: FaUser,
+      clientDetails: "CLIENT #719844",
+      statement:
+        "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
+    },
+    {
+      id: 3,
+      daysAgo: "2024-11-01",
+      numOfStars: "10/10",
+      clientIcon: FaUser,
+      clientDetails: "CLIENT #719844",
+      statement:
+        "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
+    },
+    {
+      id: 3,
+      daysAgo: "2024-11-01",
+      numOfStars: "10/10",
+      clientIcon: FaUser,
+      clientDetails: "CLIENT #719844",
+      statement:
+        "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
+    },
+    {
+      id: 3,
+      daysAgo: "2024-11-01",
+      numOfStars: "10/10",
+      clientIcon: FaUser,
+      clientDetails: "CLIENT #719844",
+      statement:
+        "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
+    },
+    {
+      id: 3,
+      daysAgo: "2024-11-01",
+      numOfStars: "10/10",
+      clientIcon: FaUser,
+      clientDetails: "CLIENT #719844",
       statement:
         "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
     },
@@ -61,8 +193,28 @@ const CustomerReviews = () => {
   const settings = {
     dots: true,
     infinite: true,
-    slidesToShow: 1,
-    slidesToScroll: 1,
+    slidesToShow: 3,
+    slidesToScroll: 3,
+    initialSlide: 0,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 2,
+          infinite: true,
+          dots: true,
+        },
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          initialSlide: 2,
+        },
+      },
+    ],
   };
 
   return (
@@ -72,33 +224,35 @@ const CustomerReviews = () => {
           <h3 className="text-center">
             Essay writing service customer reviews
           </h3>
-          <p className="text-center max-w-3xl">
+          <p className="text-center max-w-3xl pb-10">
             Looking for proof of our excellence? Our clients&apos; success
             stories say it all. Through tailored essay writing solutions and
             unwavering support, we&apos;ve earned our reputation for exceptional
             service.
           </p>
         </div>
-        <Slider {...settings}>
-          {clientReviews.map((item) => (
-            <div key={item.id}>
-              <div className="horizontal gap-6 px-10">
-                <div className="horizontal h-[400px] w-[500px]">
-                  <Image
-                    src={item.clientImage}
-                    alt="image of client"
-                    className="object-cover rounded-2xl"
-                  />
-                </div>
-                <div>
-                  <DateDifference targetDateString={item.daysAgo} />
-                  <p className="text-blue-600 mb-4">{item.orderDetails}</p>
-                  <p className="text-3xl font-semibold">{item.statement}</p>
+        <div className="bg-green-600">
+          <Slider {...settings}>
+            {clientReviews.map((item) => (
+              <div key={item.id} className="ml-7">
+                <div className="flex flex-col justify-between h-60 rounded-2xl border-2 border-gray-300 p-4 mx-4">
+                  <div className="flex justify-between">
+                    <div className="horizontal gap-1">
+                      <FaStar size={20} className="text-yellow-500" />
+                      {item.numOfStars}
+                    </div>
+                    <div>
+                      {" "}
+                      <DateDifference targetDateString={item.daysAgo} />
+                    </div>
+                  </div>
+                  <div className="text-blue-600">{item.clientDetails}</div>
+                  <div className="">{item.statement}</div>
                 </div>
               </div>
-            </div>
-          ))}
-        </Slider>
+            ))}
+          </Slider>
+        </div>
       </div>
     </>
   );

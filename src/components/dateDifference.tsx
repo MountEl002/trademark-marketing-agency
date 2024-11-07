@@ -45,7 +45,7 @@ const DateDifference: React.FC<DateDifferenceProps> = ({
 
   const { message } = calculateDateDifference();
 
-  return <span>{message}</span>;
+  return <span className="text-gray-400">{message}</span>;
 };
 
 // Default props with type checking
