@@ -207,10 +207,8 @@ export default function Home() {
           <Testimonials />
         </div>
       </section>
-      <section>
-        <div className="max-w-5xl">
-          <CustomerReviews />
-        </div>
+      <section className="max-w-5xl">
+        <CustomerReviews />
       </section>
     </>
   );

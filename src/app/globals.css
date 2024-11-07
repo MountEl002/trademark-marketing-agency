@@ -55,6 +55,17 @@ h6 {
   @apply text-lg font-bold;
 }
 
+.embla {
+  overflow: hidden;
+}
+.embla__container {
+  display: flex;
+}
+.embla__slide {
+  flex: 0 0 100%;
+  min-width: 0;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
