@@ -1,5 +1,7 @@
+"use client";
 import React, { useState } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa6";
+
 interface FAQItem {
   id: number;
   question: string;
@@ -37,6 +39,37 @@ const faqData: FAQItem[] = [
     answer:
       "High-Quality Essay has built its reputation on delivering superior academic writing at affordable prices. We offer several guarantees to ensure your confidence: free revisions until you're completely satisfied, a secure payment system, and 24/7 customer support. Rather than using a bidding system, we carefully match you with the most qualified writer for your subject matter. Our focus is on quality and reliability, providing you with the best possible academic support.",
   },
+  {
+    id: 6,
+    question: "Can I remain anonymous while using your service?",
+    answer:
+      "We take your privacy seriously. Our strict confidentiality policy ensures your information remains completely protected. When creating an account, you'll be assigned a unique identifier - there's no need to provide your real name. We advise against sharing personal details or institutional information with anyone. Your use of our service remains completely confidential.",
+  },
+  {
+    id: 7,
+    question: "What types of papers do you offer?",
+    answer:
+      "Our service covers all academic writing needs, including, essays (argumentative, descriptive, narrative, application), reviews (book, movie, article), complex academic projects (coursework, term papers), and thesis and dissertation chapters among other academic services you might need. Each assignment is handled by a writer specifically qualified in your subject area, ensuring expert-level work that meets academic standards.",
+  },
+  {
+    id: 8,
+    question: "How do you select your writers?",
+    answer:
+      "Our rigorous selection process ensures only top-tier academic writers join our team. Each candidate must provide proof of advanced degrees, pass comprehensive English proficiency tests, and successfully complete a trial period. Our quality control team continuously monitors performance, maintaining our high standards. Writers who don't consistently meet our quality benchmarks are immediately removed from our team.",
+  },
+  {
+    id: 9,
+    question: "Is your service legitimate?",
+    answer:
+      "Yes. We operate as a legitimate academic assistance service, providing reference materials and guidance to help students improve their writing skills. Our work serves as a learning tool to enhance your academic capabilities.",
+  },
+  {
+    id: 10,
+    question:
+      "How can a money-back guarantee help me use your service effectively?",
+    answer:
+      "According to our money-back guarantee, you can get a full or partial refund when using our online essay writing service. For instance, when you decide to cancel your order, you can get a 100% refund if your writer has not started working on your assignment. Otherwise, the refund amount will depend on the expert’s progress. On top of that, you can count on getting your money back if your order is delivered late and we are at fault. Even though our writers do everything they can to meet the most challenging deadlines, it's impossible to guarantee on-time delivery in 100% of cases. As you can see, getting custom essay help here is risk-free because you can rely on multiple guarantees. We aim to meet our clients' expectations no matter what.",
+  },
 ];
 
 const FAQ = () => {
@@ -47,11 +80,9 @@ const FAQ = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-6 space-y-4">
-      <h2 className="text-3xl font-bold text-gray-800 mb-8">
-        Frequently Asked Questions
-      </h2>
-      <div className="space-y-4">
+    <div className="">
+      <h2>Frequently Asked Questions about our services</h2>
+      <div className="w-full space-y-4">
         {faqData.map((item) => (
           <div key={item.id} className="border rounded-lg shadow-sm">
             <button
@@ -62,18 +93,22 @@ const FAQ = () => {
                   : "text-gray-700 hover:text-blue-400"
               }`}
             >
-              <span className="font-medium">{item.question}</span>
-              {activeId === item.id ? (
-                <FaChevronUp className="flex-shrink-0 ml-2" />
-              ) : (
-                <FaChevronDown className="flex-shrink-0 ml-2" />
-              )}
+              <span className="text-2xl font-medium pr-8">{item.question}</span>
+              <FaChevronDown
+                className={`flex-shrink-0 ml-2 transform transition-transform duration-500 ease-in-out ${
+                  activeId === item.id ? "rotate-180" : "rotate-0"
+                }`}
+              />
             </button>
-            {activeId === item.id && (
-              <div className="px-4 pb-4 text-gray-600 animate-fadeIn">
+            <div
+              className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                activeId === item.id ? "max-h-96" : "max-h-0"
+              }`}
+            >
+              <div className="p-4 text-gray-600">
                 <p>{item.answer}</p>
               </div>
-            )}
+            </div>
           </div>
         ))}
       </div>

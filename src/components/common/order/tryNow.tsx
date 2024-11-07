@@ -1,0 +1,19 @@
+import React from "react";
+import OrderAnEssay from "./orderAnEssay";
+
+const TryNow = () => {
+  return (
+    <div>
+      <div className="flex flex-row items-center justify-between w-full gap-12 mt-8">
+        <div className="text-2xl font-semibold">
+          Try our essay writing service right now!
+        </div>
+        <div>
+          <OrderAnEssay />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default TryNow;

@@ -8,11 +8,12 @@ import { FaPhoneVolume } from "react-icons/fa6";
 import { IoIosUnlock } from "react-icons/io";
 import { MdAttachMoney } from "react-icons/md";
 import { TbTargetArrow } from "react-icons/tb";
-import OrderAnEssay from "@/components/common/order/orderAnEssay";
 import OrderPaper from "@/components/common/order/orderPaper";
 import Testimonials from "@/components/testimonials";
 import CustomerReviews from "@/components/customerReviews";
 import { IconType } from "react-icons";
+import FAQ from "@/components/faq";
+import TryNow from "@/components/common/order/tryNow";
 
 interface Benefit {
   id: number;
@@ -206,22 +207,28 @@ export default function Home() {
         <div className="max-w-5xl">
           <Testimonials />
         </div>
-        <div>
-          <div>Try our essay writing service right now!</div>
-          <div>
-            <OrderAnEssay />
-          </div>
+        <div className="max-w-4xl w-full">
+          <TryNow />
         </div>
       </section>
+
+      {/* Customer Reviws Section */}
       <section className="max-w-5xl">
         <CustomerReviews />
-        <div className="horizontal">
+        <div className="horizontal mt-8">
           <a
             href="#"
             className="text-white bg-blue-500 py-2 px-6 md:mx-0 mx-8 font-bold text-sm rounded-full hover:bg-blue-900 hover:scale-105 transition duration-500 text-center"
           >
             See More Reviews
           </a>
+        </div>
+      </section>
+
+      {/* Frequently Asked Questions Section */}
+      <section>
+        <div className="max-w-3xl mx-auto">
+          <FAQ />
         </div>
       </section>
     </>
