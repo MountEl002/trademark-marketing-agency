@@ -234,7 +234,7 @@ const CustomerReviews = () => {
             <div className="embla__container">
               {clientReviews.map((item) => (
                 <div key={item.id}>
-                  <div className="flex flex-col justify-between w-64 h-60 rounded-2xl border-2 border-gray-300 p-4 mx-4">
+                  <div className="flex flex-col justify-between w-64 h-60 rounded-2xl border-2 border-gray-300 p-4 mx-5">
                     <div className="flex justify-between">
                       <div className="horizontal gap-1">
                         <FaStar size={20} className="text-yellow-500" />
