@@ -9,8 +9,9 @@ const LightLogo: React.FC = () => {
     <Link href="/">
       <div className="flex flex-shrink-0 items-center">
         <Image src={LogoImage} width={30} height={40} alt="Company Logo" />
-        <span className="ml-1 text-base font-semibold text-gray-600">
-          HighQualityEssay
+        <span className="ml-1 text-base font-semibold text-gray-600 text-center">
+          High-Quality <br />
+          Essay
         </span>
       </div>
     </Link>

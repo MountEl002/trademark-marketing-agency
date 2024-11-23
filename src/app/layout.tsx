@@ -35,7 +35,7 @@ export default function RootLayout({
         <header>
           <Navbar />
         </header>
-        <main className="min-h-screen bg-white">
+        <main className="min-h-screen mt-16 bg-white">
           <ScrollToTop />
           {children}
         </main>

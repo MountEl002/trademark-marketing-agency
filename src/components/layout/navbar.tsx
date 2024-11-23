@@ -45,7 +45,7 @@ const Navbar: React.FC = () => {
   };
 
   const navItems = [
-    { href: "/how_it_works", label: "How to Order" },
+    { href: "/how-to-order", label: "How to Order" },
     { href: "/prices", label: "Prices" },
     { href: "/reviews", label: "Reviews" },
     { href: "/blog", label: "Blog" },
@@ -54,23 +54,45 @@ const Navbar: React.FC = () => {
   ];
 
   const serviceItems = [
-    { href: "/college_essay_writing", label: "College Essay Writing" },
-    { href: "/course_work_writing", label: "Coursework Writing" },
-    { href: "/research_paper_writing", label: "Research Paper Writing" },
-    { href: "/dissertation_writing", label: "Dissertation Writing" },
-    { href: "/college_paper_writing", label: "College Paper Writing" },
-    { href: "/case_study_writing", label: "Case Study Writing" },
-    { href: "/services", label: "View All Writing Services" },
+    { href: "/services/college-essay", label: "College Essay Writing" },
+    { href: "/services/coursework", label: "Coursework Writing" },
+    {
+      href: "/services/research-paper",
+      label: "Research Paper Writing",
+    },
+    { href: "/services/dissertation", label: "Dissertation Writing" },
+    {
+      href: "/services/college-paper",
+      label: "College Paper Writing",
+    },
+    { href: "/services/case-study", label: "Case Study Writing" },
+    { href: "/services/nursing-paper", label: "Nursing Paper Writing" },
+    { href: "/services/scholarship-essay", label: "Scholarship Essay Writing" },
+    {
+      href: "/services/powerPoint-presentation",
+      label: "PowerPoint Presentation",
+    },
   ];
 
   const serviceItemscol2 = [
-    { href: "/college_essay_writing", label: "Scholarship Essay Writing" },
-    { href: "/course_work_writing", label: "Personal Statement Writing" },
-    { href: "/research_paper_writing", label: "Write my Term Paper" },
-    { href: "/services", label: "Write My Dissertation" },
-    { href: "/dissertation_writing", label: "Buy Research Paper" },
-    { href: "/college_paper_writing", label: "Buy Collage Essays" },
-    { href: "/case_study_writing", label: "Buy Essay" },
+    {
+      href: "/services/college-essay",
+      label: "College Essay Writing",
+    },
+    {
+      href: "/services/personal-statement",
+      label: "Personal Statement Writing",
+    },
+    { href: "/services/term-paper", label: "Write my Term Paper" },
+    {
+      href: "/services/dissertation",
+      label: "Write My Dissertation",
+    },
+    { href: "/services/research-paper", label: "Buy Research Paper" },
+    { href: "/services/college-paper", label: "Buy Collage Essays" },
+    { href: "/services/essay", label: "Essay For Sale" },
+    { href: "/services/homework", label: "Do My Homework" },
+    { href: "/services/urgent-paper", label: "Urgent Paper Writing" },
   ];
 
   return (
@@ -123,9 +145,11 @@ const Navbar: React.FC = () => {
                   className="absolute w-[500px] py-2 mt-5 right-16 rounded-lg bg-gray-100 shadow-md"
                   onMouseLeave={closeDropdown}
                 >
-                  <h1 className="text-gray-900 text-2xl font-bold py-2 px-4">
-                    Popular Services
-                  </h1>
+                  <Link href="/services" className="">
+                    <h1 className="text-gray-700 text-2xl font-bold py-2 px-4 transition-colors duration-300 hover:text-blue-400">
+                      View All Our Writing Services
+                    </h1>
+                  </Link>
                   <div className="flex flex-row gap-6">
                     <div>
                       {" "}
@@ -164,14 +188,14 @@ const Navbar: React.FC = () => {
           {/* Sign Up and Log in Buttons */}
           <div className="flex flex-row gap-4">
             <Link
-              href="/sign_up"
+              href="/sign-up"
               className="w-28 text-white bg-blue-500 py-2 px-6 md:mx-0 mx-8 font-bold text-sm rounded-full hover:bg-blue-900 hover:scale-105 transition duration-500 text-center"
               onClick={handleItemClick}
             >
               Sign Up
             </Link>
             <Link
-              href="/log_in"
+              href="/log-in"
               className="w-28 text-white bg-blue-800 py-2 px-6 md:mx-0 mx-8 font-bold text-sm rounded-full hover:bg-blue-950 hover:scale-105 transition duration-500 text-center"
               onClick={handleItemClick}
             >
