@@ -1,5 +1,4 @@
 import FAQ from "@/components/common/faq";
-import FaqDisplay from "@/components/common/faq";
 import React from "react";
 
 interface FAQItem {
