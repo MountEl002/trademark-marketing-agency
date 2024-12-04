@@ -2,6 +2,7 @@ import React from "react";
 import SocialMedia from "../common/socialMedia";
 import DarkLogo from "../common/darkLogo";
 import PaymentMethods from "../common/paymentMethods";
+import MdAllServicesCols from "./mdAllServicesCols";
 
 interface Resource {
   id: number;
@@ -19,13 +20,6 @@ interface Policy {
   name: string;
   LinkTo: string;
 }
-
-interface MicroService {
-  id: number;
-  name: string;
-  LinkTo: string;
-}
-
 interface CompanyDetail {
   id: number;
   name: string;
@@ -94,48 +88,6 @@ const Footer = () => {
     },
   ];
 
-  const microServices: MicroService[] = [
-    {
-      id: 1,
-      name: "Write My Case Study",
-      LinkTo: "/sampling_and_data_collection",
-    },
-    { id: 2, name: "Literature Review Writing", LinkTo: "/survey_solutions" },
-    {
-      id: 3,
-      name: "Report Writing Service",
-      LinkTo: "/panel_build_management",
-    },
-    { id: 4, name: "Buy College Paper", LinkTo: "/cati_research" },
-    {
-      id: 5,
-      name: "Annotated Bibliography Writing",
-      LinkTo: "/lead_generation",
-    },
-    {
-      id: 6,
-      name: "Argumentative Essay Writing",
-      LinkTo: "/affiliate_marketing",
-    },
-    { id: 7, name: "Lab Report Writing", LinkTo: "/qualitative_research" },
-    {
-      id: 8,
-      name: "English Assignment Writing",
-      LinkTo: "/quantitative_research",
-    },
-    {
-      id: 9,
-      name: "Non Plagiarized Essays",
-      LinkTo: "/quantitative_research",
-    },
-    {
-      id: 10,
-      name: "Capstone Project Writing",
-      LinkTo: "/quantitative_research",
-    },
-    { id: 11, name: "Finance Essay Writing", LinkTo: "/quantitative_research" },
-  ];
-
   return (
     <div className="mx-auto pt-8 bg-indigo-950 text-gray-300 text-sm">
       {/* Row 1: Company Logo and Social Media Handles */}
@@ -147,7 +99,7 @@ const Footer = () => {
       </div>
 
       {/* Row 2: Services, Resources, Policies, and Company Details*/}
-      <div className="max-w-5xl mx-auto w-full flex gap-24 mb-10">
+      <div className="max-w-5xl mx-auto w-full flex justify-between mb-10">
         {/* Column 1 - Our Services */}
         <div>
           <h3 className="font-bold text-lg text-gray-100 mb-4">Our Services</h3>
@@ -197,17 +149,9 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* Row 3: Microservices */}
+      {/* Row 3: AllServices */}
       <div className="bg-[#0B1221] py-8">
-        <div className="max-w-5xl mx-auto w-full">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
-            {microServices.map((item) => (
-              <div key={item.id} className="hover:text-blue-600 cursor-pointer">
-                <a href={item.LinkTo}>{item.name}</a>
-              </div>
-            ))}
-          </div>
-        </div>
+        <MdAllServicesCols />
       </div>
 
       {/* Row 4: Disclaimer and paymentMethods */}
