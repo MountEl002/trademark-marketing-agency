@@ -14,12 +14,19 @@ section {
   @apply flex flex-row items-center justify-center;
 }
 
+.horizontalSpaceBetween {
+  @apply flex flex-row items-center justify-between;
+}
+
 .vertical {
   @apply flex flex-col items-center justify-center;
 }
 
 .buttonGradient {
   @apply bg-gradient-to-r from-yellow-600 to-orange-700 px-10 py-2 text-gray-50 rounded-full font-semibold;
+}
+.buttonBlue {
+  @apply bg-blue-500 px-10 py-2 text-gray-50 rounded-full font-semibold;
 }
 
 h1,

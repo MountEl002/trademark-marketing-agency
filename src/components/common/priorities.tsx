@@ -41,7 +41,7 @@ const Priorities = () => {
     },
   ];
   return (
-    <div className="grid grid-cols-4 gap-8 my-4">
+    <div className="grid grid-cols-2 min-[875px]:grid-cols-4 gap-8 my-4">
       {customerPrioties.map((item) => (
         <div
           key={item.id}

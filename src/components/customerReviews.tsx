@@ -170,7 +170,12 @@ const CustomerReviews = () => {
   ];
 
   const [emblaRef, emblaApi] = useEmblaCarousel(
-    { loop: true, align: "center", containScroll: "trimSnaps" },
+    {
+      loop: true,
+      align: "center",
+      containScroll: "trimSnaps",
+      dragFree: true,
+    },
     [Autoplay({ delay: 10000 })]
   );
 
@@ -209,19 +214,17 @@ const CustomerReviews = () => {
 
   return (
     <>
-      <div>
+      <div className="w-full overflow-hidden">
         <div className="vertical">
-          <h3 className="text-center">
-            Essay writing service customer reviews
-          </h3>
+          <h3 className="text-center">What our Clients Say About Us</h3>
           <p className="text-center max-w-3xl pb-10">
-            Looking for proof of our excellence? Our clients&apos; success
-            stories say it all. Through tailored essay writing solutions and
-            unwavering support, we&apos;ve earned our reputation for exceptional
-            service.
+            Join 23K+ successful students who trust HighQualityEssay for their
+            academic needs. With 392 qualified writers, We build lasting
+            partnerships with our clients through exceptional service and
+            affordable rates, making academic excellence accessible to all.
           </p>
         </div>
-        <div className="flex items-center justify-between p-4 gap-6">
+        <div className="flex items-center justify-between p-4 gap-6 w-full mx-auto">
           <div>
             <button
               onClick={scrollPrev}
@@ -234,7 +237,7 @@ const CustomerReviews = () => {
             <div className="embla__container">
               {clientReviews.map((item) => (
                 <div key={item.id}>
-                  <div className="flex flex-col justify-between w-64 h-60 rounded-2xl border-2 border-gray-300 p-4 mx-5">
+                  <div className="flex flex-col justify-between max-[600px]:w-64 max-[1030px]:w-96 w-64 h-60 rounded-2xl border-2 border-gray-300 p-4 mx-5 max-[1040px]:mx-40">
                     <div className="flex justify-between">
                       <div className="horizontal gap-1">
                         <FaStar size={20} className="text-yellow-500" />

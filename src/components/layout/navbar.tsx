@@ -6,6 +6,7 @@ import { TiThMenu } from "react-icons/ti";
 import { IoClose } from "react-icons/io5";
 import Link from "next/link";
 import LightLogo from "../common/lightLogo";
+import WriteMyPaper from "../common/order/writeMyPaper";
 
 const Navbar: React.FC = () => {
   const [isServicesOpen, setIsServicesOpen] = useState(false);
@@ -185,22 +186,9 @@ const Navbar: React.FC = () => {
             </div>
           </div>
 
-          {/* Sign Up and Log in Buttons */}
+          {/* Write My Paper Button */}
           <div className="flex flex-row gap-4">
-            <Link
-              href="/sign-up"
-              className="w-28 text-white bg-blue-500 py-2 px-6 md:mx-0 mx-8 font-bold text-sm rounded-full hover:bg-blue-900 hover:scale-105 transition duration-500 text-center"
-              onClick={handleItemClick}
-            >
-              Sign Up
-            </Link>
-            <Link
-              href="/log-in"
-              className="w-28 text-white bg-blue-800 py-2 px-6 md:mx-0 mx-8 font-bold text-sm rounded-full hover:bg-blue-950 hover:scale-105 transition duration-500 text-center"
-              onClick={handleItemClick}
-            >
-              Log In
-            </Link>
+            <WriteMyPaper />
           </div>
         </div>
       </div>
