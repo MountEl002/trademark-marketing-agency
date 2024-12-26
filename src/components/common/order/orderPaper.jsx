@@ -3,7 +3,7 @@ import Link from "next/link";
 
 const OrderPaper = () => {
   return (
-    <div className=" horizontal buttonGradient">
+    <div className="w-fit horizontal button-gradient hover:button-gradient-hover">
       <Link href="#">Order a Paper</Link>
     </div>
   );

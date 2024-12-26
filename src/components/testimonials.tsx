@@ -94,7 +94,7 @@ const Testimonials = () => {
 
   return (
     <>
-      <div>
+      <div className="w-full overflow-hidden">
         <div className="vertical">
           <h3 className="text-center">What our Clients Say About Us?</h3>
           <p className="text-center max-w-3xl mb-12">
@@ -104,7 +104,7 @@ const Testimonials = () => {
             affordable rates, making academic excellence accessible to all.
           </p>
         </div>
-        <div className="flex items-center justify-between p-4 gap-6">
+        <div className="flex items-center justify-between p-4 gap-6 w-full mx-auto">
           <div>
             <button
               onClick={scrollPrev}

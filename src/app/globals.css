@@ -14,7 +14,11 @@ section {
   @apply flex flex-row items-center justify-center;
 }
 
-.horizontalSpaceBetween {
+.horizontal-start {
+  @apply flex flex-row items-center justify-start;
+}
+
+.horizontal-space-between {
   @apply flex flex-row items-center justify-between;
 }
 
@@ -22,11 +26,15 @@ section {
   @apply flex flex-col items-center justify-center;
 }
 
-.buttonGradient {
-  @apply bg-gradient-to-r from-yellow-600 to-orange-700 px-10 py-2 text-gray-50 rounded-full font-semibold;
+.vertical-start {
+  @apply flex flex-col items-start justify-start;
 }
-.buttonBlue {
-  @apply bg-blue-500 px-10 py-2 text-gray-50 rounded-full font-semibold;
+
+.button-gradient {
+  @apply bg-gradient-to-r from-yellow-400 to-yellow-700 hover:from-yellow-500 hover:to-orange-800 px-10 py-2 text-gray-50 rounded-full font-semibold cursor-pointer;
+}
+.button-blue {
+  @apply bg-blue-500 px-10 py-2 text-gray-50 rounded-full font-semibold hover:bg-blue-700 transition-colors cursor-pointer;
 }
 
 h1,
@@ -67,12 +75,19 @@ h6 {
 }
 .embla__container {
   display: flex;
+  flex-direction: row;
+  height: 100%;
 }
 .embla__slide {
   flex: 0 0 100%;
   min-width: 0;
 }
 
+@media (min-width: 950px) {
+  .embla__slide {
+    flex: 0 0 33%;
+  }
+}
 @layer base {
   :root {
     --background: 0 0% 100%;
