@@ -66,7 +66,7 @@ const ReviewsDisplayer: React.FC<ReviewDisplayerProps> = ({
   }, [emblaApi, onSelect]);
   return (
     <>
-      <div className="horizontal-space-between bg-green-500 mx-auto">
+      <div className="horizontal-space-between mx-auto">
         <div>
           <button
             onClick={scrollPrev}
@@ -75,7 +75,7 @@ const ReviewsDisplayer: React.FC<ReviewDisplayerProps> = ({
             <FaChevronLeft className="w-6 h-6" />
           </button>
         </div>
-        <div className="bg-red-500 w-[80%]">
+        <div className="w-[80%]">
           <div className="embla mx-auto bg-white" ref={emblaRef}>
             <div className="embla__container">
               {customerReviewsArray.map((item) => (
