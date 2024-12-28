@@ -76,7 +76,7 @@ const ReviewsDisplayer: React.FC<ReviewDisplayerProps> = ({
           </button>
         </div>
         <div className="w-[80%]">
-          <div className="embla mx-auto bg-white" ref={emblaRef}>
+          <div className="embla mx-auto" ref={emblaRef}>
             <div className="embla__container">
               {customerReviewsArray.map((item) => (
                 <div key={item.id} className="embla__slide">

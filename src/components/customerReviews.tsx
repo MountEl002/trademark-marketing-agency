@@ -11,7 +11,7 @@ const CustomerReviews = () => {
   const clientReviews: ClientReview[] = [
     {
       id: 0,
-      daysAgo: "2024-12-04",
+      daysAgo: "2024-12-28",
       numOfStars: "9/10",
       clientDetails: "CLIENT #19844",
       statement:

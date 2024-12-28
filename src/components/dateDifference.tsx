@@ -6,7 +6,6 @@ interface DateDifferenceProps {
 
 // Custom type for the calculation result
 type DateDiffResult = {
-  diffDays: number;
   message: string;
 };
 
@@ -23,6 +22,7 @@ const DateDifference: React.FC<DateDifferenceProps> = ({
         : targetDateString;
 
       const targetDate: Date = new Date(formattedDate);
+      let message: string;
 
       // Validate the date
       if (isNaN(targetDate.getTime())) {
@@ -30,14 +30,43 @@ const DateDifference: React.FC<DateDifferenceProps> = ({
       }
 
       const diffTime: number = Math.abs(today.getTime() - targetDate.getTime());
-      const diffDays: number = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      const diffMinutes: number = Math.round(diffTime / 6000);
+      console.log(diffTime);
+      console.log(diffMinutes);
 
-      const message: string = `${diffDays} days ago`;
+      const diffHours: number = Math.round(diffTime / 3600000);
+      const diffDays: number = Math.round(diffTime / 86400000);
+      const diffWeeks: number = Math.round(diffTime / 604800000);
+      const diffMonths: number = Math.round(diffTime / 2629746000);
+      const diffYears: number = Math.round(diffTime / 31556952000);
 
-      return { diffDays, message };
+      if (diffMinutes < 60) {
+        message =
+          diffMinutes === 1
+            ? `${diffMinutes} minute ago`
+            : `${diffMinutes} minutes ago`;
+      } else if (diffMinutes >= 60 && diffHours < 24) {
+        message =
+          diffHours === 1 ? `${diffHours} hour ago` : `${diffHours} hours ago`;
+      } else if (diffHours >= 24 && diffDays < 7) {
+        message =
+          diffDays === 1 ? `${diffDays} day ago` : `${diffDays} days ago`;
+      } else if (diffDays >= 7 && diffWeeks < 4.3) {
+        message =
+          diffWeeks === 1 ? `${diffWeeks} week ago` : `${diffWeeks} weeks ago`;
+      } else if (diffWeeks >= 4.3 && diffMonths < 12) {
+        message =
+          diffMonths === 1
+            ? `${diffMonths} month ago`
+            : `${diffMonths} months ago`;
+      } else {
+        message =
+          diffYears === 1 ? `${diffYears} year ago` : `${diffYears} years ago`;
+      }
+
+      return { message };
     } catch (error) {
       return {
-        diffDays: 0,
         message: `${error}: Please provide a valid date in DD/MM/YYYY or YYYY-MM-DD format`,
       };
     }
