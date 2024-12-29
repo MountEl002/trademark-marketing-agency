@@ -37,6 +37,10 @@ section {
   @apply bg-blue-500 px-10 py-2 text-gray-50 rounded-full font-semibold hover:bg-blue-700 transition-colors cursor-pointer;
 }
 
+.button-light-blue {
+  @apply bg-blue-100 px-10 py-2 text-blue-500 rounded-full font-semibold hover:bg-indigo-950 hover:text-gray-100 transition-colors cursor-pointer;
+}
+
 h1,
 h2,
 h3,

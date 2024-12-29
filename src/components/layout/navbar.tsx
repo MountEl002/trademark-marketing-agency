@@ -6,7 +6,7 @@ import { TiThMenu } from "react-icons/ti";
 import { IoClose } from "react-icons/io5";
 import Link from "next/link";
 import LightLogo from "../common/lightLogo";
-import WriteMyPaper from "../common/order/writeMyPaper";
+import UserAccessControl from "../common/login/userAccessControl";
 
 const Navbar: React.FC = () => {
   const [isServicesOpen, setIsServicesOpen] = useState(false);
@@ -188,7 +188,7 @@ const Navbar: React.FC = () => {
 
           {/* Write My Paper Button */}
           <div className="flex flex-row gap-4">
-            <WriteMyPaper />
+            <UserAccessControl />
           </div>
         </div>
       </div>

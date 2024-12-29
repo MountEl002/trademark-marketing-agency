@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import OrderPaper from "./order/orderPaper";
 import { GoDotFill } from "react-icons/go";
+import WriteMyPaper from "./order/writeMyPaper";
 
 type TabContent = {
   [key: string]: {
@@ -72,7 +72,7 @@ const SelfProclamation = () => {
             Our expert essay writers can tackle any academic task you entrust
             them with. Here are some of the services we offer:
           </p>
-          <OrderPaper />
+          <WriteMyPaper />
         </div>
 
         <div>

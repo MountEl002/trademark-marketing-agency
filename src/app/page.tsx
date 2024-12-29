@@ -1,5 +1,5 @@
 import Priorities from "@/components/common/priorities";
-import qualityControlImage from "@/assests/qualityControl2.png";
+import HeroSection from "@/assests/hero-section.jpg";
 import Image from "next/image";
 import OrderPaper from "@/components/common/order/orderPaper";
 import CustomerReviews from "@/components/customerReviews";
@@ -47,10 +47,7 @@ export default function Home() {
             experts handle the rest.
           </h6>
           <div>
-            <Image
-              src={qualityControlImage}
-              alt="Our Qualitity cotrol process"
-            />
+            <Image src={HeroSection} alt="Essay writing in progress" />
           </div>
           <Benefits />
         </div>

@@ -40,8 +40,8 @@ const ourBonuses: Bonus[] = [
   },
   {
     id: 6,
-    name: "An AI report",
-    initialPrice: "$16.99",
+    name: "Formatting",
+    initialPrice: "$7.99",
     currentPrice: "free",
   },
 ];

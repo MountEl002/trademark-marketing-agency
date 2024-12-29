@@ -157,7 +157,7 @@ const CommnOrderForm: React.FC<CommnOrderFormProps> = ({ onSubmit }) => {
           </div>
         </div>
 
-        <button type="submit" className="buttonBlue">
+        <button type="submit" className="button-blue">
           Place your order
         </button>
 

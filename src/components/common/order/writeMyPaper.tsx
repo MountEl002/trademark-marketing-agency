@@ -3,7 +3,7 @@ import Link from "next/link";
 
 const WriteMyPaper = () => {
   return (
-    <div className="horizontal button-blue">
+    <div className="horizontal button-gradient">
       <Link href="#">Write My Paper</Link>
     </div>
   );
