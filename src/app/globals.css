@@ -74,6 +74,10 @@ h6 {
   @apply text-lg font-bold;
 }
 
+.navbar h3 {
+  @apply !text-lg !my-4 px-4;
+}
+
 .embla {
   overflow: hidden;
 }
