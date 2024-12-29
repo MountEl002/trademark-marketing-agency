@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
-import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import ScrollToTop from "@/components/common/backToTop";
 import { Roboto, Lato } from "next/font/google";
+import SecondNavbar from "@/components/layout/secondNavbar";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -34,7 +34,7 @@ export default function RootLayout({
     <html lang="en" className={`${roboto.variable} ${lato.variable}`}>
       <body className="font-sans">
         <header>
-          <Navbar />
+          <SecondNavbar />
         </header>
         <main className="min-h-screen mt-16 bg-white">
           <ScrollToTop />
