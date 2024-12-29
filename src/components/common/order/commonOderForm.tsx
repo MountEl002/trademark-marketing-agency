@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import { FaMinus, FaPlus } from "react-icons/fa";
-import { BsInfoCircle } from "react-icons/bs";
 import ContinueWith from "../login/continueWith";
 import EmailInfo from "../login/emailInfo";
 

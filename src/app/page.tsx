@@ -4,12 +4,13 @@ import Image from "next/image";
 import OrderPaper from "@/components/common/order/orderPaper";
 import CustomerReviews from "@/components/customerReviews";
 import TryNow from "@/components/common/order/tryNow";
-import SocialMedia from "@/components/common/socialMedia";
 import HomepageFqa from "@/components/homepageSections/homepageFqa";
 import Benefits from "@/components/common/benefits";
 import Bonus from "@/components/common/bonus";
 import CommnOrderForm from "@/components/common/order/commonOderForm";
 import SelfProclamation from "@/components/common/selfProclamation";
+import EffortlessLearning from "@/components/common/effortlessLearning";
+import PrivacyHighlight from "@/components/common/privacyHighlight";
 
 export default function Home() {
   return (
@@ -71,7 +72,6 @@ export default function Home() {
           <OrderPaper />
         </div>
       </section>
-
       {/* Customer Reviws Section */}
       <section className="bg-blue-50">
         <div className="max-w-5xl w-full px-4 overflow-hidden">
@@ -96,6 +96,16 @@ export default function Home() {
       {/* Self-Procalamation Section */}
       <section className="bg-blue-50">
         <SelfProclamation />
+      </section>
+
+      {/* Description of services and processes section */}
+      <section className="bg-blue-100">
+        <EffortlessLearning />
+      </section>
+
+      {/* Privacy Highlight Section */}
+      <section className="bg-blue-600">
+        <PrivacyHighlight />
       </section>
     </>
   );

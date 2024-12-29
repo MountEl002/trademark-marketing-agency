@@ -41,20 +41,22 @@ const Priorities = () => {
     },
   ];
   return (
-    <div className="grid grid-cols-2 gap-4 my-4">
-      {customerPrioties.map((item) => (
-        <div
-          key={item.id}
-          className="bg-gray-50 p-4 rounded-lg shadow-lg h-48 w-48"
-        >
-          <Image
-            src={item.repImage}
-            alt={item.imageAlt}
-            className="object-contain h-[80%] w-full"
-          />
-          <p className="pt-4 text-gray-800 text-xs">{item.name}</p>
-        </div>
-      ))}
+    <div className="horizontal">
+      <div className="grid grid-cols-2 gap-4 my-4">
+        {customerPrioties.map((item) => (
+          <div
+            key={item.id}
+            className="bg-gray-50 p-4 rounded-lg shadow-lg h-48 w-48"
+          >
+            <Image
+              src={item.repImage}
+              alt={item.imageAlt}
+              className="object-contain h-[80%] w-full"
+            />
+            <p className="pt-4 text-gray-800 text-xs">{item.name}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

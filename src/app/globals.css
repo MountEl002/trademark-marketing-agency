@@ -199,3 +199,64 @@ h6 {
     @apply bg-background text-foreground;
   }
 }
+
+.services-and-processes::-webkit-scrollbar {
+  width: 0.2rem;
+}
+
+.services-and-processes::-webkit-scrollbar-track {
+  background: #9ca3af;
+}
+
+.services-and-processes::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 100vw;
+}
+
+.services-and-processes::-webkit-scrollbar-thumb:hover {
+  background: #374151;
+}
+
+.services-and-processes p {
+  @apply text-sm mb-6;
+}
+
+.services-and-processes h3 {
+  @apply !text-base !my-auto;
+}
+
+.services-and-processes h4 {
+  @apply !text-sm !my-auto !mb-4;
+}
+
+.services-and-processes > div > div > div > div {
+  @apply flex flex-row items-center justify-start gap-3 my-3;
+}
+
+.services-and-processes span {
+  @apply font-semibold;
+}
+
+.services-and-processes ul {
+  @apply text-sm list-disc space-y-2 pl-4 mb-6;
+}
+
+.services-and-processes table td span {
+  @apply mr-2;
+}
+
+.services-and-processes table td {
+  @apply p-2 border border-gray-400;
+}
+
+.services-and-processes td:nth-child(2) {
+  @apply border-l-2 border-l-gray-500;
+}
+
+.services-and-processes tr:nth-child(3) {
+  @apply border-b-2 border-b-gray-500;
+}
+
+.privacy-highlights p {
+  @apply text-gray-200 mb-6;
+}
