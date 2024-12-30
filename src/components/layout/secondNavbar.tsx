@@ -80,10 +80,10 @@ const SecondNavbar = () => {
   };
 
   const closeOffersMenu = () => {
-    setOffersMenuOpen(true);
+    setOffersMenuOpen(false);
 
     setTimeout(() => {
-      setOffersMenuOpen(false);
+      setOffersMenuOpen(true);
     }, 1000);
   };
 
@@ -110,7 +110,7 @@ const SecondNavbar = () => {
           {/* Left section */}
           <LightLogo />
           {/* Middle Section */}
-          <div className="hidden mdadd:flex flex-row items-center justify-center h-full gap-2 xl:gap-3 2xl:gap-5 transition-all">
+          <div className="hidden md:flex flex-row items-center justify-center h-full gap-2 xl:gap-3 2xl:gap-5 transition-all">
             {/* How to Order */}
             <Link
               href="/how-to-order"
