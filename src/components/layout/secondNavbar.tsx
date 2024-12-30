@@ -66,7 +66,34 @@ const offerItems = [
 
 const SecondNavbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [servicesMenuOpen, setServicesMenuOpen] = useState(true);
+  const [offersMenuOpen, setOffersMenuOpen] = useState(true);
+  const [resourcesMenuOpen, setResourcesMenuOpen] = useState(true);
   const [animationParent] = useAutoAnimate();
+
+  const closeServicesMenu = () => {
+    setServicesMenuOpen(false);
+
+    setTimeout(() => {
+      setServicesMenuOpen(true);
+    }, 1000);
+  };
+
+  const closeOffersMenu = () => {
+    setOffersMenuOpen(true);
+
+    setTimeout(() => {
+      setOffersMenuOpen(false);
+    }, 1000);
+  };
+
+  const closeResourcesMenu = () => {
+    setResourcesMenuOpen(false);
+
+    setTimeout(() => {
+      setResourcesMenuOpen(true);
+    }, 1000);
+  };
 
   const openMobileMenu = () => {
     setMobileMenuOpen(true);
@@ -83,7 +110,7 @@ const SecondNavbar = () => {
           {/* Left section */}
           <LightLogo />
           {/* Middle Section */}
-          <div className="hidden md:flex flex-row items-center justify-center h-full gap-2 xl:gap-3 2xl:gap-5 transition-all">
+          <div className="hidden mdadd:flex flex-row items-center justify-center h-full gap-2 xl:gap-3 2xl:gap-5 transition-all">
             {/* How to Order */}
             <Link
               href="/how-to-order"
@@ -101,37 +128,41 @@ const SecondNavbar = () => {
                 <FaChevronDown className="text-gray-600 transition-all duration-500 group-hover:text-blue-500 group-hover:rotate-180" />
               </p>
               {/* Services Dropdown Menu */}
-              <div className="absolute w-[450px] top-16 hidden group-hover:block rounded-lg bg-white shadow-xl">
-                <Link href="/services" className="">
-                  <h3 className="transition-colors duration-300 hover:text-blue-500">
-                    View All Our Writing Services
-                  </h3>
-                </Link>
-                <div className="horizontal-start gap-2">
-                  <div>
-                    {serviceItems.map((item) => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className="block px-4 py-2 text-sm transition-all duration-300 hover:text-blue-500"
-                      >
-                        {item.label}
-                      </Link>
-                    ))}
-                  </div>
-                  <div>
-                    {serviceItemscol2.map((item) => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className="block px-4 py-2 text-sm transition-all duration-300 hover:text-blue-500"
-                      >
-                        {item.label}
-                      </Link>
-                    ))}
+              {servicesMenuOpen && (
+                <div className="absolute w-[450px] top-16 hidden group-hover:block rounded-lg bg-white shadow-xl">
+                  <Link href="/services" className="">
+                    <h3 className="transition-colors duration-300 hover:text-blue-500">
+                      View All Our Writing Services
+                    </h3>
+                  </Link>
+                  <div className="horizontal-start gap-2">
+                    <div>
+                      {serviceItems.map((item) => (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onClick={closeServicesMenu}
+                          className="block px-4 py-2 text-sm transition-all duration-300 hover:text-blue-500"
+                        >
+                          {item.label}
+                        </Link>
+                      ))}
+                    </div>
+                    <div>
+                      {serviceItemscol2.map((item) => (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onClick={closeServicesMenu}
+                          className="block px-4 py-2 text-sm transition-all duration-300 hover:text-blue-500"
+                        >
+                          {item.label}
+                        </Link>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </Link>
 
             {/* Offers */}
@@ -144,21 +175,24 @@ const SecondNavbar = () => {
                 <FaChevronDown className="text-gray-600 transition-all duration-500 group-hover:text-blue-500 group-hover:rotate-180" />
               </p>
               {/* Offers Dropdown Menu */}
-              <div className="absolute w-[200px] top-16 hidden group-hover:block rounded-lg bg-white shadow-xl">
-                <div>
-                  <div className="pt-2">
-                    {offerItems.map((item) => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className="block px-4 pb-2 text-sm py-2 transition-all duration-300 hover:text-blue-500"
-                      >
-                        {item.label}
-                      </Link>
-                    ))}
+              {offersMenuOpen && (
+                <div className="absolute w-[200px] top-16 hidden group-hover:block rounded-lg bg-white shadow-xl">
+                  <div>
+                    <div className="pt-2">
+                      {offerItems.map((item) => (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onClick={closeOffersMenu}
+                          className="block px-4 pb-2 text-sm py-2 transition-all duration-300 hover:text-blue-500"
+                        >
+                          {item.label}
+                        </Link>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </Link>
 
             {/* Prices */}
@@ -185,21 +219,24 @@ const SecondNavbar = () => {
                 <FaChevronDown className="text-gray-600 transition-all duration-500 group-hover:text-blue-500 group-hover:rotate-180" />
               </p>
               {/* Resources Dropdown Menu */}
-              <div className="absolute w-[200px] top-16 hidden group-hover:block rounded-lg bg-white shadow-xl">
-                <div>
-                  <div className="pt-2">
-                    {resourceItems.map((item) => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className="block px-4 pb-2 text-sm py-2 transition-all duration-300 hover:text-blue-500"
-                      >
-                        {item.label}
-                      </Link>
-                    ))}
+              {resourcesMenuOpen && (
+                <div className="absolute w-[200px] top-16 hidden group-hover:block rounded-lg bg-white shadow-xl">
+                  <div>
+                    <div className="pt-2">
+                      {resourceItems.map((item) => (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onClick={closeResourcesMenu}
+                          className="block px-4 pb-2 text-sm py-2 transition-all duration-300 hover:text-blue-500"
+                        >
+                          {item.label}
+                        </Link>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </Link>
           </div>
           {/* Right Section */}
@@ -255,6 +292,7 @@ function MobileNav({ closeMobileMenu }: { closeMobileMenu: () => void }) {
                     <Link
                       key={item.href}
                       href={item.href}
+                      onClick={closeMobileMenu}
                       className="block px-4 py-2 text-sm transition-all duration-300 hover:text-blue-500"
                     >
                       {item.label}
@@ -266,6 +304,7 @@ function MobileNav({ closeMobileMenu }: { closeMobileMenu: () => void }) {
                     <Link
                       key={item.href}
                       href={item.href}
+                      onClick={closeMobileMenu}
                       className="block px-4 py-2 text-sm transition-all duration-300 hover:text-blue-500"
                     >
                       {item.label}
