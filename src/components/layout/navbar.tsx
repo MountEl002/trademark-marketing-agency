@@ -57,11 +57,12 @@ const resourceItems = [
     href: "/resources/writing-resources",
     label: "Writing Resources",
   },
+  { href: "/resources/essay-writing-tools", label: "Essay Writing Tools" },
 ];
 
 const offerItems = [
-  { href: "/offers/get-discount", label: "Get Amazing Discouts" },
-  { href: "/offers/referral-program", label: "Join Our Referral Program" },
+  { href: "/discounts", label: "Get Amazing Discouts" },
+  { href: "/referral-program", label: "Join Our Referral Program" },
 ];
 
 const Navbar = () => {
@@ -130,7 +131,11 @@ const Navbar = () => {
               {/* Services Dropdown Menu */}
               {servicesMenuOpen && (
                 <div className="absolute w-[450px] top-16 hidden group-hover:block rounded-lg bg-white shadow-xl">
-                  <Link href="/services" className="">
+                  <Link
+                    onClick={closeServicesMenu}
+                    href="/services"
+                    className=""
+                  >
                     <h3 className="transition-colors duration-300 hover:text-blue-500">
                       View All Our Writing Services
                     </h3>

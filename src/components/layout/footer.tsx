@@ -33,15 +33,18 @@ interface AllServices {
 
 const Footer = () => {
   const resources: Resource[] = [
-    { id: 1, name: "Blog", LinkTo: "/" },
-    { id: 2, name: "PlagCheck Tool", LinkTo: "/about_us" },
-    { id: 3, name: "Samples", LinkTo: "/contact_us" },
+    { id: 1, name: "Blog", LinkTo: "/resources/blog" },
+    { id: 2, name: "Free papers and Essays", LinkTo: "/resources/free-papers" },
+    {
+      id: 3,
+      name: "Writing Resources",
+      LinkTo: "/resources/writing-resources",
+    },
     {
       id: 4,
       name: "Free Essay Writing Tools",
       LinkTo: "/terms_and_conditions",
     },
-    { id: 5, name: "Questions and Answers", LinkTo: "/privacy_policy" },
   ];
 
   const policies: Policy[] = [
@@ -72,24 +75,28 @@ const Footer = () => {
     {
       id: 1,
       name: "Write My Coursework",
-      LinkTo: "/sampling_and_data_collection",
+      LinkTo: "/services/coursework",
     },
-    { id: 2, name: "Write My Assignment", LinkTo: "/survey_solutions" },
+    { id: 2, name: "Write My Assignment", LinkTo: "/services/assignment" },
     {
       id: 3,
       name: "Buy Dissertation",
-      LinkTo: "/panel_build_management",
+      LinkTo: "/services/dissertation",
     },
-    { id: 4, name: "Term Paper Help", LinkTo: "/cati_research" },
-    { id: 5, name: "Coursework Help", LinkTo: "/project_management" },
-    { id: 6, name: "Essay for Sale", LinkTo: "/lead_generation" },
-    { id: 7, name: "Write My research Paper", LinkTo: "/affiliate_marketing" },
-    { id: 8, name: "Fast Essay Writing", LinkTo: "/qualitative_research" },
-    { id: 9, name: "Dissertation Help", LinkTo: "/quantitative_research" },
+    { id: 4, name: "Term Paper Help", LinkTo: "/services/term-paper" },
+    { id: 5, name: "Coursework Help", LinkTo: "/services/coursework" },
+    { id: 6, name: "Essay for Sale", LinkTo: "/services/essay" },
+    {
+      id: 7,
+      name: "Write My research Paper",
+      LinkTo: "/services/research-paper",
+    },
+    { id: 8, name: "Fast Essay Writing", LinkTo: "/services/fast-essay" },
+    { id: 9, name: "Dissertation Help", LinkTo: "/services/dissertation" },
     {
       id: 10,
       name: "Write My College Essay",
-      LinkTo: "/quantitative_research",
+      LinkTo: "/services/college-paper",
     },
   ];
 
@@ -333,7 +340,7 @@ const Footer = () => {
       </div>
 
       {/* Row 4: Disclaimer and paymentMethods */}
-      <div className="max-w-xl mx-auto w-full py-8 text-justify">
+      <div className="max-w-xl mx-auto w-full py-8 text-justify px-3">
         <h3 className="font-bold text-center text-lg text-gray-100 mb-4">
           Disclaimer
         </h3>
