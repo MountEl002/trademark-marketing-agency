@@ -9,7 +9,7 @@ import { MdDashboardCustomize } from "react-icons/md";
 
 const EffortlessLearning = () => {
   return (
-    <div className="grid grid-cols-1 gap-3 max-w-5xl mx-auto py-12">
+    <div className="grid grid-cols-1 gap-3 max-w-6xl mx-auto py-12">
       <div className="text-center">
         <h2>Make your studies effortless with our essay service</h2>
       </div>

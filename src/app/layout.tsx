@@ -32,7 +32,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${roboto.variable} ${lato.variable}`}>
-      <body className="font-sans">
+      <body
+        className={`font-sans ${
+          process.env.NODE_ENV == "development" ? "debug-screens" : ""
+        }`}
+      >
         <header>
           <SecondNavbar />
         </header>

@@ -16,7 +16,7 @@ export default function Home() {
   return (
     <>
       {/* Here section */}
-      <section className="max-w-5xl mt-28 text-center text-gray-600">
+      <section className="max-w-6xl mt-28 text-center text-gray-600">
         <div className="grid grid-cols-1 min-[820px]:grid-cols-2 gap-4">
           <div>
             <h1 className="font-bold max-w-3xl">
@@ -39,7 +39,7 @@ export default function Home() {
       </section>
       {/* Essay Writing services summary */}
       <section className="bg-blue-50">
-        <div className="max-w-5xl text-center">
+        <div className="max-w-6xl text-center">
           <h2>Premium Essay Writing Services</h2>
           <h6>
             Transform your academic journey with our professional essay writing
@@ -53,7 +53,7 @@ export default function Home() {
         </div>
       </section>
       {/* Bonuses Section */}
-      <section className="max-w-5xl text-center">
+      <section className="max-w-6xl text-center">
         <h2 className="mb-6">
           Smart students choose smarter writing solutions!
         </h2>
@@ -71,7 +71,7 @@ export default function Home() {
       </section>
       {/* Customer Reviws Section */}
       <section className="bg-blue-50">
-        <div className="max-w-5xl w-full px-4 overflow-hidden">
+        <div className="max-w-6xl w-full px-4 overflow-hidden">
           <CustomerReviews />
           <div className="horizontal mt-8">
             <a href="#" className="buttonBlue">

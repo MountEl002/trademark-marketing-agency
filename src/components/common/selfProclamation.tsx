@@ -65,7 +65,7 @@ const SelfProclamation = () => {
 
   return (
     <div>
-      <div className="flex flex-col md:flex-row gap-12 max-w-5xl mx-auto mt-10">
+      <div className="flex flex-col md:flex-row gap-12 max-w-6xl mx-auto mt-10">
         <div className="mb-6  max-w-full md:max-w-[40%] text-center md:text-start vertical md:items-start">
           <h2>Your #1 paper writing service</h2>
           <p className="text-gray-600 mb-6">

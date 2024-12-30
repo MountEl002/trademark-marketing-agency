@@ -3,7 +3,7 @@ import GetStarted from "./login/getStarted";
 
 const PrivacyHighlight = () => {
   return (
-    <div className="privacy-highlights max-w-5xl vertical text-center">
+    <div className="privacy-highlights max-w-6xl vertical text-center">
       <h2 className="text-gray-50">
         Essay writing service that keeps your data safe
       </h2>
