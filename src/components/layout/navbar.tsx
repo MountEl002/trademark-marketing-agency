@@ -1,199 +1,385 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
-import { FaChevronDown } from "react-icons/fa";
-import { TiThMenu } from "react-icons/ti";
-import { IoClose } from "react-icons/io5";
-import Link from "next/link";
+import React, { useState } from "react";
 import LightLogo from "../common/lightLogo";
 import UserAccessControl from "../common/login/userAccessControl";
+import Link from "next/link";
+import { FaChevronDown } from "react-icons/fa";
+import { IoMenu, IoClose } from "react-icons/io5";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 
-const Navbar: React.FC = () => {
-  const [isServicesOpen, setIsServicesOpen] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const navRef = useRef<HTMLDivElement>(null);
-  const servicesRef = useRef<HTMLDivElement>(null);
+const serviceItems = [
+  { href: "/services/college-essay", label: "College Essay Writing" },
+  { href: "/services/coursework", label: "Coursework Writing" },
+  {
+    href: "/services/research-paper",
+    label: "Research Paper Writing",
+  },
+  { href: "/services/dissertation", label: "Dissertation Writing" },
+  {
+    href: "/services/college-paper",
+    label: "College Paper Writing",
+  },
+  { href: "/services/case-study", label: "Case Study Writing" },
+  { href: "/services/nursing-paper", label: "Nursing Paper Writing" },
+  { href: "/services/scholarship-essay", label: "Scholarship Essay Writing" },
+  {
+    href: "/services/powerPoint-presentation",
+    label: "PowerPoint Presentation",
+  },
+];
 
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
+const serviceItemscol2 = [
+  {
+    href: "/services/college-essay",
+    label: "College Essay Writing",
+  },
+  {
+    href: "/services/personal-statement",
+    label: "Personal Statement Writing",
+  },
+  { href: "/services/term-paper", label: "Write my Term Paper" },
+  {
+    href: "/services/dissertation",
+    label: "Write My Dissertation",
+  },
+  { href: "/services/research-paper", label: "Buy Research Paper" },
+  { href: "/services/college-paper", label: "Buy Collage Essays" },
+  { href: "/services/essay", label: "Essay For Sale" },
+  { href: "/services/homework", label: "Do My Homework" },
+  { href: "/services/urgent-paper", label: "Urgent Paper Writing" },
+];
+
+const resourceItems = [
+  { href: "/resources/free-papers", label: "Free Papers and Essays" },
+  { href: "/resources/blog", label: "Blog" },
+  {
+    href: "/resources/writing-resources",
+    label: "Writing Resources",
+  },
+];
+
+const offerItems = [
+  { href: "/offers/get-discount", label: "Get Amazing Discouts" },
+  { href: "/offers/referral-program", label: "Join Our Referral Program" },
+];
+
+const Navbar = () => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [servicesMenuOpen, setServicesMenuOpen] = useState(true);
+  const [offersMenuOpen, setOffersMenuOpen] = useState(true);
+  const [resourcesMenuOpen, setResourcesMenuOpen] = useState(true);
+  const [animationParent] = useAutoAnimate();
+
+  const closeServicesMenu = () => {
+    setServicesMenuOpen(false);
+
+    setTimeout(() => {
+      setServicesMenuOpen(true);
+    }, 1000);
   };
 
-  const closeDropdown = () => {
-    setIsServicesOpen(false);
+  const closeOffersMenu = () => {
+    setOffersMenuOpen(false);
+
+    setTimeout(() => {
+      setOffersMenuOpen(true);
+    }, 1000);
   };
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (navRef.current && !navRef.current.contains(event.target as Node)) {
-        setIsMobileMenuOpen(false);
-      }
-      if (
-        servicesRef.current &&
-        !servicesRef.current.contains(event.target as Node)
-      ) {
-        setIsServicesOpen(false);
-      }
-    };
+  const closeResourcesMenu = () => {
+    setResourcesMenuOpen(false);
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  const handleItemClick = () => {
-    setIsMobileMenuOpen(false);
+    setTimeout(() => {
+      setResourcesMenuOpen(true);
+    }, 1000);
   };
 
-  const navItems = [
-    { href: "/how-to-order", label: "How to Order" },
-    { href: "/prices", label: "Prices" },
-    { href: "/reviews", label: "Reviews" },
-    { href: "/blog", label: "Blog" },
-    { href: "/resources", label: "Resources" },
-    // { href: "/blog", label: "Blog" },
-  ];
+  const openMobileMenu = () => {
+    setMobileMenuOpen(true);
+  };
 
-  const serviceItems = [
-    { href: "/services/college-essay", label: "College Essay Writing" },
-    { href: "/services/coursework", label: "Coursework Writing" },
-    {
-      href: "/services/research-paper",
-      label: "Research Paper Writing",
-    },
-    { href: "/services/dissertation", label: "Dissertation Writing" },
-    {
-      href: "/services/college-paper",
-      label: "College Paper Writing",
-    },
-    { href: "/services/case-study", label: "Case Study Writing" },
-    { href: "/services/nursing-paper", label: "Nursing Paper Writing" },
-    { href: "/services/scholarship-essay", label: "Scholarship Essay Writing" },
-    {
-      href: "/services/powerPoint-presentation",
-      label: "PowerPoint Presentation",
-    },
-  ];
-
-  const serviceItemscol2 = [
-    {
-      href: "/services/college-essay",
-      label: "College Essay Writing",
-    },
-    {
-      href: "/services/personal-statement",
-      label: "Personal Statement Writing",
-    },
-    { href: "/services/term-paper", label: "Write my Term Paper" },
-    {
-      href: "/services/dissertation",
-      label: "Write My Dissertation",
-    },
-    { href: "/services/research-paper", label: "Buy Research Paper" },
-    { href: "/services/college-paper", label: "Buy Collage Essays" },
-    { href: "/services/essay", label: "Essay For Sale" },
-    { href: "/services/homework", label: "Do My Homework" },
-    { href: "/services/urgent-paper", label: "Urgent Paper Writing" },
-  ];
+  const closeMobileMenu = () => {
+    setMobileMenuOpen(false);
+  };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-gray-50 shadow-md">
-      <div className="relative max-w-5xl mx-auto">
-        <div className="flex justify-between h-16 items-center">
+    <nav className="navbar fixed top-0 left-0 right-0 z-50 bg-gray-50 shadow-md">
+      <div ref={animationParent} className="relative max-w-6xl mx-auto px-3">
+        <div className="horizontal-space-between h-16">
+          {/* Left section */}
           <LightLogo />
-          <div className="md:hidden">
-            <button
-              onClick={toggleMobileMenu}
-              className="text-gray-900 hover:text-blue-600 transition-colors duration-200"
+          {/* Middle Section */}
+          <div className="hidden md:flex flex-row items-center justify-center h-full gap-2 xl:gap-3 2xl:gap-5 transition-all">
+            {/* How to Order */}
+            <Link
+              href="/how-to-order"
+              className="text-base text-gray-600 transition-all duration-500 hover:text-blue-500"
             >
-              {isMobileMenuOpen ? (
-                <IoClose className="h-6 w-6" />
-              ) : (
-                <TiThMenu className="h-6 w-6" />
-              )}
-            </button>
-          </div>
-
-          <div ref={navRef} className="flex flex-row space-x-4">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="text-sm text-gray-900 py-2 md:pl-0 pl-4 relative group"
-                onClick={handleItemClick}
-              >
-                {item.label}
-                <span className="absolute bottom-0 left-0 w-full h-1 bg-gray-900 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200 md:block hidden"></span>
-                <span className="absolute left-0 top-0 h-full w-1 bg-white transform scale-y-0 group-hover:scale-y-100 transition-transform duration-200 md:hidden block"></span>
-              </Link>
-            ))}
-
-            <div className="py-2" ref={servicesRef}>
-              <Link
-                href="#"
-                className="flex items-center px-2 space-x-1 text-gray-900 text-sm w-full md:w-auto justify-between md:justify-start relative group"
-                onClick={() => setIsServicesOpen(!isServicesOpen)}
-                onMouseEnter={() => setIsServicesOpen(true)}
-              >
+              How to order
+            </Link>
+            {/* Services */}
+            <Link
+              href="#"
+              className="relative vertical group transition-all h-full"
+            >
+              <p className="horizontal gap-1 text-base text-gray-600 transition-all duration-500 group-hover:text-blue-500">
                 <span>Services</span>
-                <FaChevronDown className="h-4 w-4" />
-                {/* <span className="absolute bottom-0 left-0 w-full h-1 bg-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200 md:block hidden"></span>
-                <span className="absolute left-0 top-0 h-full w-1 bg-blue-600 transform scale-y-0 group-hover:scale-y-100 transition-transform duration-200 md:hidden block"></span> */}
-              </Link>
-
-              {isServicesOpen && (
-                <div
-                  className="absolute w-[500px] py-2 mt-5 right-16 rounded-lg bg-gray-100 shadow-md"
-                  onMouseLeave={closeDropdown}
-                >
+                <FaChevronDown className="text-gray-600 transition-all duration-500 group-hover:text-blue-500 group-hover:rotate-180" />
+              </p>
+              {/* Services Dropdown Menu */}
+              {servicesMenuOpen && (
+                <div className="absolute w-[450px] top-16 hidden group-hover:block rounded-lg bg-white shadow-xl">
                   <Link href="/services" className="">
-                    <h1 className="text-gray-700 text-2xl font-bold py-2 px-4 transition-colors duration-300 hover:text-blue-400">
+                    <h3 className="transition-colors duration-300 hover:text-blue-500">
                       View All Our Writing Services
-                    </h1>
+                    </h3>
                   </Link>
-                  <div className="flex flex-row gap-6">
+                  <div className="horizontal-start gap-2">
                     <div>
-                      {" "}
                       {serviceItems.map((item) => (
                         <Link
                           key={item.href}
                           href={item.href}
-                          className="block px-4 py-2 text-base text-gray-900 transition-colors duration-200 relative group"
-                          onClick={handleItemClick}
+                          onClick={closeServicesMenu}
+                          className="block px-4 py-2 text-sm transition-all duration-300 hover:text-blue-500"
                         >
                           {item.label}
-                          <span className="absolute left-0 top-0 h-full w-1 bg-white md:bg-blue-950 transform scale-y-0 group-hover:scale-y-100 transition-transform duration-200"></span>
                         </Link>
                       ))}
                     </div>
                     <div>
-                      {" "}
                       {serviceItemscol2.map((item) => (
                         <Link
                           key={item.href}
                           href={item.href}
-                          className="block px-4 py-2 text-base text-gray-900 transition-colors duration-200 relative group"
-                          onClick={handleItemClick}
+                          onClick={closeServicesMenu}
+                          className="block px-4 py-2 text-sm transition-all duration-300 hover:text-blue-500"
                         >
                           {item.label}
-                          <span className="absolute left-0 top-0 h-full w-1 bg-white md:bg-blue-950 transform scale-y-0 group-hover:scale-y-100 transition-transform duration-200"></span>
                         </Link>
                       ))}
                     </div>
                   </div>
                 </div>
               )}
-            </div>
-          </div>
+            </Link>
 
-          {/* Write My Paper Button */}
-          <div className="flex flex-row gap-4">
-            <UserAccessControl />
+            {/* Offers */}
+            <Link
+              href="#"
+              className="relative vertical group transition-all h-full"
+            >
+              <p className="horizontal gap-1 text-base text-gray-600 transition-all duration-500 group-hover:text-blue-500">
+                <span>Offers</span>
+                <FaChevronDown className="text-gray-600 transition-all duration-500 group-hover:text-blue-500 group-hover:rotate-180" />
+              </p>
+              {/* Offers Dropdown Menu */}
+              {offersMenuOpen && (
+                <div className="absolute w-[200px] top-16 hidden group-hover:block rounded-lg bg-white shadow-xl">
+                  <div>
+                    <div className="pt-2">
+                      {offerItems.map((item) => (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onClick={closeOffersMenu}
+                          className="block px-4 pb-2 text-sm py-2 transition-all duration-300 hover:text-blue-500"
+                        >
+                          {item.label}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </Link>
+
+            {/* Prices */}
+            <Link
+              href="/prices"
+              className="text-base text-gray-600 transition-all duration-500 hover:text-blue-500"
+            >
+              Prices
+            </Link>
+            {/* Reviews */}
+            <Link
+              href="/reviews"
+              className="text-base text-gray-600 transition-all duration-500 hover:text-blue-500"
+            >
+              Reviews
+            </Link>
+            {/* Resources */}
+            <Link
+              href="#"
+              className="relative group transition-all h-full hidden lg:flex flex-col items-center justify-center"
+            >
+              <p className="horizontal gap-1 text-base text-gray-600 transition-all duration-500 group-hover:text-blue-500">
+                <span>Resources</span>
+                <FaChevronDown className="text-gray-600 transition-all duration-500 group-hover:text-blue-500 group-hover:rotate-180" />
+              </p>
+              {/* Resources Dropdown Menu */}
+              {resourcesMenuOpen && (
+                <div className="absolute w-[200px] top-16 hidden group-hover:block rounded-lg bg-white shadow-xl">
+                  <div>
+                    <div className="pt-2">
+                      {resourceItems.map((item) => (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onClick={closeResourcesMenu}
+                          className="block px-4 pb-2 text-sm py-2 transition-all duration-300 hover:text-blue-500"
+                        >
+                          {item.label}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </Link>
+          </div>
+          {/* Right Section */}
+          <UserAccessControl />
+          {/* Furthest right for mobile menu */}
+          <div className="inline-block md:hidden">
+            <IoMenu
+              onClick={openMobileMenu}
+              className="cursor-pointer text-4xl text-gray-600"
+            />
           </div>
         </div>
+        {mobileMenuOpen && <MobileNav closeMobileMenu={closeMobileMenu} />}
       </div>
     </nav>
   );
 };
+
+function MobileNav({ closeMobileMenu }: { closeMobileMenu: () => void }) {
+  return (
+    <div className="fixed left-0 top-0 flex h-full min-h-screen w-full justify-end bg-black/60 md:hidden">
+      <div className="h-full w-[70%] bg-gray-50 px-4 py-4">
+        <div className="flex justify-end">
+          <IoClose
+            onClick={closeMobileMenu}
+            className="cursor-pointer text-4xl"
+          />
+        </div>
+        <div className="flex flex-col items-center justify-center gap-5 transition-all">
+          {/*Mobile Menu --  How to Order */}
+          <Link
+            href="/how-to-order"
+            className="text-base text-gray-600 transition-all duration-500 hover:text-blue-500"
+          >
+            How to order
+          </Link>
+          {/*Mobile Menu --  Services */}
+          <Link href="" className="w-full group transition-all">
+            <p className="horizontal gap-1 text-base text-gray-600 transition-all duration-500 group-hover:text-blue-500">
+              <span>Services</span>
+              <FaChevronDown className="text-gray-600 transition-all duration-500 group-hover:text-blue-500 group-hover:rotate-180" />
+            </p>
+            {/*Mobile Menu --  Services Dropdown Menu*/}
+            <div className="w-full hidden group-hover:block transition-all duration-300 ease-in-out rounded-lg bg-white shadow-xl">
+              <Link href="/services" className="">
+                <h3 className="transition-all duration-300 hover:text-blue-500">
+                  View All Our Writing Services
+                </h3>
+              </Link>
+              <div className="horizontal w-full gap-2">
+                <div>
+                  {serviceItems.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={closeMobileMenu}
+                      className="block px-4 py-2 text-sm transition-all duration-300 hover:text-blue-500"
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+                <div>
+                  {serviceItemscol2.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={closeMobileMenu}
+                      className="block px-4 py-2 text-sm transition-all duration-300 hover:text-blue-500"
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </Link>
+
+          {/*Mobile Menu --  Offers */}
+          <Link href="#" className="w-full relative group transition-all">
+            <p className="horizontal gap-1 text-base text-gray-600 transition-all duration-500 group-hover:text-blue-500">
+              <span>Offers</span>
+              <FaChevronDown className="text-gray-600 transition-all duration-500 group-hover:text-blue-500 group-hover:rotate-180" />
+            </p>
+            {/* Mobile Menu --  Offers Dropdown Menu */}
+            <div className="w-full hidden group-hover:flex flex-col items-center justify-center gap-5 text-center transition-all duration-300 ease-in-out">
+              <div>
+                <div className="pt-2">
+                  {offerItems.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className="block px-4 pb-2 text-base transition-all duration-300 hover:text-blue-500"
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </Link>
+
+          {/*Mobile Menu --  Prices */}
+          <Link
+            href="/prices"
+            className="text-base text-gray-600 transition-all duration-500 hover:text-blue-500"
+          >
+            Prices
+          </Link>
+          {/* Reviews */}
+          <Link
+            href="/reviews"
+            className="text-base text-gray-600 transition-all duration-500 hover:text-blue-500"
+          >
+            Reviews
+          </Link>
+          {/*Mobile Menu --  Resources */}
+          <Link href="#" className="w-full relative group transition-all">
+            <p className="horizontal gap-1 text-base text-gray-600 transition-all duration-500 group-hover:text-blue-500">
+              <span>Resources</span>
+              <FaChevronDown className="text-gray-600 transition-all duration-500 group-hover:text-blue-500 group-hover:rotate-180" />
+            </p>
+            {/*Mobile Menu -- Resources Dropdown Menu */}
+            <div className="w-full hidden group-hover:flex flex-col items-center justify-center gap-5 text-center transition-all duration-300 ease-in-out">
+              <div>
+                <div className="pt-2">
+                  {resourceItems.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className="block px-4 pb-2 text-base transition-all duration-300 hover:text-blue-500"
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default Navbar;

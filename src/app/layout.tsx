@@ -4,7 +4,7 @@ import "./globals.css";
 import Footer from "@/components/layout/footer";
 import ScrollToTop from "@/components/common/backToTop";
 import { Roboto, Lato } from "next/font/google";
-import SecondNavbar from "@/components/layout/secondNavbar";
+import Navbar from "@/components/layout/navbar";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -38,7 +38,7 @@ export default function RootLayout({
         }`}
       >
         <header>
-          <SecondNavbar />
+          <Navbar />
         </header>
         <main className="min-h-screen mt-16 bg-white">
           <ScrollToTop />
