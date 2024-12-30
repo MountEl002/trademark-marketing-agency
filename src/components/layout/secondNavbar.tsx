@@ -93,7 +93,7 @@ const SecondNavbar = () => {
             </Link>
             {/* Services */}
             <Link
-              href="/services"
+              href="#"
               className="relative vertical group transition-all h-full"
             >
               <p className="horizontal gap-1 text-base text-gray-600 transition-all duration-500 group-hover:text-blue-500">
@@ -177,7 +177,7 @@ const SecondNavbar = () => {
             </Link>
             {/* Resources */}
             <Link
-              href="/resources"
+              href="#"
               className="relative group transition-all h-full hidden lg:flex flex-col items-center justify-center"
             >
               <p className="horizontal gap-1 text-base text-gray-600 transition-all duration-500 group-hover:text-blue-500">
@@ -237,7 +237,7 @@ function MobileNav({ closeMobileMenu }: { closeMobileMenu: () => void }) {
             How to order
           </Link>
           {/*Mobile Menu --  Services */}
-          <Link href="/services" className="w-full group transition-all">
+          <Link href="" className="w-full group transition-all">
             <p className="horizontal gap-1 text-base text-gray-600 transition-all duration-500 group-hover:text-blue-500">
               <span>Services</span>
               <FaChevronDown className="text-gray-600 transition-all duration-500 group-hover:text-blue-500 group-hover:rotate-180" />
@@ -315,10 +315,7 @@ function MobileNav({ closeMobileMenu }: { closeMobileMenu: () => void }) {
             Reviews
           </Link>
           {/*Mobile Menu --  Resources */}
-          <Link
-            href="/resources"
-            className="w-full relative group transition-all"
-          >
+          <Link href="#" className="w-full relative group transition-all">
             <p className="horizontal gap-1 text-base text-gray-600 transition-all duration-500 group-hover:text-blue-500">
               <span>Resources</span>
               <FaChevronDown className="text-gray-600 transition-all duration-500 group-hover:text-blue-500 group-hover:rotate-180" />
