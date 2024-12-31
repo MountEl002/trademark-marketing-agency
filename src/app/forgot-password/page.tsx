@@ -4,17 +4,17 @@ import React, { useState } from "react";
 import LightLogo from "@/components/common/lightLogo";
 import Link from "next/link";
 
-interface ForgotPasswordProps {
-  onSubmit?: (email: string) => void;
-}
-
-const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onSubmit }) => {
+const ForgotPassword = () => {
   const [email, setEmail] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (onSubmit) {
-      onSubmit(email);
+    // Handle password reset logic here
+    try {
+      // Add your API call or authentication logic here
+      console.log("Password reset requested for:", email);
+    } catch (error) {
+      console.error("Error during password reset:", error);
     }
   };
 
