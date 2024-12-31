@@ -80,7 +80,9 @@ const CommnOrderForm: React.FC<CommnOrderFormProps> = ({ onSubmit }) => {
   return (
     <div className="w-full max-w-md mx-auto p-6 border-2 bg-white rounded-xl shadow-lg">
       <h2>Place an order</h2>
-      <ContinueWith />
+      <div className="horizontal">
+        <ContinueWith />
+      </div>
       <div className="flex flex-row items-center gap-3 my-5">
         <div className="w-full h-0 border-[0.5px] border-gray-200"></div>
         <div className="text-center text-gray-500">or</div>
@@ -161,13 +163,13 @@ const CommnOrderForm: React.FC<CommnOrderFormProps> = ({ onSubmit }) => {
           Place your order
         </button>
 
-        <p className="text-sm text-gray-400 mt-4">
+        <p className="google-recaptcha text-sm text-gray-400 mt-4">
           This site is protected by reCAPTCHA and the Google{" "}
-          <a href="#" className="text-blue-500 hover:underline">
+          <a href="https://policies.google.com/privacy?hl=en-US">
             Privacy Policy
           </a>{" "}
           and{" "}
-          <a href="#" className="text-blue-500 hover:underline">
+          <a href="https://policies.google.com/terms?hl=en-US">
             Terms of Service
           </a>{" "}
           apply.

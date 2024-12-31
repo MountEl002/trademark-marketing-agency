@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
-import Footer from "@/components/layout/footer";
-import ScrollToTop from "@/components/common/backToTop";
 import { Roboto, Lato } from "next/font/google";
-import Navbar from "@/components/layout/navbar";
+import { ClientLayoutWrapper } from "@/components/layout/client-layout-wrapper";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -16,13 +14,24 @@ const roboto = Roboto({
 const lato = Lato({
   subsets: ["latin"],
   variable: "--font-lato",
-  weight: ["400", "700", "900"], // Adding different weights for headings
+  weight: ["400", "700", "900"],
   display: "swap",
 });
 
 export const metadata: Metadata = {
   title: "Affordable High-Quality Essays",
   description: "Offering Affordable High Quality Essay Services",
+
+  // Add additional metadata for SEO
+  robots: {
+    index: true,
+    follow: true,
+  },
+  openGraph: {
+    title: "Affordable High-Quality Essays",
+    description: "Offering Affordable High Quality Essay Services",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
@@ -34,19 +43,10 @@ export default function RootLayout({
     <html lang="en" className={`${roboto.variable} ${lato.variable}`}>
       <body
         className={`font-sans ${
-          process.env.NODE_ENV == "development" ? "debug-screens" : ""
+          process.env.NODE_ENV === "development" ? "debug-screens" : ""
         }`}
       >
-        <header>
-          <Navbar />
-        </header>
-        <main className="min-h-screen mt-16 bg-white">
-          <ScrollToTop />
-          {children}
-        </main>
-        <footer>
-          <Footer />
-        </footer>
+        <ClientLayoutWrapper>{children}</ClientLayoutWrapper>
         <Analytics />
       </body>
     </html>

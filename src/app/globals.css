@@ -271,3 +271,37 @@ h6 {
 .privacy-highlights p {
   @apply text-gray-200 mb-6;
 }
+
+.center-content-on-screen {
+  @apply flex max-[570px]:justify-start min-[570px]:justify-center min-h-screen min-w-full overflow-hidden !p-0 !m-0 bg-gray-100 text-gray-600;
+}
+/* flex flex-col items-center py-8 px-4 mx-auto text-gray-600 */
+
+.centered-content-on-screen {
+  @apply flex flex-col justify-between items-center w-full h-screen min-[570px]:w-[500px] min-[570px]:h-[650px] min-[570px]:border bg-white min-[570px]:rounded-3xl p-6;
+}
+
+.user-agreeement a,
+.google-recaptcha a {
+  @apply text-blue-600 hover:underline transition-all duration-300;
+}
+
+.user-agreeement p {
+  @apply text-sm text-center;
+}
+
+.user-agreeement {
+  @apply horizontal max-[570px]:pb-10;
+}
+
+.input-email-password {
+  @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+}
+
+.label-email-password {
+  @apply block text-sm text-gray-600 mb-2 text-start;
+}
+
+.continue-with-gaft {
+  @apply horizontal w-fit p-3 rounded-xl border-2 hover:bg-blue-100 hover:border-blue-400 transition-colors cursor-pointer;
+}
