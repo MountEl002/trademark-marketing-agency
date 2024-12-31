@@ -8,20 +8,20 @@ import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { Tooltip } from "react-tooltip";
 import Link from "next/link";
 
-interface LoginProps {
-  onSubmit?: (email: string, password: string, stayLoggedIn: boolean) => void;
-}
-
-const LoginPage: React.FC<LoginProps> = ({ onSubmit }) => {
+const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [stayLoggedIn, setStayLoggedIn] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (onSubmit) {
-      onSubmit(email, password, stayLoggedIn);
+    try {
+      // Handle login logic here
+      // You can make API calls or use your auth service
+      console.log("Login attempted with:", { email, stayLoggedIn });
+    } catch (error) {
+      console.error("Login error:", error);
     }
   };
 
