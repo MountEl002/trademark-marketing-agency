@@ -8,12 +8,12 @@ import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { Tooltip } from "react-tooltip";
 import Link from "next/link";
 
-interface SignupFormProps {
+interface LoginProps {
   onSubmit?: (email: string, password: string, stayLoggedIn: boolean) => void;
   onForgotPassword?: () => void;
 }
 
-const LogIn: React.FC<SignupFormProps> = ({ onSubmit }) => {
+const LogIn: React.FC<LoginProps> = ({ onSubmit, onForgotPassword }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -101,7 +101,7 @@ const LogIn: React.FC<SignupFormProps> = ({ onSubmit }) => {
 
                 <button
                   type="button"
-                  // onClick={onForgotPassword}
+                  onClick={onForgotPassword}
                   className="text-base font-semibold text-blue-500 hover:text-blue-700 transition-colors"
                 >
                   Forgot password?
@@ -109,7 +109,7 @@ const LogIn: React.FC<SignupFormProps> = ({ onSubmit }) => {
               </div>
               <div className="horizontal">
                 <button type="submit" className="button-blue w-full">
-                  continue
+                  Continue
                 </button>
               </div>
             </form>
