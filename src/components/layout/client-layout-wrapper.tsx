@@ -11,7 +11,7 @@ export function ClientLayoutWrapper({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const hideComponentsOn = ["/login", "/signup", "/admin"];
+  const hideComponentsOn = ["/login", "/signup", "/admin", "/forgot-password"];
   const shouldHideComponents = hideComponentsOn.includes(pathname);
 
   if (shouldHideComponents) {

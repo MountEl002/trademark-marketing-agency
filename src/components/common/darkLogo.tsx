@@ -10,7 +10,7 @@ const DarkLogo: React.FC = () => {
       <div className="flex flex-shrink-0 items-center">
         <Image src={LogoImage} width={30} height={40} alt="Company Logo" />
         <span className="ml-1 text-base font-semibold text-gray-200 text-center">
-          High-Quality <br />
+          High-<span className="text-blue-700">Quality</span> <br />
           Essay
         </span>
       </div>

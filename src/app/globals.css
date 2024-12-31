@@ -275,10 +275,13 @@ h6 {
 .center-content-on-screen {
   @apply flex max-[570px]:justify-start min-[570px]:justify-center min-h-screen min-w-full overflow-hidden !p-0 !m-0 bg-gray-100 text-gray-600;
 }
-/* flex flex-col items-center py-8 px-4 mx-auto text-gray-600 */
 
 .centered-content-on-screen {
-  @apply flex flex-col justify-between items-center w-full h-screen min-[570px]:w-[500px] min-[570px]:h-[650px] min-[570px]:border bg-white min-[570px]:rounded-3xl p-6;
+  @apply flex flex-col justify-between items-center w-full h-screen min-[570px]:w-[450px] min-[570px]:h-[650px] min-[570px]:border bg-white min-[570px]:rounded-3xl p-6;
+}
+
+.centered-content-on-screen-rp {
+  @apply flex flex-col justify-between items-center w-full h-screen min-[570px]:w-[450px] min-[570px]:h-[440px] min-[570px]:border bg-white min-[570px]:rounded-3xl p-6;
 }
 
 .user-agreeement a,

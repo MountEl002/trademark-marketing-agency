@@ -10,10 +10,9 @@ import Link from "next/link";
 
 interface LoginProps {
   onSubmit?: (email: string, password: string, stayLoggedIn: boolean) => void;
-  onForgotPassword?: () => void;
 }
 
-const LoginPage: React.FC<LoginProps> = ({ onSubmit, onForgotPassword }) => {
+const LoginPage: React.FC<LoginProps> = ({ onSubmit }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -92,13 +91,12 @@ const LoginPage: React.FC<LoginProps> = ({ onSubmit, onForgotPassword }) => {
                 <span className="text-base text-gray-600">Stay logged in</span>
               </label>
 
-              <button
-                type="button"
-                onClick={onForgotPassword}
+              <Link
+                href="/forgot-password"
                 className="text-base font-semibold text-blue-500 hover:text-blue-700 transition-colors"
               >
                 Forgot password?
-              </button>
+              </Link>
             </div>
             <div className="horizontal">
               <button type="submit" className="button-blue w-full">
@@ -108,7 +106,7 @@ const LoginPage: React.FC<LoginProps> = ({ onSubmit, onForgotPassword }) => {
           </form>
           <div>
             <p className="text-sm text-center py-4">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link
                 href="/signup"
                 className="font-semibold text-blue-500 hover:text-blue-700 transition-colors"
