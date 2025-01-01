@@ -281,7 +281,7 @@ h6 {
 }
 
 .centered-content-on-screen-rp {
-  @apply flex flex-col justify-between items-center w-full h-screen min-[570px]:w-[450px] min-[570px]:h-[440px] min-[570px]:border bg-white min-[570px]:rounded-3xl p-6;
+  @apply flex flex-col justify-center max-[570px]:gap-16 min-[570px]:justify-between items-center w-full h-screen min-[570px]:w-[450px] min-[570px]:h-[440px] min-[570px]:border bg-white min-[570px]:rounded-3xl p-6;
 }
 
 .user-agreeement a,
