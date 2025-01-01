@@ -274,6 +274,7 @@ function MobileNav({ closeMobileMenu }: { closeMobileMenu: () => void }) {
           {/*Mobile Menu --  How to Order */}
           <Link
             href="/how-to-order"
+            onClick={closeMobileMenu}
             className="text-base text-gray-600 transition-all duration-500 hover:text-blue-500"
           >
             How to order
@@ -334,6 +335,7 @@ function MobileNav({ closeMobileMenu }: { closeMobileMenu: () => void }) {
                     <Link
                       key={item.href}
                       href={item.href}
+                      onClick={closeMobileMenu}
                       className="block px-4 pb-2 text-base transition-all duration-300 hover:text-blue-500"
                     >
                       {item.label}
@@ -347,6 +349,7 @@ function MobileNav({ closeMobileMenu }: { closeMobileMenu: () => void }) {
           {/*Mobile Menu --  Prices */}
           <Link
             href="/prices"
+            onClick={closeMobileMenu}
             className="text-base text-gray-600 transition-all duration-500 hover:text-blue-500"
           >
             Prices
@@ -354,6 +357,7 @@ function MobileNav({ closeMobileMenu }: { closeMobileMenu: () => void }) {
           {/* Reviews */}
           <Link
             href="/reviews"
+            onClick={closeMobileMenu}
             className="text-base text-gray-600 transition-all duration-500 hover:text-blue-500"
           >
             Reviews
@@ -372,6 +376,7 @@ function MobileNav({ closeMobileMenu }: { closeMobileMenu: () => void }) {
                     <Link
                       key={item.href}
                       href={item.href}
+                      onClick={closeMobileMenu}
                       className="block px-4 pb-2 text-base transition-all duration-300 hover:text-blue-500"
                     >
                       {item.label}
