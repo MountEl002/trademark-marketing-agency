@@ -7,7 +7,7 @@ const EmailInfo = () => {
     <>
       <BsInfoCircle
         data-tooltip-id="email-use-info"
-        className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-400 rounded-[50%] w-6 h-6"
+        className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-400 hover:text-blue-600 transition-colors rounded-[50%] w-6 h-6"
       />
       <Tooltip id="email-use-info">
         <div className="text-start">

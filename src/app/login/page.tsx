@@ -29,7 +29,7 @@ const LoginPage = () => {
     <section className="center-content-on-screen">
       <div className="centered-content-on-screen">
         <LightLogo />
-        <div>
+        <div className="w-full px-4">
           <h3 className="text-center">Log into your account</h3>
           <ContinueWith />
           <div className="flex flex-row items-center gap-3 my-4">
@@ -40,7 +40,7 @@ const LoginPage = () => {
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <label className="label-email-password">Email</label>
-              <div className="relative">
+              <div className="relative container-input-email-password">
                 <input
                   type="email"
                   value={email}
@@ -55,7 +55,7 @@ const LoginPage = () => {
               <label htmlFor="password" className="label-email-password">
                 Password
               </label>
-              <div className="relative">
+              <div className="relative container-input-email-password">
                 <input
                   id="password"
                   type={showPassword ? "text" : "password"}
@@ -72,9 +72,9 @@ const LoginPage = () => {
                   className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600 focus:outline-none"
                 >
                   {showPassword ? (
-                    <IoMdEye size={20} />
+                    <IoMdEye size={20} className="password-eye" />
                   ) : (
-                    <IoMdEyeOff size={20} />
+                    <IoMdEyeOff size={20} className="password-eye" />
                   )}
                 </button>
                 <Tooltip id="password-tooltip" />

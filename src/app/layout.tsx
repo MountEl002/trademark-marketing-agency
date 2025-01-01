@@ -3,6 +3,7 @@ import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 import { Roboto, Lato } from "next/font/google";
 import { ClientLayoutWrapper } from "@/components/layout/client-layout-wrapper";
+import { Providers } from "./providers";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -46,8 +47,11 @@ export default function RootLayout({
           process.env.NODE_ENV === "development" ? "debug-screens" : ""
         }`}
       >
-        <ClientLayoutWrapper>{children}</ClientLayoutWrapper>
-        <Analytics />
+        <Providers>
+          {" "}
+          <ClientLayoutWrapper>{children}</ClientLayoutWrapper>
+          <Analytics />
+        </Providers>
       </body>
     </html>
   );

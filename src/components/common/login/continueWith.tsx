@@ -6,7 +6,7 @@ import ContinueWithTwitter from "./continueWithTwitter";
 
 const ContinueWith = () => {
   return (
-    <div className="grid grid-cols-4 gap-3">
+    <div className="w-full horizontal-space-between">
       <div>
         <ContinueWithGoogle />
       </div>
