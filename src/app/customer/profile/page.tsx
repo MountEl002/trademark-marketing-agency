@@ -1,15 +1,13 @@
-import Logout from "@/components/userComponents/logout";
-import SignupDate from "@/components/userComponents/signupDate";
-import UserNumber from "@/components/userComponents/userNumber";
 import React from "react";
+import SideBar from "@/components/userComponents/sideBar";
 
 const Profile = () => {
   return (
-    <div className="Vertical">
-      <SignupDate />
-      <UserNumber />
-      <Logout />
-    </div>
+    <>
+      <div className="">
+        <SideBar />
+      </div>
+    </>
   );
 };
 

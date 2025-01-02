@@ -6,11 +6,7 @@ import React from "react";
 const UserNumber = () => {
   const { userNumber } = useAuth();
 
-  return (
-    <div>
-      <h1>{userNumber}</h1>
-    </div>
-  );
+  return <span>{userNumber}</span>;
 };
 
 export default UserNumber;

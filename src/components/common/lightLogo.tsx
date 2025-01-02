@@ -12,7 +12,7 @@ const LightLogo: React.FC = () => {
     <Link href={`${user ? "/customer/orders/open" : "/"}`}>
       <div className="flex flex-shrink-0 items-center">
         <Image src={LogoImage} width={30} height={40} alt="Company Logo" />
-        <span className="ml-1 text-base font-semibold text-gray-600 text-center">
+        <span className="max-[480px]:hidden ml-1 text-base font-semibold text-gray-600 text-center">
           High-<span className="text-blue-700">Quality</span> <br />
           Essay
         </span>
