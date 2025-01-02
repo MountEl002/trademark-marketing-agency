@@ -1,13 +1,13 @@
 import React from "react";
 
-const Resources = () => {
+const WritingTools = () => {
   return (
     <>
       <section>
-        <h1>Learning Materials and Solved Questions</h1>
+        <h1>Free Writing Tools</h1>
       </section>
     </>
   );
 };
 
-export default Resources;
+export default WritingTools;

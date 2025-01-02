@@ -1,27 +1,61 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
 import LightLogo from "@/components/common/lightLogo";
 import ContinueWith from "@/components/common/login/continueWith";
 import EmailInfo from "@/components/common/login/emailInfo";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { Tooltip } from "react-tooltip";
 import Link from "next/link";
+import { FirebaseError } from "firebase/app";
 
 const LoginPage = () => {
+  const router = useRouter();
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [stayLoggedIn, setStayLoggedIn] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+    setLoading(true);
     try {
-      // Handle login logic here
-      // You can make API calls or use your auth service
+      await login(email, password);
+      router.push("/customer/orders/new");
       console.log("Login attempted with:", { email, stayLoggedIn });
     } catch (error) {
-      console.error("Login error:", error);
+      if (error instanceof FirebaseError) {
+        switch (error.code) {
+          case "auth/user-not-found":
+          case "auth/wrong-password":
+            setError("Invalid email or password");
+            break;
+          case "auth/invalid-email":
+            setError("Invalid email address");
+            break;
+          case "auth/too-many-requests":
+            setError("Too many failed attempts. Please try again later");
+            break;
+          default:
+            setError(error.message);
+        }
+        setTimeout(() => {
+          setError("");
+        }, 5000);
+      } else {
+        setError("Failed to log in! Please try again");
+        setTimeout(() => {
+          setError("");
+        }, 5000);
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -37,6 +71,11 @@ const LoginPage = () => {
             <div className="text-center text-gray-500">or</div>
             <div className="w-full h-0 border-[1px] border-gray-200"></div>
           </div>
+          {error && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-lg relative mb-4">
+              {error}
+            </div>
+          )}
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <label className="label-email-password">Email</label>
@@ -99,8 +138,14 @@ const LoginPage = () => {
               </Link>
             </div>
             <div className="horizontal">
-              <button type="submit" className="button-blue w-full">
-                Continue
+              <button
+                type="submit"
+                disabled={loading}
+                className={`button-blue w-full ${
+                  loading ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+              >
+                {loading ? <span>Logging in...</span> : <span>Continue</span>}
               </button>
             </div>
           </form>

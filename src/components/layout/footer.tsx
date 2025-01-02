@@ -1,7 +1,9 @@
 import React from "react";
+import { usePathname } from "next/navigation";
 import SocialMedia from "../common/socialMedia";
 import DarkLogo from "../common/darkLogo";
 import PaymentMethods from "../common/paymentMethods";
+import Link from "next/link";
 
 interface Resource {
   id: number;
@@ -42,32 +44,32 @@ const Footer = () => {
     },
     {
       id: 4,
-      name: "Free Essay Writing Tools",
-      LinkTo: "/terms_and_conditions",
+      name: "Free Writing Tools",
+      LinkTo: "/writing-tools",
     },
   ];
 
   const policies: Policy[] = [
-    { id: 1, name: "Terms & Conditions", LinkTo: "/" },
-    { id: 2, name: "Privacy Policy", LinkTo: "/about_us" },
-    { id: 3, name: "Cookie Policy", LinkTo: "/contact_us" },
+    { id: 1, name: "Terms & Conditions", LinkTo: "/terms-and-conditions" },
+    { id: 2, name: "Privacy Policy", LinkTo: "/privacy-policy" },
+    { id: 3, name: "Cookie Policy", LinkTo: "/cookie-policy" },
     {
       id: 4,
       name: "Confidentiality Policy",
-      LinkTo: "/terms_and_conditions",
+      LinkTo: "/confidentiality-policy",
     },
-    { id: 5, name: "Refund Policy", LinkTo: "/privacy_policy" },
-    { id: 6, name: "Discount Policy", LinkTo: "/privacy_policy" },
-    { id: 7, name: "Money Back Guarantee", LinkTo: "/privacy_policy" },
+    { id: 5, name: "Refund Policy", LinkTo: "/refund-policy" },
+    { id: 6, name: "Discount Policy", LinkTo: "/dicount-policy" },
+    { id: 7, name: "Money Back Guarantee", LinkTo: "/money-back-guarantee" },
   ];
   const companyDeatails: CompanyDetail[] = [
-    { id: 1, name: "FAQ", LinkTo: "/" },
-    { id: 2, name: "About Us", LinkTo: "/about_us" },
-    { id: 3, name: "High-Qulity Essay Reviews", LinkTo: "/contact_us" },
+    { id: 1, name: "FAQ", LinkTo: "/#faq" },
+    { id: 2, name: "About Us", LinkTo: "/about-us" },
+    { id: 3, name: "High-Qulity Essay Reviews", LinkTo: "/reviews" },
     {
       id: 4,
       name: "Why Choose Us",
-      LinkTo: "/terms_and_conditions",
+      LinkTo: "/why-choose-us",
     },
   ];
 
@@ -263,6 +265,8 @@ const Footer = () => {
     },
   ];
 
+  const pathname = usePathname();
+
   return (
     <div className="mx-auto pt-8 bg-indigo-950 text-gray-300 text-sm">
       {/* Row 1: Company Logo and Social Media Handles */}
@@ -280,8 +284,14 @@ const Footer = () => {
           <h3 className="font-bold text-lg text-gray-100 mb-4">Our Services</h3>
           {ourServices.map((service) => (
             <ul key={service.id} className="">
-              <li className="mb-2 hover:text-blue-600 cursor-pointer">
-                <a href={service.LinkTo}>{service.name}</a>
+              <li
+                className={`mb-2 cursor-pointer ${
+                  pathname === service.LinkTo
+                    ? "text-blue-500 hover:text-blue-700"
+                    : "hover:text-blue-600"
+                }`}
+              >
+                <Link href={service.LinkTo}>{service.name}</Link>
               </li>
             </ul>
           ))}
@@ -292,8 +302,14 @@ const Footer = () => {
           <h3 className="font-bold text-lg text-gray-100 mb-4">Resources</h3>
           {resources.map((item) => (
             <ul key={item.id}>
-              <li className="mb-2 hover:text-blue-600 cursor-pointer">
-                <a href={item.LinkTo}>{item.name}</a>
+              <li
+                className={`mb-2 cursor-pointer ${
+                  pathname === item.LinkTo
+                    ? "text-blue-500 hover:text-blue-700"
+                    : "hover:text-blue-600"
+                }`}
+              >
+                <Link href={item.LinkTo}>{item.name}</Link>
               </li>
             </ul>
           ))}
@@ -304,20 +320,32 @@ const Footer = () => {
           <h3 className="font-bold text-lg text-gray-100 mb-4">Policies</h3>
           {policies.map((item) => (
             <ul key={item.id}>
-              <li className="mb-2 hover:text-blue-600 cursor-pointer">
-                <a href={item.LinkTo}>{item.name}</a>
+              <li
+                className={`mb-2 cursor-pointer ${
+                  pathname === item.LinkTo
+                    ? "text-blue-500 hover:text-blue-700"
+                    : "hover:text-blue-600"
+                }`}
+              >
+                <Link href={item.LinkTo}>{item.name}</Link>
               </li>
             </ul>
           ))}
         </div>
 
-        {/* Column 2 Company Details */}
+        {/* Column 4 Company Details */}
         <div>
           <h3 className="font-bold text-lg text-gray-100 mb-4">Company</h3>
           {companyDeatails.map((item) => (
             <ul key={item.id}>
-              <li className="mb-2 hover:text-blue-600 cursor-pointer">
-                <a href={item.LinkTo}>{item.name}</a>
+              <li
+                className={`mb-2 cursor-pointer ${
+                  pathname === item.LinkTo
+                    ? "text-blue-500 hover:text-blue-700"
+                    : "hover:text-blue-600"
+                }`}
+              >
+                <Link href={item.LinkTo}>{item.name}</Link>
               </li>
             </ul>
           ))}
@@ -330,8 +358,14 @@ const Footer = () => {
           <div className="footer-grids">
             {allServices.map((service) => (
               <ul key={service.id} className="">
-                <li className="mb-2 hover:text-blue-600 cursor-pointer">
-                  <a href={service.LinkTo}>{service.name}</a>
+                <li
+                  className={`mb-2 cursor-pointer ${
+                    pathname === service.LinkTo
+                      ? "text-blue-500 hover:text-blue-700"
+                      : "hover:text-blue-600"
+                  }`}
+                >
+                  <Link href={service.LinkTo}>{service.name}</Link>
                 </li>
               </ul>
             ))}

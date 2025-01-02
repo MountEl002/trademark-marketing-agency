@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { usePathname } from "next/navigation";
 import LightLogo from "../common/lightLogo";
 import UserAccessControl from "../common/login/userAccessControl";
 import Link from "next/link";
@@ -71,6 +72,7 @@ const Navbar = () => {
   const [offersMenuOpen, setOffersMenuOpen] = useState(true);
   const [resourcesMenuOpen, setResourcesMenuOpen] = useState(true);
   const [animationParent] = useAutoAnimate();
+  const pathname = usePathname();
 
   const closeServicesMenu = () => {
     setServicesMenuOpen(false);
@@ -104,6 +106,62 @@ const Navbar = () => {
     setMobileMenuOpen(false);
   };
 
+  const howToOrderLinkStyles = `text-base transition-all duration-500 ${
+    pathname === "/how-to-order"
+      ? "text-blue-700 hover:text-blue-900"
+      : "text-gray-600 hover:text-blue-500"
+  }`;
+
+  const pricesLinkStyles = `text-base transition-all duration-500 ${
+    pathname === "/prices"
+      ? "text-blue-700 hover:text-blue-900"
+      : "text-gray-600 hover:text-blue-500"
+  }`;
+
+  const reviewsLinkStyles = `text-base transition-all duration-500 ${
+    pathname === "/reviews"
+      ? "text-blue-700 hover:text-blue-900"
+      : "text-gray-600 hover:text-blue-500"
+  }`;
+
+  const servicesLinkStyles = `horizontal gap-1 text-base transition-all duration-500 ${
+    pathname.startsWith("/services")
+      ? "text-blue-700 group-hover:text-blue-900"
+      : "text-gray-600 group-hover:text-blue-500"
+  }`;
+
+  const offersLinkStyles = `horizontal gap-1 text-base transition-all duration-500 ${
+    pathname.startsWith("/discounts") ||
+    pathname.startsWith("/referral-program")
+      ? "text-blue-700 group-hover:text-blue-900"
+      : "text-gray-600 group-hover:text-blue-500"
+  }`;
+
+  const resourcesLinkStyles = `horizontal gap-1 text-base transition-all duration-500 ${
+    pathname.startsWith("/resources")
+      ? "text-blue-700 group-hover:text-blue-900"
+      : "text-gray-600 group-hover:text-blue-500"
+  }`;
+
+  const servicesChevronLinkStyles = `transition-all duration-500 ${
+    pathname.startsWith("/service")
+      ? "text-blue-700 group-hover:text-blue-900"
+      : "text-gray-600 group-hover:text-blue-500"
+  }`;
+
+  const offersChevronLinkStyles = `transition-all duration-500 ${
+    pathname.startsWith("/discounts") ||
+    pathname.startsWith("/referral-program")
+      ? "text-blue-700 group-hover:text-blue-900"
+      : "text-gray-600 group-hover:text-blue-500"
+  }`;
+
+  const resourcesChevronLinkStyles = `transition-all duration-500 ${
+    pathname.startsWith("/resources")
+      ? "text-blue-700 group-hover:text-blue-900"
+      : "text-gray-600 group-hover:text-blue-500"
+  }`;
+
   return (
     <nav className="navbar fixed top-0 left-0 right-0 z-50 bg-gray-50 shadow-md">
       <div ref={animationParent} className="relative max-w-6xl mx-auto px-3">
@@ -113,10 +171,7 @@ const Navbar = () => {
           {/* Middle Section */}
           <div className="hidden md:flex flex-row items-center justify-center h-full gap-2 xl:gap-3 2xl:gap-5 transition-all">
             {/* How to Order */}
-            <Link
-              href="/how-to-order"
-              className="text-base text-gray-600 transition-all duration-500 hover:text-blue-500"
-            >
+            <Link href="/how-to-order" className={howToOrderLinkStyles}>
               How to order
             </Link>
             {/* Services */}
@@ -124,9 +179,9 @@ const Navbar = () => {
               href="#"
               className="relative vertical group transition-all h-full"
             >
-              <p className="horizontal gap-1 text-base text-gray-600 transition-all duration-500 group-hover:text-blue-500">
+              <p className={servicesLinkStyles}>
                 <span>Services</span>
-                <FaChevronDown className="text-gray-600 transition-all duration-500 group-hover:text-blue-500 group-hover:rotate-180" />
+                <FaChevronDown className={servicesChevronLinkStyles} />
               </p>
               {/* Services Dropdown Menu */}
               {servicesMenuOpen && (
@@ -134,11 +189,9 @@ const Navbar = () => {
                   <Link
                     onClick={closeServicesMenu}
                     href="/services"
-                    className=""
+                    className={servicesLinkStyles}
                   >
-                    <h3 className="transition-colors duration-300 hover:text-blue-500">
-                      View All Our Writing Services
-                    </h3>
+                    <h3>View All Our Writing Services</h3>
                   </Link>
                   <div className="horizontal-start gap-2">
                     <div>
@@ -147,7 +200,11 @@ const Navbar = () => {
                           key={item.href}
                           href={item.href}
                           onClick={closeServicesMenu}
-                          className="block px-4 py-2 text-sm transition-all duration-300 hover:text-blue-500"
+                          className={`block px-4 pb-2 text-sm py-2 transition-all duration-300 ${
+                            pathname === item.href
+                              ? "text-blue-700 hover:text-blue-900"
+                              : "text-gray-600 hover:text-blue-500"
+                          }`}
                         >
                           {item.label}
                         </Link>
@@ -159,7 +216,11 @@ const Navbar = () => {
                           key={item.href}
                           href={item.href}
                           onClick={closeServicesMenu}
-                          className="block px-4 py-2 text-sm transition-all duration-300 hover:text-blue-500"
+                          className={`block px-4 pb-2 text-sm py-2 transition-all duration-300 ${
+                            pathname === item.href
+                              ? "text-blue-700 hover:text-blue-900"
+                              : "text-gray-600 hover:text-blue-500"
+                          }`}
                         >
                           {item.label}
                         </Link>
@@ -175,9 +236,9 @@ const Navbar = () => {
               href="#"
               className="relative vertical group transition-all h-full"
             >
-              <p className="horizontal gap-1 text-base text-gray-600 transition-all duration-500 group-hover:text-blue-500">
+              <p className={offersLinkStyles}>
                 <span>Offers</span>
-                <FaChevronDown className="text-gray-600 transition-all duration-500 group-hover:text-blue-500 group-hover:rotate-180" />
+                <FaChevronDown className={offersChevronLinkStyles} />
               </p>
               {/* Offers Dropdown Menu */}
               {offersMenuOpen && (
@@ -189,7 +250,11 @@ const Navbar = () => {
                           key={item.href}
                           href={item.href}
                           onClick={closeOffersMenu}
-                          className="block px-4 pb-2 text-sm py-2 transition-all duration-300 hover:text-blue-500"
+                          className={`block px-4 pb-2 text-sm py-2 transition-all duration-300 ${
+                            pathname === item.href
+                              ? "text-blue-700 hover:text-blue-900"
+                              : "text-gray-600 hover:text-blue-500"
+                          }`}
                         >
                           {item.label}
                         </Link>
@@ -201,17 +266,11 @@ const Navbar = () => {
             </Link>
 
             {/* Prices */}
-            <Link
-              href="/prices"
-              className="text-base text-gray-600 transition-all duration-500 hover:text-blue-500"
-            >
+            <Link href="/prices" className={pricesLinkStyles}>
               Prices
             </Link>
             {/* Reviews */}
-            <Link
-              href="/reviews"
-              className="text-base text-gray-600 transition-all duration-500 hover:text-blue-500"
-            >
+            <Link href="/reviews" className={reviewsLinkStyles}>
               Reviews
             </Link>
             {/* Resources */}
@@ -219,9 +278,9 @@ const Navbar = () => {
               href="#"
               className="relative group transition-all h-full hidden lg:flex flex-col items-center justify-center"
             >
-              <p className="horizontal gap-1 text-base text-gray-600 transition-all duration-500 group-hover:text-blue-500">
+              <p className={resourcesLinkStyles}>
                 <span>Resources</span>
-                <FaChevronDown className="text-gray-600 transition-all duration-500 group-hover:text-blue-500 group-hover:rotate-180" />
+                <FaChevronDown className={resourcesChevronLinkStyles} />
               </p>
               {/* Resources Dropdown Menu */}
               {resourcesMenuOpen && (
@@ -233,7 +292,11 @@ const Navbar = () => {
                           key={item.href}
                           href={item.href}
                           onClick={closeResourcesMenu}
-                          className="block px-4 pb-2 text-sm py-2 transition-all duration-300 hover:text-blue-500"
+                          className={`block px-4 pb-2 text-sm py-2 transition-all duration-300 ${
+                            pathname === item.href
+                              ? "text-blue-700 hover:text-blue-900"
+                              : "text-gray-600 hover:text-blue-500"
+                          }`}
                         >
                           {item.label}
                         </Link>
@@ -261,9 +324,67 @@ const Navbar = () => {
 };
 
 function MobileNav({ closeMobileMenu }: { closeMobileMenu: () => void }) {
+  const pathname = usePathname();
+
+  const howToOrderLinkStyles = `text-base transition-all duration-500 ${
+    pathname === "/how-to-order"
+      ? "text-blue-700 hover:text-blue-900"
+      : "text-gray-600 hover:text-blue-500"
+  }`;
+
+  const pricesLinkStyles = `text-base transition-all duration-500 ${
+    pathname === "/prices"
+      ? "text-blue-700 hover:text-blue-900"
+      : "text-gray-600 hover:text-blue-500"
+  }`;
+
+  const reviewsLinkStyles = `text-base transition-all duration-500 ${
+    pathname === "/reviews"
+      ? "text-blue-700 hover:text-blue-900"
+      : "text-gray-600 hover:text-blue-500"
+  }`;
+
+  const servicesLinkStyles = `horizontal gap-1 text-base transition-all duration-500 ${
+    pathname.startsWith("/services")
+      ? "text-blue-700 group-hover:text-blue-900"
+      : "text-gray-600 group-hover:text-blue-500"
+  }`;
+
+  const offersLinkStyles = `horizontal gap-1 text-base transition-all duration-500 ${
+    pathname.startsWith("/discounts") ||
+    pathname.startsWith("/referral-program")
+      ? "text-blue-700 group-hover:text-blue-900"
+      : "text-gray-600 group-hover:text-blue-500"
+  }`;
+
+  const resourcesLinkStyles = `horizontal gap-1 text-base transition-all duration-500 ${
+    pathname.startsWith("/resources")
+      ? "text-blue-700 group-hover:text-blue-900"
+      : "text-gray-600 group-hover:text-blue-500"
+  }`;
+
+  const servicesChevronLinkStyles = `transition-all duration-500 ${
+    pathname.startsWith("/service")
+      ? "text-blue-700 group-hover:text-blue-900"
+      : "text-gray-600 group-hover:text-blue-500"
+  }`;
+
+  const offersChevronLinkStyles = `transition-all duration-500 ${
+    pathname.startsWith("/discounts") ||
+    pathname.startsWith("/referral-program")
+      ? "text-blue-700 group-hover:text-blue-900"
+      : "text-gray-600 group-hover:text-blue-500"
+  }`;
+
+  const resourcesChevronLinkStyles = `transition-all duration-500 ${
+    pathname.startsWith("/resources")
+      ? "text-blue-700 group-hover:text-blue-900"
+      : "text-gray-600 group-hover:text-blue-500"
+  }`;
+
   return (
     <div className="fixed left-0 top-0 flex h-full min-h-screen w-full justify-end bg-black/60 md:hidden">
-      <div className="h-full w-[70%] bg-gray-50 px-4 py-4">
+      <div className="w-full max-h-fit bg-gray-50 px-4 py-4">
         <div className="flex justify-end">
           <IoClose
             onClick={closeMobileMenu}
@@ -275,22 +396,24 @@ function MobileNav({ closeMobileMenu }: { closeMobileMenu: () => void }) {
           <Link
             href="/how-to-order"
             onClick={closeMobileMenu}
-            className="text-base text-gray-600 transition-all duration-500 hover:text-blue-500"
+            className={howToOrderLinkStyles}
           >
             How to order
           </Link>
           {/*Mobile Menu --  Services */}
           <Link href="" className="w-full group transition-all">
-            <p className="horizontal gap-1 text-base text-gray-600 transition-all duration-500 group-hover:text-blue-500">
+            <p className={servicesLinkStyles}>
               <span>Services</span>
-              <FaChevronDown className="text-gray-600 transition-all duration-500 group-hover:text-blue-500 group-hover:rotate-180" />
+              <FaChevronDown className={servicesChevronLinkStyles} />
             </p>
             {/*Mobile Menu --  Services Dropdown Menu*/}
             <div className="w-full hidden group-hover:block transition-all duration-300 ease-in-out rounded-lg bg-white shadow-xl">
-              <Link href="/services" className="">
-                <h3 className="transition-all duration-300 hover:text-blue-500">
-                  View All Our Writing Services
-                </h3>
+              <Link
+                href="/services"
+                className={servicesLinkStyles}
+                onClick={closeMobileMenu}
+              >
+                <h3>View All Our Writing Services</h3>
               </Link>
               <div className="horizontal w-full gap-2">
                 <div>
@@ -299,7 +422,11 @@ function MobileNav({ closeMobileMenu }: { closeMobileMenu: () => void }) {
                       key={item.href}
                       href={item.href}
                       onClick={closeMobileMenu}
-                      className="block px-4 py-2 text-sm transition-all duration-300 hover:text-blue-500"
+                      className={`block px-4 pb-2 text-sm py-2 transition-all duration-300 ${
+                        pathname === item.href
+                          ? "text-blue-700 hover:text-blue-900"
+                          : "text-gray-600 hover:text-blue-500"
+                      }`}
                     >
                       {item.label}
                     </Link>
@@ -311,7 +438,11 @@ function MobileNav({ closeMobileMenu }: { closeMobileMenu: () => void }) {
                       key={item.href}
                       href={item.href}
                       onClick={closeMobileMenu}
-                      className="block px-4 py-2 text-sm transition-all duration-300 hover:text-blue-500"
+                      className={`block px-4 pb-2 text-sm py-2 transition-all duration-300 ${
+                        pathname === item.href
+                          ? "text-blue-700 hover:text-blue-900"
+                          : "text-gray-600 hover:text-blue-500"
+                      }`}
                     >
                       {item.label}
                     </Link>
@@ -323,9 +454,9 @@ function MobileNav({ closeMobileMenu }: { closeMobileMenu: () => void }) {
 
           {/*Mobile Menu --  Offers */}
           <Link href="#" className="w-full relative group transition-all">
-            <p className="horizontal gap-1 text-base text-gray-600 transition-all duration-500 group-hover:text-blue-500">
+            <p className={offersLinkStyles}>
               <span>Offers</span>
-              <FaChevronDown className="text-gray-600 transition-all duration-500 group-hover:text-blue-500 group-hover:rotate-180" />
+              <FaChevronDown className={offersChevronLinkStyles} />
             </p>
             {/* Mobile Menu --  Offers Dropdown Menu */}
             <div className="w-full hidden group-hover:flex flex-col items-center justify-center gap-5 text-center transition-all duration-300 ease-in-out">
@@ -336,7 +467,11 @@ function MobileNav({ closeMobileMenu }: { closeMobileMenu: () => void }) {
                       key={item.href}
                       href={item.href}
                       onClick={closeMobileMenu}
-                      className="block px-4 pb-2 text-base transition-all duration-300 hover:text-blue-500"
+                      className={`block px-4 pb-2 text-sm py-2 transition-all duration-300 ${
+                        pathname === item.href
+                          ? "text-blue-700 hover:text-blue-900"
+                          : "text-gray-600 hover:text-blue-500"
+                      }`}
                     >
                       {item.label}
                     </Link>
@@ -350,7 +485,7 @@ function MobileNav({ closeMobileMenu }: { closeMobileMenu: () => void }) {
           <Link
             href="/prices"
             onClick={closeMobileMenu}
-            className="text-base text-gray-600 transition-all duration-500 hover:text-blue-500"
+            className={pricesLinkStyles}
           >
             Prices
           </Link>
@@ -358,15 +493,15 @@ function MobileNav({ closeMobileMenu }: { closeMobileMenu: () => void }) {
           <Link
             href="/reviews"
             onClick={closeMobileMenu}
-            className="text-base text-gray-600 transition-all duration-500 hover:text-blue-500"
+            className={reviewsLinkStyles}
           >
             Reviews
           </Link>
           {/*Mobile Menu --  Resources */}
           <Link href="#" className="w-full relative group transition-all">
-            <p className="horizontal gap-1 text-base text-gray-600 transition-all duration-500 group-hover:text-blue-500">
+            <p className={resourcesLinkStyles}>
               <span>Resources</span>
-              <FaChevronDown className="text-gray-600 transition-all duration-500 group-hover:text-blue-500 group-hover:rotate-180" />
+              <FaChevronDown className={resourcesChevronLinkStyles} />
             </p>
             {/*Mobile Menu -- Resources Dropdown Menu */}
             <div className="w-full hidden group-hover:flex flex-col items-center justify-center gap-5 text-center transition-all duration-300 ease-in-out">
@@ -377,7 +512,11 @@ function MobileNav({ closeMobileMenu }: { closeMobileMenu: () => void }) {
                       key={item.href}
                       href={item.href}
                       onClick={closeMobileMenu}
-                      className="block px-4 pb-2 text-base transition-all duration-300 hover:text-blue-500"
+                      className={`block px-4 pb-2 text-sm py-2 transition-all duration-300 ${
+                        pathname === item.href
+                          ? "text-blue-700 hover:text-blue-900"
+                          : "text-gray-600 hover:text-blue-500"
+                      }`}
                     >
                       {item.label}
                     </Link>

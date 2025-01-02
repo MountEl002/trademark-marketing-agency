@@ -63,7 +63,7 @@ const SignUpPage = () => {
             <div className="w-full h-0 border-[1px] border-gray-200"></div>
           </div>
           {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative mb-4">
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-lg relative mb-4">
               {error}
             </div>
           )}
@@ -111,7 +111,13 @@ const SignUpPage = () => {
               </div>
             </div>
             <div className="horizontal mt-5">
-              <button type="submit" className="button-blue w-full">
+              <button
+                type="submit"
+                disabled={loading}
+                className={`button-blue w-full ${
+                  loading ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+              >
                 {loading ? (
                   <span>Creating account...</span>
                 ) : (

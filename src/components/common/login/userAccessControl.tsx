@@ -5,7 +5,7 @@ import UserAccount from "./userAccount";
 import { useAuth } from "@/contexts/AuthContext";
 
 const UserAccessControl = () => {
-  const user = useAuth();
+  const { user } = useAuth();
 
   return (
     <div className="w-fit horizontal gap-2">

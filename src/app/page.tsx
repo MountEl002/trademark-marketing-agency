@@ -82,7 +82,7 @@ export default function Home() {
         </div>
       </section>
       {/* Frequently Asked Questions Section */}
-      <section>
+      <section id="faq">
         <div className="max-w-3xl mx-auto">
           <h2 className="text-center">
             Frequently Asked Questions about our services
