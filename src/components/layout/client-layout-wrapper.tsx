@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import ScrollToTop from "@/components/common/backToTop";
+import SecondNavBar from "../userComponents/secondNavbar";
 
 export function ClientLayoutWrapper({
   children,
@@ -22,6 +23,7 @@ export function ClientLayoutWrapper({
     <>
       <header>
         <Navbar />
+        <SecondNavBar />
       </header>
       <main className="min-h-screen mt-16 bg-white">
         <ScrollToTop />

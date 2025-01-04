@@ -15,7 +15,7 @@ import PrivacyHighlight from "@/components/common/privacyHighlight";
 export default function Home() {
   return (
     <>
-      {/* Here section */}
+      {/* Hero section */}
       <section className="max-w-6xl mt-28 text-center text-gray-600">
         <div className="grid grid-cols-1 min-[820px]:grid-cols-2 gap-4">
           <div>

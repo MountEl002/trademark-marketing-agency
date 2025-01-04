@@ -142,10 +142,14 @@ const LoginPage = () => {
                 type="submit"
                 disabled={loading}
                 className={`button-blue w-full ${
-                  loading ? "opacity-50 cursor-not-allowed" : ""
+                  loading ? "cursor-not-allowed" : ""
                 }`}
               >
-                {loading ? <span>Logging in...</span> : <span>Continue</span>}
+                {loading ? (
+                  <div className="animate-spin h-5 w-5 border-4 text-gray-100 rounded-[50%] border-t-transparent mx-auto" />
+                ) : (
+                  <span>Continue</span>
+                )}
               </button>
             </div>
           </form>

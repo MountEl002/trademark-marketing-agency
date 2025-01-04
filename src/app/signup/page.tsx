@@ -115,11 +115,13 @@ const SignUpPage = () => {
                 type="submit"
                 disabled={loading}
                 className={`button-blue w-full ${
-                  loading ? "opacity-50 cursor-not-allowed" : ""
+                  loading ? "cursor-not-allowed" : ""
                 }`}
               >
                 {loading ? (
-                  <span>Creating account...</span>
+                  <span>
+                    <div className="animate-spin h-5 w-5 border-4 text-gray-100 rounded-[50%] border-t-transparent mx-auto" />
+                  </span>
                 ) : (
                   <span>Continue</span>
                 )}

@@ -287,7 +287,7 @@ const Footer = () => {
               <li
                 className={`mb-2 cursor-pointer ${
                   pathname === service.LinkTo
-                    ? "text-blue-500 hover:text-blue-700"
+                    ? "font-semibold text-blue-500 hover:text-blue-700"
                     : "hover:text-blue-600"
                 }`}
               >
@@ -305,7 +305,7 @@ const Footer = () => {
               <li
                 className={`mb-2 cursor-pointer ${
                   pathname === item.LinkTo
-                    ? "text-blue-500 hover:text-blue-700"
+                    ? "font-semibold text-blue-500 hover:text-blue-700"
                     : "hover:text-blue-600"
                 }`}
               >
@@ -323,7 +323,7 @@ const Footer = () => {
               <li
                 className={`mb-2 cursor-pointer ${
                   pathname === item.LinkTo
-                    ? "text-blue-500 hover:text-blue-700"
+                    ? "font-semibold text-blue-500 hover:text-blue-700"
                     : "hover:text-blue-600"
                 }`}
               >
@@ -341,7 +341,7 @@ const Footer = () => {
               <li
                 className={`mb-2 cursor-pointer ${
                   pathname === item.LinkTo
-                    ? "text-blue-500 hover:text-blue-700"
+                    ? "font-semibold text-blue-500 hover:text-blue-700"
                     : "hover:text-blue-600"
                 }`}
               >
@@ -361,7 +361,7 @@ const Footer = () => {
                 <li
                   className={`mb-2 cursor-pointer ${
                     pathname === service.LinkTo
-                      ? "text-blue-500 hover:text-blue-700"
+                      ? "font-semibold text-blue-500 hover:text-blue-700"
                       : "hover:text-blue-600"
                   }`}
                 >

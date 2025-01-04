@@ -108,55 +108,55 @@ const Navbar = () => {
 
   const howToOrderLinkStyles = `text-sm min-[810px]:text-base transition-all duration-500 ${
     pathname === "/how-to-order"
-      ? "text-blue-700 hover:text-blue-900"
+      ? "font-semibold text-blue-700 hover:text-blue-900"
       : "text-gray-600 hover:text-blue-500"
   }`;
 
   const pricesLinkStyles = `text-sm min-[810px]:text-base transition-all duration-500 ${
     pathname === "/prices"
-      ? "text-blue-700 hover:text-blue-900"
+      ? "font-semibold text-blue-700 hover:text-blue-900"
       : "text-gray-600 hover:text-blue-500"
   }`;
 
   const reviewsLinkStyles = `text-sm min-[810px]:text-base transition-all duration-500 ${
     pathname === "/reviews"
-      ? "text-blue-700 hover:text-blue-900"
+      ? "font-semibold text-blue-700 hover:text-blue-900"
       : "text-gray-600 hover:text-blue-500"
   }`;
 
   const servicesLinkStyles = `horizontal gap-1 text-sm min-[810px]:text-base transition-all duration-500 ${
     pathname.startsWith("/services")
-      ? "text-blue-700 group-hover:text-blue-900"
+      ? "font-semibold text-blue-700 group-hover:text-blue-900"
       : "text-gray-600 group-hover:text-blue-500"
   }`;
 
   const offersLinkStyles = `horizontal gap-1 text-sm min-[810px]:text-base transition-all duration-500 ${
     pathname.startsWith("/discounts") ||
     pathname.startsWith("/referral-program")
-      ? "text-blue-700 group-hover:text-blue-900"
+      ? "font-semibold text-blue-700 group-hover:text-blue-900"
       : "text-gray-600 group-hover:text-blue-500"
   }`;
 
   const resourcesLinkStyles = `horizontal gap-1 text-sm min-[810px]:text-base transition-all duration-500 ${
     pathname.startsWith("/resources")
-      ? "text-blue-700 group-hover:text-blue-900"
+      ? "font-semibold text-blue-700 group-hover:text-blue-900"
       : "text-gray-600 group-hover:text-blue-500"
   }`;
 
-  const servicesChevronLinkStyles = `transition-all duration-500 ${
+  const servicesChevronLinkStyles = `transition-all duration-500 group-hover:rotate-180 ${
     pathname.startsWith("/service")
       ? "text-blue-700 group-hover:text-blue-900"
       : "text-gray-600 group-hover:text-blue-500"
   }`;
 
-  const offersChevronLinkStyles = `transition-all duration-500 ${
+  const offersChevronLinkStyles = `transition-all duration-500 group-hover:rotate-180 ${
     pathname.startsWith("/discounts") ||
     pathname.startsWith("/referral-program")
       ? "text-blue-700 group-hover:text-blue-900"
       : "text-gray-600 group-hover:text-blue-500"
   }`;
 
-  const resourcesChevronLinkStyles = `transition-all duration-500 ${
+  const resourcesChevronLinkStyles = `transition-all duration-500 group-hover:rotate-180 ${
     pathname.startsWith("/resources")
       ? "text-blue-700 group-hover:text-blue-900"
       : "text-gray-600 group-hover:text-blue-500"
@@ -202,7 +202,7 @@ const Navbar = () => {
                           onClick={closeServicesMenu}
                           className={`block px-4 pb-2 text-sm py-2 transition-all duration-300 ${
                             pathname === item.href
-                              ? "text-blue-700 hover:text-blue-900"
+                              ? "font-semibold text-blue-700 hover:text-blue-900"
                               : "text-gray-600 hover:text-blue-500"
                           }`}
                         >
@@ -218,7 +218,7 @@ const Navbar = () => {
                           onClick={closeServicesMenu}
                           className={`block px-4 pb-2 text-sm py-2 transition-all duration-300 ${
                             pathname === item.href
-                              ? "text-blue-700 hover:text-blue-900"
+                              ? "font-semibold text-blue-700 hover:text-blue-900"
                               : "text-gray-600 hover:text-blue-500"
                           }`}
                         >
@@ -252,7 +252,7 @@ const Navbar = () => {
                           onClick={closeOffersMenu}
                           className={`block px-4 pb-2 text-sm py-2 transition-all duration-300 ${
                             pathname === item.href
-                              ? "text-blue-700 hover:text-blue-900"
+                              ? "font-semibold text-blue-700 hover:text-blue-900"
                               : "text-gray-600 hover:text-blue-500"
                           }`}
                         >
@@ -294,7 +294,7 @@ const Navbar = () => {
                           onClick={closeResourcesMenu}
                           className={`block px-4 pb-2 text-sm py-2 transition-all duration-300 ${
                             pathname === item.href
-                              ? "text-blue-700 hover:text-blue-900"
+                              ? "font-semibold text-blue-700 hover:text-blue-900"
                               : "text-gray-600 hover:text-blue-500"
                           }`}
                         >
@@ -328,55 +328,55 @@ function MobileNav({ closeMobileMenu }: { closeMobileMenu: () => void }) {
 
   const howToOrderLinkStyles = `text-base transition-all duration-500 ${
     pathname === "/how-to-order"
-      ? "text-blue-700 hover:text-blue-900"
+      ? "font-semibold text-blue-700 hover:text-blue-900"
       : "text-gray-600 hover:text-blue-500"
   }`;
 
   const pricesLinkStyles = `text-base transition-all duration-500 ${
     pathname === "/prices"
-      ? "text-blue-700 hover:text-blue-900"
+      ? "font-semibold text-blue-700 hover:text-blue-900"
       : "text-gray-600 hover:text-blue-500"
   }`;
 
   const reviewsLinkStyles = `text-base transition-all duration-500 ${
     pathname === "/reviews"
-      ? "text-blue-700 hover:text-blue-900"
+      ? "font-semibold text-blue-700 hover:text-blue-900"
       : "text-gray-600 hover:text-blue-500"
   }`;
 
   const servicesLinkStyles = `horizontal gap-1 text-base transition-all duration-500 ${
     pathname.startsWith("/services")
-      ? "text-blue-700 group-hover:text-blue-900"
+      ? "font-semibold text-blue-700 group-hover:text-blue-900"
       : "text-gray-600 group-hover:text-blue-500"
   }`;
 
   const offersLinkStyles = `horizontal gap-1 text-base transition-all duration-500 ${
     pathname.startsWith("/discounts") ||
     pathname.startsWith("/referral-program")
-      ? "text-blue-700 group-hover:text-blue-900"
+      ? "font-semibold text-blue-700 group-hover:text-blue-900"
       : "text-gray-600 group-hover:text-blue-500"
   }`;
 
   const resourcesLinkStyles = `horizontal gap-1 text-base transition-all duration-500 ${
     pathname.startsWith("/resources")
-      ? "text-blue-700 group-hover:text-blue-900"
+      ? "font-semibold text-blue-700 group-hover:text-blue-900"
       : "text-gray-600 group-hover:text-blue-500"
   }`;
 
-  const servicesChevronLinkStyles = `transition-all duration-500 ${
+  const servicesChevronLinkStyles = `transition-all duration-500 group-hover:rotate-180 ${
     pathname.startsWith("/service")
       ? "text-blue-700 group-hover:text-blue-900"
       : "text-gray-600 group-hover:text-blue-500"
   }`;
 
-  const offersChevronLinkStyles = `transition-all duration-500 ${
+  const offersChevronLinkStyles = `transition-all duration-500 group-hover:rotate-180 ${
     pathname.startsWith("/discounts") ||
     pathname.startsWith("/referral-program")
       ? "text-blue-700 group-hover:text-blue-900"
       : "text-gray-600 group-hover:text-blue-500"
   }`;
 
-  const resourcesChevronLinkStyles = `transition-all duration-500 ${
+  const resourcesChevronLinkStyles = `transition-all duration-500 group-hover:rotate-180 ${
     pathname.startsWith("/resources")
       ? "text-blue-700 group-hover:text-blue-900"
       : "text-gray-600 group-hover:text-blue-500"

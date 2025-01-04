@@ -2,10 +2,11 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { FaChevronDown } from "react-icons/fa";
+import { FaChevronDown, FaUser } from "react-icons/fa";
 import { usePathname } from "next/navigation";
 import Logout from "@/components/userComponents/logout";
 import UserNumber from "@/components/userComponents/userNumber";
+import SecondNavBarMobile from "@/components/userComponents/secondNavbarMobile";
 
 const UserAccount = () => {
   const [myAccountMenuOpen, setMyAccountMenuOpen] = useState(true);
@@ -21,11 +22,11 @@ const UserAccount = () => {
 
   const myAccountLinkStyles = `horizontal gap-1 text-sm min-[810px]:text-base transition-all duration-500 ${
     pathname === "/customer/profile"
-      ? "text-blue-700 group-hover:text-blue-900"
+      ? "font-semibold text-blue-700 group-hover:text-blue-900"
       : "text-gray-600 group-hover:text-blue-500"
   }`;
 
-  const myAccountChevronLinkStyles = `transition-all duration-500 ${
+  const myAccountChevronLinkStyles = `transition-all duration-500 group-hover:rotate-180 ${
     pathname === "/customer/profile"
       ? "text-blue-700 group-hover:text-blue-900"
       : "text-gray-600 group-hover:text-blue-500"
@@ -48,14 +49,16 @@ const UserAccount = () => {
                 onClick={closeMyAccountMenu}
                 className={`block px-4 pb-2 text-sm py-2 transition-all duration-300 ${
                   pathname === "/customer/profile"
-                    ? "text-blue-700 hover:text-blue-900"
+                    ? "font-semibold text-blue-700 hover:text-blue-900"
                     : "text-gray-600 hover:text-blue-500"
                 }`}
               >
-                My Profile{"  -  "}
-                <span>
-                  #<UserNumber />
-                </span>
+                <div className="horizontal-start gap-3">
+                  <div className="rounded-[50%] p-1 bg-gray-200">
+                    <FaUser size={15} />
+                  </div>
+                  My Profile{" - "} #<UserNumber />
+                </div>
               </Link>
 
               {/* Log out */}
@@ -67,6 +70,7 @@ const UserAccount = () => {
               </div>
             </div>
           </div>
+          <SecondNavBarMobile />
         </div>
       )}
     </Link>
