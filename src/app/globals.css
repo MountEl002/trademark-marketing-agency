@@ -10,6 +10,10 @@ section {
   @apply flex flex-col items-center py-8 px-4 mx-auto text-gray-600;
 }
 
+.logged-in-customer-pages {
+  @apply bg-gray-200 min-h-screen min-w-full pt-24;
+}
+
 .horizontal {
   @apply flex flex-row items-center justify-center;
 }

@@ -79,13 +79,18 @@ const SecondNavBar = () => {
                   <div
                     key={item.id}
                     className={`horizontal group rounded-md  p-2 transition-all duration-500 ${
-                      pathname === item.linkTo ? "bg-white" : "hover:bg-white"
+                      pathname === item.linkTo ||
+                      (item.id === 2 && pathname.startsWith("/customer/orders"))
+                        ? "bg-white"
+                        : "hover:bg-white"
                     }`}
                   >
                     <Link href={item.linkTo}>
                       <span
                         className={`horizontal gap-1 transition-all duration-500 ${
-                          pathname === item.linkTo
+                          pathname === item.linkTo ||
+                          (item.id === 2 &&
+                            pathname.startsWith("/customer/order"))
                             ? "font-semibold text-blue-700 group-hover:text-blue-900"
                             : "text-gray-600 group-hover:text-blue-500"
                         }`}
