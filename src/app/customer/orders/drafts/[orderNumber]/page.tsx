@@ -1,7 +1,14 @@
 import Link from "next/link";
 
-async function OrderPage({ params }: { params: { orderNumber: string } }) {
-  const { orderNumber } = await params;
+type PageProps = {
+  params: {
+    orderNumber: string;
+  };
+};
+
+async function OrderPage({ params }: PageProps) {
+  // Remove the await since params is already an object with the value
+  const orderNumber = params.orderNumber;
 
   return (
     <div className="bg-gray-200 overflow-hidden">

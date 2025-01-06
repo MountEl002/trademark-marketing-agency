@@ -6,7 +6,8 @@
     "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "check": "npm run lint && tsc --noEmit && next build"
   },
   "dependencies": {
     "@formkit/auto-animate": "^0.8.2",
