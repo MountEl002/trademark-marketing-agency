@@ -13,7 +13,10 @@ export function ClientLayoutWrapper({
 }) {
   const pathname = usePathname();
   const hideComponentsOn = ["/login", "/signup", "/admin", "/forgot-password"];
-  const shouldHideComponents = hideComponentsOn.includes(pathname);
+
+  const isDraftOrderPage = pathname?.startsWith("/customer/orders/drafts/");
+  const shouldHideComponents =
+    hideComponentsOn.includes(pathname) || isDraftOrderPage;
 
   if (shouldHideComponents) {
     return <>{children}</>;

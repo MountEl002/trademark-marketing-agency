@@ -27,7 +27,7 @@ const LoginPage = () => {
     setLoading(true);
     try {
       await login(email, password);
-      router.push("/customer/orders/new");
+      router.push("/customer/orders/open");
       console.log("Login attempted with:", { email, stayLoggedIn });
     } catch (error) {
       if (error instanceof FirebaseError) {
