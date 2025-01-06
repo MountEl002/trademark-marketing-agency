@@ -13,6 +13,27 @@ interface NewOrderButtonProps {
   className?: string;
 }
 
+// Definition of the initial order structure
+interface OrderData {
+  orderNumber: number;
+  userId: string;
+  userNumber: string;
+  status: string;
+  assignmentType: string;
+  service: string;
+  academicLevel: string;
+  language: string;
+  pages: number;
+  words: number;
+  deadline: string;
+  addOns: string;
+  subject: string;
+  instructions: string;
+  files: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 export const NewOrderButton = ({ className = "" }: NewOrderButtonProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -50,19 +71,35 @@ export const NewOrderButton = ({ className = "" }: NewOrderButtonProps) => {
     try {
       const orderNumber = await getNextOrderNumber();
 
+      // Create the initial order data
+      const initialOrderData: OrderData = {
+        orderNumber,
+        userId: user.uid,
+        userNumber: userNumber,
+        status: "draft",
+        assignmentType: "",
+        service: "",
+        academicLevel: "",
+        language: "",
+        pages: 0,
+        words: 0,
+        deadline: "",
+        addOns: "",
+        subject: "",
+        instructions: "",
+        files: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
       // Create the order document
       await runTransaction(db, async (transaction) => {
         const orderRef = doc(db, "orders", orderNumber.toString());
-
-        transaction.set(orderRef, {
-          orderNumber,
-          userId: user.uid,
-          userNumber: userNumber,
-          status: "draft",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        });
+        transaction.set(orderRef, initialOrderData);
       });
+
+      // Log the created order data
+      console.log("New order created with initial data:", initialOrderData);
 
       // Redirect to the new order page
       router.push(`/customer/orders/drafts/${orderNumber}`);

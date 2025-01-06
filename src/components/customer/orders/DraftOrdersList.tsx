@@ -6,7 +6,8 @@ import { useRouter } from "next/navigation";
 import { db } from "@/lib/firebase";
 import { collection, query, where, orderBy, getDocs } from "firebase/firestore";
 import { useAuth } from "@/contexts/AuthContext";
-import ZeroOrders from "@/components/userComponents/orders/zeroOrders";
+import ZeroOrders from "@/components/customer/orders/zeroOrders";
+import LoadingAnimantion from "@/components/common/LoadingAnimantion";
 
 interface DraftOrder {
   id: string; // Added id to the interface
@@ -61,7 +62,11 @@ export default function DraftOrdersList() {
   }, [user]);
 
   if (loading) {
-    return <div className="text-center py-8">Loading...</div>;
+    return (
+      <div className="vertical py-32">
+        <LoadingAnimantion className="m-10" />
+      </div>
+    );
   }
 
   if (drafts.length === 0) {

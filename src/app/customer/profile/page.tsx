@@ -1,5 +1,5 @@
 import React from "react";
-import SideBar from "@/components/userComponents/secondNavbar";
+import SideBar from "@/components/customer/secondNavbar";
 
 const Profile = () => {
   return (

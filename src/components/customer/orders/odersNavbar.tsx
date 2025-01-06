@@ -9,7 +9,6 @@ const OrdersNavbar = () => {
     { href: "/customer/orders/open", label: "Active" },
     { href: "/customer/orders/drafts", label: "Drafts" },
     { href: "/customer/orders/closed", label: "closed" },
-    { href: "/customer/orders/new", label: "Place new" },
   ];
 
   const pathname = usePathname();
