@@ -1,4 +1,3 @@
-// components/customer/NewOrderButton.tsx
 "use client";
 
 import { useState } from "react";
@@ -13,7 +12,6 @@ interface NewOrderButtonProps {
   className?: string;
 }
 
-// Definition of the initial order structure
 interface OrderData {
   orderNumber: number;
   userId: string;
@@ -23,13 +21,20 @@ interface OrderData {
   service: string;
   academicLevel: string;
   language: string;
+  size: string;
   pages: number;
   words: number;
   deadline: string;
   addOns: string;
+  topic: string;
   subject: string;
   instructions: string;
-  files: string[];
+  uploadedFiles: Array<{
+    file: File;
+    progress: number;
+    status: "pending" | "uploading" | "completed" | "error";
+    id: string;
+  }>;
   createdAt: string;
   updatedAt: string;
 }
@@ -46,9 +51,8 @@ export const NewOrderButton = ({ className = "" }: NewOrderButtonProps) => {
       );
 
       if (!counterDoc.exists()) {
-        // Initialize counter if it doesn't exist
         transaction.set(doc(db, "counters", "orderNumber"), {
-          currentNumber: 3418596, // One less than the first required number
+          currentNumber: 3418596,
         });
         return 3418597;
       }
@@ -71,7 +75,6 @@ export const NewOrderButton = ({ className = "" }: NewOrderButtonProps) => {
     try {
       const orderNumber = await getNextOrderNumber();
 
-      // Create the initial order data
       const initialOrderData: OrderData = {
         orderNumber,
         userId: user.uid,
@@ -81,31 +84,28 @@ export const NewOrderButton = ({ className = "" }: NewOrderButtonProps) => {
         service: "",
         academicLevel: "",
         language: "",
+        size: "",
         pages: 0,
         words: 0,
         deadline: "",
         addOns: "",
+        topic: "",
         subject: "",
         instructions: "",
-        files: [],
+        uploadedFiles: [],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
 
-      // Create the order document
       await runTransaction(db, async (transaction) => {
         const orderRef = doc(db, "orders", orderNumber.toString());
         transaction.set(orderRef, initialOrderData);
       });
 
-      // Log the created order data
       console.log("New order created with initial data:", initialOrderData);
-
-      // Redirect to the new order page
       router.push(`/customer/orders/drafts/${orderNumber}`);
     } catch (error) {
       console.error("Error creating new order:", error);
-      // Here you might want to show an error toast/notification
     } finally {
       setIsLoading(false);
     }
@@ -122,7 +122,7 @@ export const NewOrderButton = ({ className = "" }: NewOrderButtonProps) => {
       ) : (
         <div className="relative group horizontal-space-between button-blue py-10">
           <span className="mr-5">New order</span>
-          <span className="absolute  right-1 lg:right-2 bg-blue-400 group-hover:bg-blue-600 rounded-[50%] transition-all duration-300">
+          <span className="absolute right-1 lg:right-2 bg-blue-400 group-hover:bg-blue-600 rounded-[50%] transition-all duration-300">
             <LuPlus className="text-2xl lg:text-3xl" />
           </span>
         </div>
