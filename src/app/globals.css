@@ -59,27 +59,27 @@ h6 {
 }
 
 h1 {
-  @apply text-5xl font-bold;
+  @apply max-[450px]:text-xl text-5xl font-bold;
 }
 
 h2 {
-  @apply text-4xl font-bold;
+  @apply max-[450px]:text-lg text-4xl font-bold;
 }
 
 h3 {
-  @apply text-3xl font-bold;
+  @apply max-[450px]:text-base text-3xl font-bold;
 }
 
 h4 {
-  @apply text-2xl font-bold;
+  @apply max-[450px]:text-sm text-2xl font-bold;
 }
 
 h5 {
-  @apply text-xl font-bold;
+  @apply max-[450px]:text-sm text-xl font-bold;
 }
 
 h6 {
-  @apply text-lg font-bold;
+  @apply max-[450px]:text-sm text-lg font-bold;
 }
 
 .navbar h3 {
@@ -326,11 +326,11 @@ h6 {
 }
 
 .draft-order-grids-min {
-  @apply flex flex-row items-center justify-between bg-gray-100 rounded-lg w-full h-fit pl-3 py-2 pr-2 cursor-pointer hover:bg-white transition-all duration-500;
+  @apply bg-gray-100 rounded-lg w-full h-fit pl-3 py-2 pr-2 cursor-pointer hover:bg-white transition-all duration-500;
 }
 
 .draft-order-grids-min .first-div {
-  @apply flex flex-row items-center justify-start w-[90%] text-sm;
+  @apply flex flex-col items-start min-[500px]:flex-row min-[500px]:items-center justify-start w-[90%] text-sm;
 }
 
 .draft-order-grids-min .first-div p:first-child {
@@ -338,5 +338,5 @@ h6 {
 }
 
 .draft-order-grids-min .second-div {
-  @apply flex flex-row items-center justify-between gap-1 bg-blue-400 p-1 rounded-sm;
+  @apply flex flex-row items-center justify-between gap-1 w-14 p-1 ml-2 rounded-sm;
 }

@@ -6,8 +6,14 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import Link from "next/link";
 import AssignmentTypeSelector from "@/components/customer/orders/draftOrder/AssignmentType";
+import ServiceSelector from "@/components/customer/orders/draftOrder/ServiceSelector";
+import AcademicLevelSelector from "@/components/customer/orders/draftOrder/AcademicLevelSelector";
+import LanguageSelector from "@/components/customer/orders/draftOrder/LanguageSelector";
 import router from "next/router";
 import LoadingScreen from "@/components/common/LoadingScreen";
+import AddOnsSelector from "@/components/customer/orders/draftOrder/AddOnsSelector";
+import TopicSelector from "@/components/customer/orders/draftOrder/TopicSelector";
+import SubjectSelector from "@/components/customer/orders/draftOrder/SubjectSelector";
 
 interface PageProps {
   params: Promise<{
@@ -21,10 +27,6 @@ interface UploadedFileInfo {
   status: "pending" | "uploading" | "completed" | "error";
   id: string;
 }
-
-// interface ClickCounts {
-//   [key: number]: number;
-// }
 
 interface OrderData {
   assignmentType: string;
@@ -61,6 +63,18 @@ function OrderPage({ params }: PageProps) {
   });
 
   const [loading, setLoading] = useState(true);
+  const [activeField, setActiveField] = useState<number | null>(null);
+  const [addOnsTotalPrice, setAddOnsTotalPrice] = useState(0);
+
+  console.log(addOnsTotalPrice);
+
+  // Function to find the next empty field
+  const findNextEmptyField = () => {
+    const nextEmptyField = fields.find(
+      (field) => !orderData[field.field as keyof OrderData]
+    );
+    return nextEmptyField?.id || null;
+  };
 
   useEffect(() => {
     const fetchOrderData = async () => {
@@ -85,9 +99,6 @@ function OrderPage({ params }: PageProps) {
     fetchOrderData();
   }, [orderNumber]);
 
-  const [activeField, setActiveField] = useState<number | null>(null);
-  // const [clickCounts, setClickCounts] = useState<ClickCounts>({});
-
   // Function to update Firebase
   const updateFirebase = async (field: string, value: unknown) => {
     try {
@@ -108,14 +119,14 @@ function OrderPage({ params }: PageProps) {
       [field]: value,
     }));
     updateFirebase(field, value);
+
+    // Find and activate next empty field
+    const nextEmptyField = findNextEmptyField();
+    setActiveField(nextEmptyField);
   };
 
   const handleClick = (id: number) => {
     setActiveField(activeField === id ? null : id);
-    // setClickCounts((prevCounts) => ({
-    //   ...prevCounts,
-    //   [id]: (prevCounts[id] || 0) + 1,
-    // }));
   };
 
   const fields = [
@@ -123,6 +134,7 @@ function OrderPage({ params }: PageProps) {
       id: 1,
       name: "Assignment type",
       placeHolder: "Select assignment type",
+      neccessity: "required",
       value: orderData.assignmentType,
       field: "assignmentType" as keyof OrderData,
     },
@@ -130,6 +142,7 @@ function OrderPage({ params }: PageProps) {
       id: 2,
       name: "Service",
       placeHolder: "Select service",
+      neccessity: "required",
       value: orderData.service,
       field: "service" as keyof OrderData,
     },
@@ -137,6 +150,7 @@ function OrderPage({ params }: PageProps) {
       id: 3,
       name: "Academic level",
       placeHolder: "Select academic level",
+      neccessity: "required",
       value: orderData.academicLevel,
       field: "academicLevel" as keyof OrderData,
     },
@@ -144,6 +158,7 @@ function OrderPage({ params }: PageProps) {
       id: 4,
       name: "Language",
       placeHolder: "Select language",
+      neccessity: "required",
       value: orderData.language,
       field: "language" as keyof OrderData,
     },
@@ -151,6 +166,7 @@ function OrderPage({ params }: PageProps) {
       id: 5,
       name: "Size",
       placeHolder: "Indicate the size of assignment",
+      neccessity: "required",
       value: orderData.size,
       field: "size" as keyof OrderData,
     },
@@ -158,6 +174,7 @@ function OrderPage({ params }: PageProps) {
       id: 6,
       name: "Deadline",
       placeHolder: "Select deadline",
+      neccessity: "required",
       value: orderData.deadline,
       field: "deadline" as keyof OrderData,
     },
@@ -165,6 +182,7 @@ function OrderPage({ params }: PageProps) {
       id: 7,
       name: "Add-ons",
       placeHolder: "Select add-ons",
+      neccessity: "optional",
       value: orderData.addOns,
       field: "addOns" as keyof OrderData,
     },
@@ -172,6 +190,7 @@ function OrderPage({ params }: PageProps) {
       id: 8,
       name: "Topic",
       placeHolder: "Write Your Topic",
+      neccessity: "required",
       value: orderData.topic,
       field: "topic" as keyof OrderData,
     },
@@ -179,6 +198,7 @@ function OrderPage({ params }: PageProps) {
       id: 9,
       name: "Subject",
       placeHolder: "Select your subject",
+      neccessity: "required",
       value: orderData.subject,
       field: "subject" as keyof OrderData,
     },
@@ -186,14 +206,11 @@ function OrderPage({ params }: PageProps) {
       id: 10,
       name: "Instructions",
       placeHolder: "Write instructions and/or attach files",
+      neccessity: "required",
       value: orderData.instructions,
       field: "instructions" as keyof OrderData,
     },
   ];
-
-  // const getClickCount = (id: number): number => {
-  //   return clickCounts[id] || 0;
-  // };
 
   if (loading) {
     return (
@@ -214,56 +231,123 @@ function OrderPage({ params }: PageProps) {
             </h3>
           </div>
           <div className="button-blue">
-            <Link href="/customer/orders/drafts">Close/Back</Link>
+            <Link href="/customer/orders/drafts">Close</Link>
           </div>
         </div>
       </div>{" "}
-      <div className="grid grid-cols-1 gap-2 mt-24 max-w-4xl mx-auto">
-        {fields.map((field, index) => {
-          const previousField = fields[index - 1];
-          const shouldRenderField =
-            index === 0 || (previousField && previousField.value);
-
-          return shouldRenderField ? (
-            <div key={field.id}>
-              <div
-                onClick={() => handleClick(field.id)}
-                className={`draft-order-grids-min group ${
-                  activeField === field.id ? "bg-blue-50" : ""
-                }`}
-              >
-                <div className="first-div">
-                  <p>{field.name}</p>
-                  <p>{field.value || field.placeHolder}</p>
-                  {/* <span className="text-xs text-gray-500">
-                  Clicked: {getClickCount(field.id)} times
-                </span> */}
-                </div>
-                <div className="second-div group-hover:bg-blue-500 transition-all duration-500">
-                  <span className="text-white text-sm">Edit</span>
-                  <IoChevronDown
-                    className={`group-hover:bg-blue-400 bg-blue-300 text-xl text-white rounded-sm transition-all duration-500 ${
-                      activeField === field.id ? "rotate-180" : ""
-                    }`}
-                  />
-                </div>
+      <div className="grid grid-cols-1 gap-2 my-24 max-w-4xl mx-auto px-3">
+        {fields.map((field) => (
+          <div key={field.id}>
+            <div
+              onClick={() => handleClick(field.id)}
+              className={`draft-order-grids-min group ${
+                activeField === field.id
+                  ? "hidden"
+                  : "flex flex-row items-center justify-between"
+              }`}
+            >
+              <div className="first-div">
+                <p>{field.name}</p>
+                <p>
+                  {field.value || field.placeHolder}
+                  {!field.value && field.neccessity === "required" && (
+                    <span className="animate-pulse ml-2 inline text-red-600">
+                      ({field.neccessity})
+                    </span>
+                  )}
+                </p>
               </div>
               <div
-                className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                  activeField === field.id ? "max-h-full" : "max-h-0"
+                className={`second-div transition-all duration-500 ${
+                  field.value
+                    ? "bg-blue-400 group-hover:bg-blue-500"
+                    : "bg-blue-600 group-hover:bg-blue-700"
                 }`}
               >
+                <span className="text-white text-sm">
+                  {field.value ? "Edit" : "Fill"}
+                </span>
+                <IoChevronDown
+                  className={`text-xl text-white rounded-sm transition-all duration-500 ${
+                    field.value
+                      ? "bg-blue-300 group-hover:bg-blue-400"
+                      : "bg-blue-500 group-hover:bg-blue-600"
+                  }`}
+                />
+              </div>
+            </div>
+            <div
+              className={`vertical-start bg-white rounded-lg  transition-all duration-300 ease-in-out overflow-hidden ${
+                activeField === field.id ? "max-h-full" : "max-h-0"
+              }`}
+            >
+              <div>
                 {field.id === 1 ? (
                   <AssignmentTypeSelector
                     value={orderData.assignmentType}
                     onChange={(value) => updateField("assignmentType", value)}
                     className="p-4"
                   />
+                ) : field.id === 2 ? (
+                  <ServiceSelector
+                    value={orderData.service}
+                    onChange={(value: unknown) => updateField("service", value)}
+                    className="p-4"
+                  />
+                ) : field.id === 3 ? (
+                  <AcademicLevelSelector
+                    value={orderData.academicLevel}
+                    onChange={(value: unknown) =>
+                      updateField("academicLevel", value)
+                    }
+                    className="p-4"
+                  />
+                ) : field.id === 4 ? (
+                  <LanguageSelector
+                    value={orderData.language}
+                    onChange={(value: unknown) =>
+                      updateField("language", value)
+                    }
+                    className="p-4"
+                  />
+                ) : field.id === 7 ? (
+                  <AddOnsSelector
+                    value={orderData.addOns}
+                    onChange={(value, totalPrice) => {
+                      updateField("addOns", value);
+                      setAddOnsTotalPrice(totalPrice);
+                    }}
+                    onContinue={() => {
+                      const nextEmptyFieldId = findNextEmptyField();
+                      if (nextEmptyFieldId) {
+                        setActiveField(nextEmptyFieldId);
+                      }
+                    }}
+                    className="p-4"
+                  />
+                ) : field.id === 8 ? (
+                  <TopicSelector
+                    value={orderData.topic}
+                    onChange={(value) => updateField("topic", value)}
+                    onContinue={() => {
+                      const nextEmptyFieldId = findNextEmptyField();
+                      if (nextEmptyFieldId) {
+                        setActiveField(nextEmptyFieldId);
+                      }
+                    }}
+                    className="p-4"
+                  />
+                ) : field.id === 9 ? (
+                  <SubjectSelector
+                    value={orderData.subject}
+                    onChange={(value) => updateField("subject", value)}
+                    className="p-4"
+                  />
                 ) : null}
               </div>
             </div>
-          ) : null;
-        })}
+          </div>
+        ))}
       </div>
     </div>
   );
