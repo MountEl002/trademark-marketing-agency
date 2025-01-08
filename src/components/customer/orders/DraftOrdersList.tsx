@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { db } from "@/lib/firebase";
 import { collection, query, where, orderBy, getDocs } from "firebase/firestore";
 import { useAuth } from "@/contexts/AuthContext";
-import ZeroOrders from "@/components/customer/orders/zeroOrders";
+import ZeroOrders from "@/components/customer/orders/ZeroOrders";
 import LoadingAnimantion from "@/components/common/LoadingAnimantion";
 
 interface DraftOrder {

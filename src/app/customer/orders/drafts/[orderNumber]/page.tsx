@@ -14,6 +14,7 @@ import LoadingScreen from "@/components/common/LoadingScreen";
 import AddOnsSelector from "@/components/customer/orders/draftOrder/AddOnsSelector";
 import TopicSelector from "@/components/customer/orders/draftOrder/TopicSelector";
 import SubjectSelector from "@/components/customer/orders/draftOrder/SubjectSelector";
+import SizeSelector from "@/components/customer/orders/draftOrder/SizeSelector";
 
 interface PageProps {
   params: Promise<{
@@ -34,7 +35,6 @@ interface OrderData {
   academicLevel: string;
   language: string;
   size: string;
-  pages: number;
   words: number;
   deadline: string;
   addOns: string;
@@ -52,7 +52,6 @@ function OrderPage({ params }: PageProps) {
     academicLevel: "",
     language: "",
     size: "",
-    pages: 0,
     words: 0,
     deadline: "",
     addOns: "",
@@ -65,6 +64,8 @@ function OrderPage({ params }: PageProps) {
   const [loading, setLoading] = useState(true);
   const [activeField, setActiveField] = useState<number | null>(null);
   const [addOnsTotalPrice, setAddOnsTotalPrice] = useState(0);
+
+  console.log(orderData.words);
 
   console.log(addOnsTotalPrice);
 
@@ -308,6 +309,18 @@ function OrderPage({ params }: PageProps) {
                     onChange={(value: unknown) =>
                       updateField("language", value)
                     }
+                    className="p-4"
+                  />
+                ) : field.id === 5 ? (
+                  <SizeSelector
+                    value={orderData.size}
+                    onChange={(sizeString) => {
+                      // Extract word count from the size string
+                      const wordCount = parseInt(sizeString.split(" ")[2]);
+                      // Update both fields using the existing updateField function
+                      updateField("size", sizeString);
+                      updateField("words", wordCount);
+                    }}
                     className="p-4"
                   />
                 ) : field.id === 7 ? (

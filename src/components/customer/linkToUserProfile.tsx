@@ -1,6 +1,6 @@
 import React from "react";
 import { FaUser } from "react-icons/fa";
-import UserNumber from "./userNumber";
+import UserNumber from "./UserNumber";
 
 const LinkToUserProfile = () => {
   return (

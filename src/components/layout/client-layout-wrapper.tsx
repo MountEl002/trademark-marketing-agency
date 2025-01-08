@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import ScrollToTop from "@/components/common/backToTop";
-import SecondNavBar from "../customer/secondNavbar";
+import SecondNavBar from "../customer/SecondNavbar";
 
 export function ClientLayoutWrapper({
   children,

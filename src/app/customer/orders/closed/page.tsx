@@ -1,5 +1,5 @@
-import OrdersNavbar from "@/components/customer/orders/odersNavbar";
-import ZeroOrders from "@/components/customer/orders/zeroOrders";
+import OrdersNavbar from "@/components/customer/orders/OdersNavbar";
+import ZeroOrders from "@/components/customer/orders/ZeroOrders";
 import React from "react";
 
 const ClosedOrders = () => {

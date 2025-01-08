@@ -2,7 +2,7 @@ import React from "react";
 import SignUp from "./signUp";
 import Login from "./login";
 import { useAuth } from "@/contexts/AuthContext";
-import NewOrderButton from "@/components/customer/newOrderButton";
+import NewOrderButton from "@/components/customer/NewOrderButton";
 import UserAccount from "./userAccount";
 
 const UserAccessControl = () => {

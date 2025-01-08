@@ -22,7 +22,6 @@ interface OrderData {
   academicLevel: string;
   language: string;
   size: string;
-  pages: number;
   words: number;
   deadline: string;
   addOns: string;
@@ -85,7 +84,6 @@ export const NewOrderButton = ({ className = "" }: NewOrderButtonProps) => {
         academicLevel: "",
         language: "",
         size: "",
-        pages: 0,
         words: 0,
         deadline: "",
         addOns: "",

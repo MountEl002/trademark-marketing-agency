@@ -2,7 +2,7 @@
 
 import React from "react";
 import { FaRegFolderOpen } from "react-icons/fa";
-import NewOrderButton from "../newOrderButton";
+import NewOrderButton from "../NewOrderButton";
 import { usePathname } from "next/navigation";
 
 const ZeroOrders = () => {
