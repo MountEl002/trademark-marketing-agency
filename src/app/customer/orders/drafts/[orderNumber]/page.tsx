@@ -15,6 +15,7 @@ import AddOnsSelector from "@/components/customer/orders/draftOrder/AddOnsSelect
 import TopicSelector from "@/components/customer/orders/draftOrder/TopicSelector";
 import SubjectSelector from "@/components/customer/orders/draftOrder/SubjectSelector";
 import SizeSelector from "@/components/customer/orders/draftOrder/SizeSelector";
+import DeadlineSelector from "@/components/customer/orders/draftOrder/DeadlineSelector";
 
 interface PageProps {
   params: Promise<{
@@ -321,6 +322,12 @@ function OrderPage({ params }: PageProps) {
                       updateField("size", sizeString);
                       updateField("words", wordCount);
                     }}
+                    className="p-4"
+                  />
+                ) : field.id === 6 ? (
+                  <DeadlineSelector
+                    value={orderData.deadline}
+                    onChange={(value) => updateField("deadline", value)}
                     className="p-4"
                   />
                 ) : field.id === 7 ? (
