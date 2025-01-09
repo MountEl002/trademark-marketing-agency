@@ -1,7 +1,7 @@
 "use client";
 
 import DraftOrdersList from "@/components/customer/orders/DraftOrdersList";
-import OrdersNavbar from "@/components/customer/orders/OdersNavbar";
+import OrdersNavbar from "@/components/customer/orders/OrdersNavbar";
 
 const Drafts = () => {
   return (

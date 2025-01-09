@@ -1,33 +1,28 @@
 "use client";
 
 import { use, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { IoChevronDown } from "react-icons/io5";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import Link from "next/link";
 import AssignmentTypeSelector from "@/components/customer/orders/draftOrder/AssignmentType";
 import ServiceSelector from "@/components/customer/orders/draftOrder/ServiceSelector";
 import AcademicLevelSelector from "@/components/customer/orders/draftOrder/AcademicLevelSelector";
 import LanguageSelector from "@/components/customer/orders/draftOrder/LanguageSelector";
-import router from "next/router";
 import LoadingScreen from "@/components/common/LoadingScreen";
 import AddOnsSelector from "@/components/customer/orders/draftOrder/AddOnsSelector";
 import TopicSelector from "@/components/customer/orders/draftOrder/TopicSelector";
 import SubjectSelector from "@/components/customer/orders/draftOrder/SubjectSelector";
 import SizeSelector from "@/components/customer/orders/draftOrder/SizeSelector";
 import DeadlineSelector from "@/components/customer/orders/draftOrder/DeadlineSelector";
+import InstructionsEditor from "@/components/customer/orders/draftOrder/InstructionsEditor";
+import ConfirmationDialog from "@/components/customer/orders/draftOrder/ConfirmationDialog";
 
 interface PageProps {
   params: Promise<{
     orderNumber: string;
   }>;
-}
-
-interface UploadedFileInfo {
-  file: File;
-  progress: number;
-  status: "pending" | "uploading" | "completed" | "error";
-  id: string;
 }
 
 interface OrderData {
@@ -42,7 +37,6 @@ interface OrderData {
   topic: string;
   subject: string;
   instructions: string;
-  uploadedFiles: UploadedFileInfo[];
 }
 
 function OrderPage({ params }: PageProps) {
@@ -59,16 +53,29 @@ function OrderPage({ params }: PageProps) {
     topic: "",
     subject: "",
     instructions: "",
-    uploadedFiles: [],
   });
 
   const [loading, setLoading] = useState(true);
   const [activeField, setActiveField] = useState<number | null>(null);
   const [addOnsTotalPrice, setAddOnsTotalPrice] = useState(0);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const router = useRouter();
 
   console.log(orderData.words);
 
   console.log(addOnsTotalPrice);
+
+  // Add this function to handle draft deletion
+  const handleDiscardDraft = async () => {
+    try {
+      const orderRef = doc(db, "orders", orderNumber.toString());
+      await deleteDoc(orderRef);
+      router.push("/customer/orders/drafts");
+    } catch (error) {
+      console.error("Error discarding draft:", error);
+      // You might want to show an error message to the user here
+    }
+  };
 
   // Function to find the next empty field
   const findNextEmptyField = () => {
@@ -99,7 +106,7 @@ function OrderPage({ params }: PageProps) {
     };
 
     fetchOrderData();
-  }, [orderNumber]);
+  }, [orderNumber, router]);
 
   // Function to update Firebase
   const updateFirebase = async (field: string, value: unknown) => {
@@ -129,6 +136,11 @@ function OrderPage({ params }: PageProps) {
 
   const handleClick = (id: number) => {
     setActiveField(activeField === id ? null : id);
+  };
+
+  const handleInstructionsUpdate = (instructions: string) => {
+    updateField("instructions", instructions);
+    // Handle the uploaded files as needed
   };
 
   const fields = [
@@ -232,11 +244,30 @@ function OrderPage({ params }: PageProps) {
               <span className="text-gray-500 font-medium">(Draft)</span>
             </h3>
           </div>
+          <div>
+            <button
+              onClick={() => setShowConfirmation(true)}
+              className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+            >
+              Discard Draft
+            </button>
+          </div>
           <div className="button-blue">
             <Link href="/customer/orders/drafts">Close</Link>
           </div>
         </div>
-      </div>{" "}
+      </div>
+
+      {/* Confirmation dialog component */}
+      <ConfirmationDialog
+        isOpen={showConfirmation}
+        onClose={() => setShowConfirmation(false)}
+        onConfirm={handleDiscardDraft}
+        title="Discard Draft"
+        message="Are you sure you want to discard this draft? This action cannot be undone."
+      />
+
+      {/* List of fields */}
       <div className="grid grid-cols-1 gap-2 my-24 max-w-4xl mx-auto px-3">
         {fields.map((field) => (
           <div key={field.id}>
@@ -251,7 +282,9 @@ function OrderPage({ params }: PageProps) {
               <div className="first-div">
                 <p>{field.name}</p>
                 <p>
-                  {field.value || field.placeHolder}
+                  {field.id === 10 && orderData.instructions
+                    ? "Successfully added instruction and/or files"
+                    : field.value || field.placeHolder}
                   {!field.value && field.neccessity === "required" && (
                     <span className="animate-pulse ml-2 inline text-red-600">
                       ({field.neccessity})
@@ -361,6 +394,12 @@ function OrderPage({ params }: PageProps) {
                   <SubjectSelector
                     value={orderData.subject}
                     onChange={(value) => updateField("subject", value)}
+                    className="p-4"
+                  />
+                ) : field.id === 10 ? (
+                  <InstructionsEditor
+                    value={orderData.instructions}
+                    onUpdate={handleInstructionsUpdate}
                     className="p-4"
                   />
                 ) : null}

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import OrdersNavbar from "@/components/customer/orders/OdersNavbar";
+import OrdersNavbar from "@/components/customer/orders/OrdersNavbar";
 import ZeroOrders from "@/components/customer/orders/ZeroOrders";
 
 const ActiveOrders = () => {

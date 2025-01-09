@@ -1,3 +1,4 @@
 Navbar - z-50
 Second Nav-bar - z-40
 Dynamic drafts page navbar - z-60
+Discard Draft confirmation - z-70

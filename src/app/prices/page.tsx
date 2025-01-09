@@ -1,3 +1,4 @@
+import Tiptap from "@/components/customer/orders/draftOrder/TipTap";
 import React from "react";
 
 const Prices = () => {
@@ -5,6 +6,9 @@ const Prices = () => {
     <>
       <section>
         <h1>Our Prices</h1>
+      </section>
+      <section>
+        <Tiptap />
       </section>
     </>
   );
