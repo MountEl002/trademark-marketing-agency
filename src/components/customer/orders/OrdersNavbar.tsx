@@ -8,7 +8,8 @@ const OrdersNavbar = () => {
   const linksToOrdersPage = [
     { href: "/customer/orders/open", label: "Active" },
     { href: "/customer/orders/drafts", label: "Drafts" },
-    { href: "/customer/orders/closed", label: "closed" },
+    { href: "/customer/orders/closed", label: "Closed" },
+    { href: "/customer/orders/new", label: "New" },
   ];
 
   const pathname = usePathname();
