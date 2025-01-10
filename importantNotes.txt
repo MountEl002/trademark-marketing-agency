@@ -11,3 +11,7 @@
         e. npx tailwindcss-cli build -o build.css
 # Analyze bundle size
         f. ANALYZE=true npm run build      
+
+
+2. Forcefully remove a folder or file
+     Remove-Item -Recurse -Force .next
