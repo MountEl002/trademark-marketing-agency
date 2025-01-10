@@ -31,8 +31,6 @@ const DateDifference: React.FC<DateDifferenceProps> = ({
 
       const diffTime: number = Math.abs(today.getTime() - targetDate.getTime());
       const diffMinutes: number = Math.round(diffTime / 6000);
-      console.log(diffTime);
-      console.log(diffMinutes);
 
       const diffHours: number = Math.round(diffTime / 3600000);
       const diffDays: number = Math.round(diffTime / 86400000);

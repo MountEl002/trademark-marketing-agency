@@ -78,9 +78,12 @@ const LoginPage = () => {
           )}
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
-              <label className="label-email-password">Email</label>
+              <label htmlFor="email" className="label-email-password">
+                Email
+              </label>
               <div className="relative container-input-email-password">
                 <input
+                  id="email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -120,8 +123,9 @@ const LoginPage = () => {
               </div>
             </div>
             <div className="horizontal-space-between mb-4">
-              <label className="horizontal space-x-2">
+              <label htmlFor="rememberMe" className="horizontal space-x-2">
                 <input
+                  id="rememberMe"
                   type="checkbox"
                   checked={stayLoggedIn}
                   onChange={(e) => setStayLoggedIn(e.target.checked)}

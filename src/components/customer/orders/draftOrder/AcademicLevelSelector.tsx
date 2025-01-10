@@ -12,7 +12,7 @@ const academicLevels = [
   { id: "3", name: "College" },
   { id: "4", name: "Bachelor's" },
   { id: "5", name: "Master's" },
-  { id: "6", name: "Doctorate" },
+  { id: "6", name: "PhD" },
 ];
 
 const AcademicLevelSelector: React.FC<AcademicLevelSelectorProps> = ({

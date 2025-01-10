@@ -61,8 +61,6 @@ function OrderPage({ params }: PageProps) {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const router = useRouter();
 
-  console.log(orderData.words);
-
   console.log(addOnsTotalPrice);
 
   // Add this function to handle draft deletion

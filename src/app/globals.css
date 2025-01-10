@@ -340,3 +340,23 @@ h6 {
 .draft-order-grids-min .second-div {
   @apply flex flex-row items-center justify-between gap-1 w-14 p-1 ml-2 rounded-sm;
 }
+
+.prices-table {
+  @apply max-w-[90vw] overflow-x-auto text-sm md:text-base;
+}
+
+.prices-table table {
+  @apply w-full border-collapse;
+}
+
+.prices-table table th {
+  @apply border border-x-transparent p-3 text-left;
+}
+
+.prices-table table tbody tr td:first-child {
+  @apply border border-x-transparent p-3 font-semibold;
+}
+
+.prices-table table tbody tr .individual-price {
+  @apply border border-x-transparent p-3 hover:bg-blue-200;
+}

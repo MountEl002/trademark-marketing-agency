@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { GoDotFill } from "react-icons/go";
-import WriteMyPaper from "./order/writeMyPaper";
+import WriteMyPaper from "@/components/common/order/WriteMyPaper";
 
 type TabContent = {
   [key: string]: {

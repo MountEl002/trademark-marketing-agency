@@ -1,4 +1,3 @@
-// components/customer/DraftOrdersList.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -102,7 +101,7 @@ export default function DraftOrdersList() {
 
   return (
     <>
-      <div className="grid gap-4 grid-cols-1">
+      <div className="grid gap-1 grid-cols-1">
         {drafts.map((draft) => (
           <div
             key={draft.id} // Changed from orderNumber to id for better uniqueness

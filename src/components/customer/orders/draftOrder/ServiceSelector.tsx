@@ -11,8 +11,6 @@ const services = [
   { id: "2", name: "Rewriting" },
   { id: "3", name: "Editing" },
   { id: "4", name: "Proofreading" },
-  { id: "5", name: "Problem solving" },
-  { id: "6", name: "Calculations" },
 ];
 
 const ServiceSelector: React.FC<ServiceSelectorProps> = ({

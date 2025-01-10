@@ -1,12 +1,23 @@
-import React from "react";
-import Link from "next/link";
+"use client";
 
-const orderNow = () => {
+import { useOrderCreation } from "@/hooks/useOrderCreation";
+import LoadingScreen from "@/components/common/LoadingScreen";
+
+const OrderNow = () => {
+  const { createNewOrder, isLoading } = useOrderCreation();
+
   return (
-    <div className="horizontal px-10 py-2 bg-green-400 text-gray-50 rounded-full font-semibold">
-      <Link href="#">Order Now</Link>
+    <div>
+      {isLoading && <LoadingScreen />}
+      <button
+        onClick={createNewOrder}
+        disabled={isLoading}
+        className="horizontal button-gradient"
+      >
+        Order now
+      </button>
     </div>
   );
 };
 
-export default orderNow;
+export default OrderNow;

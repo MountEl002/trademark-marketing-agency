@@ -165,15 +165,6 @@ const CustomerReviews = () => {
 
   return (
     <>
-      <div className="vertical">
-        <h3 className="text-center">What our Clients Say About Us</h3>
-        <p className="text-center max-w-3xl pb-10">
-          Join 23K+ successful students who trust HighQualityEssay for their
-          academic needs. With 392 qualified writers, We build lasting
-          partnerships with our clients through exceptional service and
-          affordable rates, making academic excellence accessible to all.
-        </p>
-      </div>
       <ReviewsDisplayer customerReviewsArray={clientReviews} />
     </>
   );

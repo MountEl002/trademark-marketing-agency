@@ -1,13 +1,12 @@
 import Priorities from "@/components/common/priorities";
 import HeroSection from "@/assests/hero-section.jpg";
 import Image from "next/image";
-import OrderPaper from "@/components/common/order/orderPaper";
+import OrderPaper from "@/components/common/order/OrderPaper";
 import CustomerReviews from "@/components/customerReviews";
-import TryNow from "@/components/common/order/tryNow";
+import TryNow from "@/components/common/order/TryNow";
 import HomepageFqa from "@/components/homepageSections/homepageFqa";
 import Benefits from "@/components/common/benefits";
 import Bonus from "@/components/common/bonus";
-import CommnOrderForm from "@/components/common/order/commonOderForm";
 import SelfProclamation from "@/components/common/selfProclamation";
 import EffortlessLearning from "@/components/common/effortlessLearning";
 import PrivacyHighlight from "@/components/common/privacyHighlight";
@@ -17,7 +16,7 @@ export default function Home() {
     <>
       {/* Hero section */}
       <section className="max-w-6xl mt-28 text-center text-gray-600">
-        <div className="grid grid-cols-1 min-[820px]:grid-cols-2 gap-4">
+        <div>
           <div>
             <h1 className="font-bold max-w-3xl">
               Exemplary Essay Writing Services with Professional Writers at
@@ -31,9 +30,6 @@ export default function Home() {
               and get unique paper help
             </h5>
             <Priorities />
-          </div>
-          <div>
-            <CommnOrderForm />
           </div>
         </div>
       </section>
@@ -72,6 +68,16 @@ export default function Home() {
       {/* Customer Reviws Section */}
       <section className="bg-blue-50">
         <div className="max-w-6xl w-full px-4 overflow-hidden">
+          <div className="vertical">
+            <h3 className="text-center">What our Clients Say About Us</h3>
+            <p className="text-center max-w-3xl pb-10">
+              Join 23K+ successful students who trust High-
+              <span className="text-blue-700">Quality</span> Essay for their
+              academic needs. With 392 qualified writers, We build lasting
+              partnerships with our clients through exceptional service and
+              affordable rates, making academic excellence accessible to all.
+            </p>
+          </div>
           <CustomerReviews />
           <div className="horizontal mt-8">
             <a href="#" className="buttonBlue">

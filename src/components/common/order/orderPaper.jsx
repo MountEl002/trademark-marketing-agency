@@ -1,10 +1,21 @@
-import React from "react";
-import Link from "next/link";
+"use client";
+
+import { useOrderCreation } from "@/hooks/useOrderCreation";
+import LoadingScreen from "@/components/common/LoadingScreen";
 
 const OrderPaper = () => {
+  const { createNewOrder, isLoading } = useOrderCreation();
+
   return (
-    <div className="w-fit horizontal button-gradient">
-      <Link href="#">Order a Paper</Link>
+    <div>
+      {isLoading && <LoadingScreen />}
+      <button
+        onClick={createNewOrder}
+        disabled={isLoading}
+        className="horizontal button-gradient"
+      >
+        Order a paper
+      </button>
     </div>
   );
 };
