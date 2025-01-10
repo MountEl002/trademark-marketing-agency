@@ -1,0 +1,25 @@
+import React from "react";
+import Image from "next/image";
+import TwitterLogo from "@/assests/twitterLogo.png";
+import { Tooltip } from "react-tooltip";
+
+const ContinueWithTwitter = () => {
+  return (
+    <>
+      <div
+        data-tooltip-id="div-tooltip"
+        data-tooltip-content="Use your Twitter(X) account to Sign Up!"
+        className="continue-with-gaft"
+      >
+        <Image
+          src={TwitterLogo}
+          alt="Apple Logo"
+          className="object-cover h-5 w-5"
+        />
+      </div>
+      <Tooltip id="div-tooltip" />
+    </>
+  );
+};
+
+export default ContinueWithTwitter;

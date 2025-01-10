@@ -15,3 +15,37 @@
 
 2. Forcefully remove a folder or file
      Remove-Item -Recurse -Force .next
+
+
+git branch -d branchname     # Safe delete - will warn if branch has unmerged changes
+git branch -D branchname     # Force delete - will delete regardless of merge status
+
+# To delete a remote branch:
+    git push origin --delete branchname
+# OR
+     git push origin :branchname
+
+# See all remote branches
+git branch -r 
+
+# See both local and remote branches
+git branch -a 
+
+# Create a New Branch
+git branch <branch_name>
+
+# Switch to the New Branch
+git checkout <branch_name>
+
+# Combining the Steps
+git checkout -b <branch_name>
+
+# Fetch Remote Changes
+git fetch origin 
+
+
+# Compare your local branch with its remote counterpart:
+git diff <local-branch> origin/<remote-branch>
+
+# Compare commit histories (This displays commits that exist in your local branch but not in the remote branch. )
+git log origin/<remote-branch>..<local-branch> 

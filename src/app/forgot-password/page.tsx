@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import LightLogo from "@/components/common/LightLogo";
 import Link from "next/link";
+import LightLogo from "@/components/common/LightLogo";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
