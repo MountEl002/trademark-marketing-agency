@@ -1,5 +1,5 @@
 import React from "react";
-import GetStarted from "./login/getStarted";
+import GetStarted from "./login/GetStarted";
 
 const PrivacyHighlight = () => {
   return (

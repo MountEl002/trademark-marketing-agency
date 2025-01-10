@@ -3,9 +3,9 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import LightLogo from "@/components/common/lightLogo";
-import ContinueWith from "@/components/common/login/continueWith";
-import EmailInfo from "@/components/common/login/emailInfo";
+import LightLogo from "@/components/common/LightLogo";
+import ContinueWith from "@/components/common/login/ContinueWith";
+import EmailInfo from "@/components/common/login/EmailInfo";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { Tooltip } from "react-tooltip";
 import Link from "next/link";

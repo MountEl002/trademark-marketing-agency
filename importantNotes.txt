@@ -1,0 +1,13 @@
+1. Pre-deployment checklist
+   # Check for TypeScript errors
+        a. npx tsc --noEmit
+   # Check for code style issues
+        b. npm run lint
+    # Test production build locally
+        c. npm run build
+# Then run the production build
+        d. npm run start
+# Check for any unused CSS with:
+        e. npx tailwindcss-cli build -o build.css
+# Analyze bundle size
+        f. ANALYZE=true npm run build      

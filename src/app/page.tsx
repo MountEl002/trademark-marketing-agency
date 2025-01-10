@@ -1,15 +1,15 @@
-import Priorities from "@/components/common/priorities";
+import Priorities from "@/components/common/Priorities";
 import HeroSection from "@/assests/hero-section.jpg";
 import Image from "next/image";
 import OrderPaper from "@/components/common/order/OrderPaper";
-import CustomerReviews from "@/components/customerReviews";
+import CustomerReviews from "@/components/CustomerReviews";
 import TryNow from "@/components/common/order/TryNow";
-import HomepageFqa from "@/components/homepageSections/homepageFqa";
-import Benefits from "@/components/common/benefits";
-import Bonus from "@/components/common/bonus";
-import SelfProclamation from "@/components/common/selfProclamation";
-import EffortlessLearning from "@/components/common/effortlessLearning";
-import PrivacyHighlight from "@/components/common/privacyHighlight";
+import HomepageFqa from "@/components/homepageSections/HomepageFqa";
+import Benefits from "@/components/common/Benefits";
+import Bonus from "@/components/common/Bonus";
+import SelfProclamation from "@/components/common/SelfProclamation";
+import EffortlessLearning from "@/components/common/EffortlessLearning";
+import PrivacyHighlight from "@/components/common/PrivacyHighlight";
 
 export default function Home() {
   return (

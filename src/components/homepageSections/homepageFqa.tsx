@@ -1,4 +1,4 @@
-import FAQ from "@/components/common/faq";
+import FAQ from "@/components/common/FAQ";
 
 interface FAQItem {
   id: number;

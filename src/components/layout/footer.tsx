@@ -1,8 +1,8 @@
 import React from "react";
 import { usePathname } from "next/navigation";
-import SocialMedia from "../common/socialMedia";
-import DarkLogo from "../common/darkLogo";
-import PaymentMethods from "../common/paymentMethods";
+import SocialMedia from "../common/SocialMedia";
+import DarkLogo from "../common/DarkLogo";
+import PaymentMethods from "../common/PaymentMethods";
 import Link from "next/link";
 
 interface Resource {

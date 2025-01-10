@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { FaMinus, FaPlus } from "react-icons/fa";
-import ContinueWith from "../login/continueWith";
-import EmailInfo from "../login/emailInfo";
+import ContinueWith from "../login/ContinueWith";
+import EmailInfo from "../login/EmailInfo";
 interface CommnOrderFormProps {
   onSubmit?: (formData: {
     email: string;

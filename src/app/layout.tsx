@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 import { Roboto, Lato } from "next/font/google";
-import { ClientLayoutWrapper } from "@/components/layout/client-layout-wrapper";
+import { ClientLayoutWrapper } from "@/components/layout/ClientLayoutWrapper";
 import { Providers } from "./providers";
 
 const roboto = Roboto({

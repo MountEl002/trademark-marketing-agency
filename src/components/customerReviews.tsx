@@ -1,4 +1,4 @@
-import ReviewsDisplayer from "./common/reviewsDisplayer";
+import ReviewsDisplayer from "./common/ReviewsDisplayer";
 interface ClientReview {
   id: number;
   clientDetails: string;

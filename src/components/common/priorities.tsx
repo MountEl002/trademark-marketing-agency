@@ -42,11 +42,11 @@ const Priorities = () => {
   ];
   return (
     <div className="horizontal">
-      <div className="grid grid-cols-2 gap-4 my-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 my-4">
         {customerPrioties.map((item) => (
           <div
             key={item.id}
-            className="bg-gray-50 p-4 rounded-lg shadow-lg h-48 w-48"
+            className="bg-blue-100 p-4 rounded-lg shadow-lg h-48 w-48"
           >
             <Image
               src={item.repImage}

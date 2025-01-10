@@ -2,8 +2,8 @@
 
 import React, { useState } from "react";
 import { usePathname } from "next/navigation";
-import LightLogo from "../common/lightLogo";
-import UserAccessControl from "../common/login/userAccessControl";
+import LightLogo from "../common/LightLogo";
+import UserAccessControl from "../common/login/UserAccessControl";
 import Link from "next/link";
 import { FaChevronDown } from "react-icons/fa";
 import { IoMenu, IoClose } from "react-icons/io5";

@@ -1,6 +1,6 @@
 import OrderPaper from "@/components/common/order/OrderPaper";
 import TryNow from "@/components/common/order/TryNow";
-import CustomerReviews from "@/components/customerReviews";
+import CustomerReviews from "@/components/CustomerReviews";
 import Buttons from "@/components/prices/Buttons";
 import Menu from "@/components/prices/Menu";
 import React from "react";

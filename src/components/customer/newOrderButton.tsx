@@ -1,18 +1,11 @@
+"use client";
+
 import { useOrderCreation } from "@/hooks/useOrderCreation";
 import LoadingScreen from "../common/LoadingScreen";
 import { LuPlus } from "react-icons/lu";
 
 const NewOrderButton = () => {
-  const { createNewOrder, isLoading, isAuthenticated, isAuthLoading } =
-    useOrderCreation();
-
-  if (isAuthLoading) {
-    return <LoadingScreen />;
-  }
-
-  if (!isAuthenticated) {
-    return null; // Or some other fallback
-  }
+  const { createNewOrder, isLoading } = useOrderCreation();
 
   return (
     <div>

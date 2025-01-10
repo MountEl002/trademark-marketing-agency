@@ -1,9 +1,9 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import Navbar from "@/components/layout/navbar";
-import Footer from "@/components/layout/footer";
-import ScrollToTop from "@/components/common/backToTop";
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
+import ScrollToTop from "@/components/common/BackToTop";
 import SecondNavBar from "../customer/SecondNavbar";
 
 export function ClientLayoutWrapper({
