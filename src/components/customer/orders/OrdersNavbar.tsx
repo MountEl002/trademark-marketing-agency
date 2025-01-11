@@ -9,7 +9,7 @@ const OrdersNavbar = () => {
     { href: "/customer/orders/open", label: "Active" },
     { href: "/customer/orders/drafts", label: "Drafts" },
     { href: "/customer/orders/closed", label: "Closed" },
-    { href: "/customer/orders/new", label: "New" },
+    { href: "/customer/orders/new", label: "Create new" },
   ];
 
   const pathname = usePathname();
@@ -19,7 +19,7 @@ const OrdersNavbar = () => {
       <div>
         <h3>My orders</h3>
       </div>
-      <div className="border-b-2 border-gray-400">
+      <div className="border-b border-gray-400">
         {linksToOrdersPage.map((item) => (
           <Link
             key={item.href}
@@ -32,7 +32,7 @@ const OrdersNavbar = () => {
           >
             <span>{item.label}</span>
             <span
-              className={`absolute w-full border-b-2 -bottom-0.5 left-0 border-blue-600 ${
+              className={`absolute w-full border-b -bottom-[0.45] left-0 border-blue-600 ${
                 pathname === item.href ? "block" : "hidden"
               }`}
             ></span>

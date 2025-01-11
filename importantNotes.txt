@@ -49,3 +49,13 @@ git diff <local-branch> origin/<remote-branch>
 
 # Compare commit histories (This displays commits that exist in your local branch but not in the remote branch. )
 git log origin/<remote-branch>..<local-branch> 
+
+Removing and adding cached file names:
+git rm -r --cached .
+git add --all .
+
+git status ##Review that **only** changes staged are renames
+
+## Commit your changes after reviewing:
+git commit -a -m "Fixing file name casing"
+git push origin main

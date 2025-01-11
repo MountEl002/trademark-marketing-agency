@@ -59,19 +59,30 @@ function OrderPage({ params }: PageProps) {
   const [activeField, setActiveField] = useState<number | null>(null);
   const [addOnsTotalPrice, setAddOnsTotalPrice] = useState(0);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [errorDiscarding, setErrorDiscarding] = useState(false);
+  const [successDiscarding, setSuccessDiscarding] = useState(false);
+  const [discarding, setDiscarding] = useState(false);
   const router = useRouter();
 
   console.log(addOnsTotalPrice);
 
-  // Add this function to handle draft deletion
+  // Function to handle draft deletion
   const handleDiscardDraft = async () => {
     try {
       const orderRef = doc(db, "orders", orderNumber.toString());
+      setDiscarding(true);
       await deleteDoc(orderRef);
-      router.push("/customer/orders/drafts");
+      setDiscarding(false);
+      setSuccessDiscarding(true);
+      setTimeout(() => {
+        router.push("/customer/orders/drafts");
+      }, 2000);
     } catch (error) {
       console.error("Error discarding draft:", error);
-      // You might want to show an error message to the user here
+      setErrorDiscarding(true);
+      setTimeout(() => {
+        setShowConfirmation(false);
+      }, 3000);
     }
   };
 
@@ -234,24 +245,24 @@ function OrderPage({ params }: PageProps) {
 
   return (
     <div className="bg-gray-200 min-h-screen overflow-hidden">
-      <div className="fixed inset-x-0 top-0 h-24 z-[60] px-3 py-8 bg-gray-200">
-        <div className="horizontal-space-between max-w-4xl mx-auto">
+      <div className="fixed inset-x-0 top-0 h-24 z-[60] py-8 bg-gray-200">
+        <div className="horizontal-space-between max-w-4xl mx-auto px-3">
           <div>
-            <h3 className="!mb-0">
-              Order #{orderNumber}{" "}
+            <h4 className="!mb-0">
+              Order {orderNumber}{" "}
               <span className="text-gray-500 font-medium">(Draft)</span>
-            </h3>
+            </h4>
           </div>
-          <div>
+          <div className="horizontal gap-3">
             <button
               onClick={() => setShowConfirmation(true)}
-              className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+              className="button-red"
             >
-              Discard Draft
+              Discard
             </button>
-          </div>
-          <div className="button-blue">
-            <Link href="/customer/orders/drafts">Close</Link>
+            <Link className="button-blue" href="/customer/orders/drafts">
+              Close
+            </Link>
           </div>
         </div>
       </div>
@@ -259,6 +270,9 @@ function OrderPage({ params }: PageProps) {
       {/* Confirmation dialog component */}
       <ConfirmationDialog
         isOpen={showConfirmation}
+        discarding={discarding}
+        successDiscarding={successDiscarding}
+        errorDiscarding={errorDiscarding}
         onClose={() => setShowConfirmation(false)}
         onConfirm={handleDiscardDraft}
         title="Discard Draft"

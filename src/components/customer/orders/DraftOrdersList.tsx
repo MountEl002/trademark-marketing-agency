@@ -25,6 +25,9 @@ export default function DraftOrdersList() {
 
   // Confirmation dialog state
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [errorDiscarding, setErrorDiscarding] = useState(false);
+  const [successDiscarding, setSuccessDiscarding] = useState(false);
+  const [discarding, setDiscarding] = useState(false);
   const [selectedDraft, setSelectedDraft] = useState<DraftOrder | null>(null);
   const { user } = useAuth();
   const router = useRouter();
@@ -40,13 +43,24 @@ export default function DraftOrdersList() {
     if (!selectedDraft) return;
 
     try {
+      setDiscarding(true);
       await deleteDoc(doc(db, "orders", selectedDraft.id));
+      setDiscarding(false);
+      setSuccessDiscarding(true);
+      setTimeout(() => {
+        setSuccessDiscarding(false);
+        setShowConfirmation(false);
+      }, 3000);
       setDrafts(drafts.filter((draft) => draft.id !== selectedDraft.id));
-      setShowConfirmation(false);
       setSelectedDraft(null);
     } catch (error) {
+      setDiscarding(false);
+      setErrorDiscarding(true);
       console.error("Error discarding draft:", error);
-      // You might want to show an error message to the user here
+      setTimeout(() => {
+        setErrorDiscarding(false);
+        setShowConfirmation(false);
+      }, 3000);
     }
   };
 
@@ -137,6 +151,9 @@ export default function DraftOrdersList() {
       </div>
       <ConfirmationDialog
         isOpen={showConfirmation}
+        discarding={discarding}
+        successDiscarding={successDiscarding}
+        errorDiscarding={errorDiscarding}
         onClose={() => {
           setShowConfirmation(false);
           setSelectedDraft(null);

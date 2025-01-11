@@ -22,6 +22,10 @@ section {
   @apply flex flex-row items-center justify-start;
 }
 
+.horizontal-end {
+  @apply flex flex-row items-center justify-end;
+}
+
 .horizontal-space-between {
   @apply flex flex-row items-center justify-between;
 }
@@ -45,6 +49,10 @@ section {
   @apply bg-blue-500 px-4 lg:px-10 py-1 lg:py-2 text-gray-50 rounded-full font-semibold hover:bg-blue-700 transition-colors cursor-pointer;
 }
 
+.button-red {
+  @apply bg-red-500 px-4 lg:px-10 py-1 lg:py-2 text-gray-50 rounded-full font-semibold hover:bg-red-700 transition-colors cursor-pointer;
+}
+
 .button-light-blue {
   @apply bg-blue-100 px-4 lg:px-10 py-1 lg:py-2 text-blue-500 rounded-full font-semibold hover:bg-indigo-950 hover:text-gray-100 transition-colors cursor-pointer;
 }
@@ -59,27 +67,27 @@ h6 {
 }
 
 h1 {
-  @apply max-[450px]:text-xl text-5xl font-bold;
+  @apply max-[450px]:text-xl text-4xl sm:text-5xl font-bold;
 }
 
 h2 {
-  @apply max-[450px]:text-lg text-4xl font-bold;
+  @apply max-[450px]:text-lg text-3xl sm:text-4xl font-bold;
 }
 
 h3 {
-  @apply max-[450px]:text-base text-3xl font-bold;
+  @apply max-[450px]:text-base text-2xl sm:text-3xl font-bold;
 }
 
 h4 {
-  @apply max-[450px]:text-sm text-2xl font-bold;
+  @apply max-[450px]:text-sm text-xl sm:text-2xl font-bold;
 }
 
 h5 {
-  @apply max-[450px]:text-sm text-xl font-bold;
+  @apply max-[450px]:text-sm text-lg sm:text-xl font-bold;
 }
 
 h6 {
-  @apply max-[450px]:text-sm text-lg font-bold;
+  @apply max-[450px]:text-sm text-base sm:text-lg font-bold;
 }
 
 .navbar h3 {
