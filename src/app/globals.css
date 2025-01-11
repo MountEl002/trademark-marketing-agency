@@ -368,3 +368,15 @@ h6 {
 .prices-table table tbody tr .individual-price {
   @apply border border-x-transparent p-3 hover:bg-blue-200;
 }
+
+.Order-form-drop-down {
+  @apply mt-1 bg-gray-200 rounded-md shadow-lg h-[335px] w-[320px] overflow-y-auto overflow-x-hidden text-sm;
+}
+
+.Order-form-drop-down .category {
+  @apply px-1;
+}
+
+.category .category-name {
+  @apply text-blue-500 border-b border-gray-400 py-3 mx-4 mb-1;
+}

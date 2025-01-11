@@ -324,8 +324,10 @@ function OrderPage({ params }: PageProps) {
               </div>
             </div>
             <div
-              className={`vertical-start bg-white rounded-lg  transition-all duration-300 ease-in-out overflow-hidden ${
-                activeField === field.id ? "max-h-full" : "max-h-0"
+              className={`bg-white rounded-lg py-3 px-2 transition-all duration-300 ease-in-out overflow-hidden ${
+                activeField === field.id
+                  ? "flex flex-col items-start justify-start h-fit"
+                  : "hidden"
               }`}
             >
               <div>
