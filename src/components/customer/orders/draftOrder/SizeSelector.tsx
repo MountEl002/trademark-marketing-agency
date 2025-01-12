@@ -1,10 +1,9 @@
-import React, { useState, ChangeEvent, useEffect } from "react";
+import React, { useState, ChangeEvent, useEffect, useRef } from "react";
 import { IoAdd, IoRemove, IoChevronDown } from "react-icons/io5";
 
 interface SizeSelectorProps {
   value: string;
   onChange: (sizeString: string) => void;
-  className?: string;
 }
 
 // Parse the initial value string to extract pages/words
@@ -35,15 +34,13 @@ type ModeType = "Pages" | "Words";
 const WORDS_INCREMENT = 25;
 const PAGES_INCREMENT = 1;
 
-const SizeSelector: React.FC<SizeSelectorProps> = ({
-  value,
-  onChange,
-  className = "",
-}) => {
+const SizeSelector: React.FC<SizeSelectorProps> = ({ value, onChange }) => {
   const [mode, setMode] = useState<ModeType>("Words");
   const [inputValue, setInputValue] = useState<string>("275");
   const [lineSpacing, setLineSpacing] = useState<LineSpacingType>("Double");
   const [showSpacingOptions, setShowSpacingOptions] = useState<boolean>(false);
+  const [sizeInputFocus, setSizeInputFocus] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Updated conversion functions with line spacing consideration
   const wordsToPages = (words: string, spacing: LineSpacingType): string => {
@@ -153,25 +150,38 @@ const SizeSelector: React.FC<SizeSelectorProps> = ({
       pages = wordsToPages(inputValue, lineSpacing);
     }
 
-    const sizeString = `${parseFloat(pages).toFixed(1)} pages, ${Math.round(
-      parseFloat(words)
-    )} words, ${lineSpacing} space`;
+    const sizeString = `${Math.round(parseFloat(words))} words, (~ ${parseFloat(
+      pages
+    ).toFixed(1)} pages), ${lineSpacing} spacing`;
     onChange(sizeString);
   };
 
-  return (
-    <div className={`p-4 space-y-4 ${className}`}>
-      <div className="space-y-2">
-        <label className="text-sm text-gray-600">Size</label>
+  // Handle click outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setShowSpacingOptions(false);
+      }
+    };
 
-        <div className="inline-flex rounded-md shadow-sm">
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  return (
+    <div className="vertical-start p-4">
+      <label className="order-form-field-title">Size</label>
+      <div className="flex flex-col md:flex-row items-center justify-start gap-8 md:gap-3 mt-6 mb-12 w-full">
+        {/* Page/words toggle */}
+        <div className="horizontal w-full rounded-lg p-0.5 bg-gray-200">
           <button
             type="button"
             onClick={() => handleModeToggle("Pages")}
-            className={`px-4 py-2 text-sm rounded-l-md border ${
-              mode === "Pages"
-                ? "bg-blue-600 text-white"
-                : "bg-white text-gray-700"
+            className={`w-full py-2 rounded-lg text-sm transition-all duration-500 ${
+              mode === "Pages" ? "text-blue-500 bg-gray-300" : "text-gray-500"
             }`}
           >
             Pages
@@ -179,99 +189,127 @@ const SizeSelector: React.FC<SizeSelectorProps> = ({
           <button
             type="button"
             onClick={() => handleModeToggle("Words")}
-            className={`px-4 py-2 text-sm rounded-r-md border-t border-r border-b ${
-              mode === "Words"
-                ? "bg-blue-600 text-white"
-                : "bg-white text-gray-700"
+            className={`w-full py-2 rounded-lg text-sm transition-all duration-500 ${
+              mode === "Words" ? "text-blue-500 bg-gray-300" : "text-gray-500"
             }`}
           >
             Words
           </button>
         </div>
 
-        <div className="flex space-x-4">
-          <div className="flex-1">
-            <div className="relative flex items-center">
-              <button
-                type="button"
-                onClick={handleDecrement}
-                className="absolute left-2 text-gray-500 hover:text-gray-700"
-              >
-                <IoRemove className="text-xl" />
-              </button>
-              <input
-                type="text"
-                value={inputValue}
-                onChange={handleInputChange}
-                className="w-full px-8 py-2 border rounded-md text-center"
-                placeholder="0"
-              />
-              <button
-                type="button"
-                onClick={handleIncrement}
-                className="absolute right-2 text-gray-500 hover:text-gray-700"
-              >
-                <IoAdd className="text-xl" />
-              </button>
-            </div>
+        {/* Input words/pages */}
+        <div
+          className={`relative horizontal-space-between w-full rounded-lg transition-all duration-500 ${
+            sizeInputFocus
+              ? "bg-gray-100 border border-blue-500"
+              : "bg-gray-200"
+          }`}
+        >
+          <button
+            type="button"
+            onClick={handleDecrement}
+            className="text-gray-500 p-2 hover:text-gray-700"
+          >
+            <IoRemove className="text-xl" />
+          </button>
+          <input
+            type="text"
+            value={inputValue}
+            onChange={handleInputChange}
+            onFocus={() => setSizeInputFocus(true)}
+            className="focus:outline-none w-full text-center p-2 bg-transparent"
+            placeholder="0"
+          />
+          <button
+            type="button"
+            onClick={handleIncrement}
+            className="text-gray-500 p-2 hover:text-gray-700"
+          >
+            <IoAdd className="text-xl" />
+          </button>
+          <div className="absolute left-1/2 -translate-x-1/2 -bottom-8">
             {inputValue && mode === "Words" && (
-              <p className="text-sm text-gray-500 mt-1">
-                ~{wordsToPages(inputValue, lineSpacing)} pages
+              <p className="text-sm text-gray-400 mt-1">
+                ~ {wordsToPages(inputValue, lineSpacing)} pages
               </p>
             )}
             {inputValue && mode === "Pages" && (
-              <p className="text-sm text-gray-500 mt-1">
-                ~{pagesToWords(inputValue, lineSpacing)} words
+              <p className="text-sm text-gray-400 mt-1">
+                ~ {pagesToWords(inputValue, lineSpacing)} words
               </p>
             )}
           </div>
+        </div>
 
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => setShowSpacingOptions(!showSpacingOptions)}
-              className="w-48 px-4 py-2 border rounded-md flex items-center justify-between bg-white"
-            >
-              <span>{lineSpacing}</span>
-              <IoChevronDown className="text-xl" />
-            </button>
+        {/* Toggle line spacing */}
+        <div ref={containerRef} className="w-full">
+          <button
+            type="button"
+            onClick={() => setShowSpacingOptions(!showSpacingOptions)}
+            className={`w-full px-4 py-2 border rounded-md flex items-center justify-between transition-all duration-500 ${
+              showSpacingOptions ? "bg-gray-50" : "bg-gray-200"
+            }`}
+          >
+            <span>{lineSpacing}</span>
+            <IoChevronDown
+              className={`text-xl transition-all duration-500 ${
+                showSpacingOptions ? "rotate-180" : "rotate-0"
+              }`}
+            />
+          </button>
 
-            {showSpacingOptions && (
-              <div className="absolute z-10 w-48 mt-1 bg-white border rounded-md shadow-lg">
-                <button
-                  type="button"
-                  onClick={() => {
-                    handleLineSpacingChange("Single");
-                    setShowSpacingOptions(false);
-                  }}
-                  className="w-full px-4 py-2 text-left hover:bg-gray-100"
-                >
-                  Single
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    handleLineSpacingChange("Double");
-                    setShowSpacingOptions(false);
-                  }}
-                  className="w-full px-4 py-2 text-left hover:bg-gray-100"
-                >
-                  Double
-                </button>
-              </div>
-            )}
-          </div>
+          {showSpacingOptions && (
+            <div className="absolute z-[65] mt-1 bg-gray-200 border rounded-md shadow-lg p-1">
+              <button
+                type="button"
+                onClick={() => {
+                  handleLineSpacingChange("Single");
+                  setShowSpacingOptions(false);
+                }}
+                className={`w-full px-4 py-2 text-left mb-1 rounded-lg transition-all duration-500 ${
+                  lineSpacing === "Single"
+                    ? "bg-blue-500 text-white hover:bg-blue-600 hover:text-gray-100"
+                    : "hover:bg-gray-100"
+                }`}
+              >
+                Single
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  handleLineSpacingChange("Double");
+                  setShowSpacingOptions(false);
+                }}
+                className={`w-full px-4 py-2 text-left rounded-lg transition-all duration-500 ${
+                  lineSpacing === "Double"
+                    ? "bg-blue-500 text-white hover:bg-blue-600 hover:text-gray-100"
+                    : "hover:bg-gray-100"
+                }`}
+              >
+                Double
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
-      <button
-        type="button"
-        onClick={handleSave}
-        className="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center justify-center"
-      >
-        Save
-        <IoChevronDown className="ml-2 text-xl" />
-      </button>
+      {/* Save Button */}
+      <div className="horizontal w-full mt-6">
+        <button
+          type="button"
+          onClick={() => {
+            handleSave();
+            setSizeInputFocus(false);
+          }}
+          className="w-fit pl-24 p-0.5 group bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center justify-center"
+        >
+          Save
+          <IoChevronDown
+            size={30}
+            className="ml-20 text-white rounded-sm transition-all duration-500 bg-blue-400 group-hover:bg-blue-500"
+          />
+        </button>
+      </div>
     </div>
   );
 };

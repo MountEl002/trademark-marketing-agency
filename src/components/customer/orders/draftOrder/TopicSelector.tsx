@@ -5,14 +5,12 @@ interface TopicSelectorProps {
   value: string;
   onChange: (value: string) => void;
   onContinue?: () => void;
-  className?: string;
 }
 
 const TopicSelector: React.FC<TopicSelectorProps> = ({
   value,
   onChange,
   onContinue,
-  className = "",
 }) => {
   const [localTopic, setLocalTopic] = useState(value);
 
@@ -24,7 +22,7 @@ const TopicSelector: React.FC<TopicSelectorProps> = ({
   };
 
   return (
-    <div className={`vertical-start gap-4 ${className}`}>
+    <div className="vertical-start gap-4">
       <div className="w-full">
         <label
           htmlFor="topic"

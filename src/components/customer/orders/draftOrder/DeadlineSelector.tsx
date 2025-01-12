@@ -11,14 +11,9 @@ import {
 interface DeadlineSelectorProps {
   value: string;
   onChange: (value: string) => void;
-  className?: string;
 }
 
-const DeadlineSelector = ({
-  value,
-  onChange,
-  className = "",
-}: DeadlineSelectorProps) => {
+const DeadlineSelector = ({ value, onChange }: DeadlineSelectorProps) => {
   // Extract date and time from value prop if it exists
   const extractDateTime = () => {
     if (!value) return { date: "", time: "" };
@@ -84,7 +79,7 @@ const DeadlineSelector = ({
   };
 
   return (
-    <div className={`space-y-4 ${className}`}>
+    <div className="p-4">
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700">
           Select Date

@@ -15,7 +15,6 @@ import { storage } from "@/lib/firebase";
 interface InstructionsEditorProps {
   value: string;
   onUpdate: (instructions: string, files: UploadedFileInfo[]) => void;
-  className?: string;
 }
 
 interface UploadedFileInfo {
@@ -29,7 +28,6 @@ interface UploadedFileInfo {
 const InstructionsEditor: React.FC<InstructionsEditorProps> = ({
   value,
   onUpdate,
-  className = "",
 }) => {
   const [localInstructions, setLocalInstructions] = useState(value);
   const [files, setFiles] = useState<UploadedFileInfo[]>([]);
@@ -159,7 +157,7 @@ const InstructionsEditor: React.FC<InstructionsEditorProps> = ({
   }
 
   return (
-    <div className={`space-y-4 ${className}`}>
+    <div className="p-4">
       <div className="flex flex-wrap gap-2 border-b pb-2">
         <button
           onClick={() => editor.chain().focus().toggleBold().run()}

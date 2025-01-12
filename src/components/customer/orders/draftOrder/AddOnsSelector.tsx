@@ -5,7 +5,6 @@ interface AddOnsSelectorProps {
   value: string;
   onChange: (value: string, totalPrice: number) => void;
   onContinue: () => void;
-  className?: string;
 }
 
 const addOns = [
@@ -20,7 +19,6 @@ const AddOnsSelector: React.FC<AddOnsSelectorProps> = ({
   value,
   onChange,
   onContinue,
-  className = "",
 }) => {
   // Initialize local state with current value
   const [localSelectedAddOns, setLocalSelectedAddOns] = useState<string[]>(
@@ -57,7 +55,7 @@ const AddOnsSelector: React.FC<AddOnsSelectorProps> = ({
   };
 
   return (
-    <div className={`vertical-start gap-4 ${className}`}>
+    <div className="vertical-start gap-4">
       <div className="flex flex-col gap-3 w-full">
         {addOns.map((addOn) => (
           <div

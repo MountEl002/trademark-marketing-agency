@@ -3,7 +3,6 @@ import React from "react";
 interface LanguageSelectorProps {
   value: string;
   onChange: (value: string) => void;
-  className?: string;
 }
 
 const languages = [
@@ -14,20 +13,20 @@ const languages = [
 const LanguageSelector: React.FC<LanguageSelectorProps> = ({
   value,
   onChange,
-  className = "",
 }) => {
   return (
-    <div className={`p-4 ${className}`}>
-      <div className="flex flex-wrap gap-2">
+    <div className="p-4">
+      <p className="order-form-field-title">Language</p>
+      <div className="order-form-buttons">
         {languages.map((language) => (
           <button
             key={language.id}
             onClick={() => onChange(language.name)}
-            className={`px-4 py-2 rounded-md transition-all duration-300 
+            className={`py-2 px-3 w-fit rounded-lg text-sm transition-all duration-500 
               ${
                 value === language.name
-                  ? "bg-blue-600 text-white hover:bg-blue-700"
-                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  ? "bg-blue-500 text-white hover:bg-blue-600 hover:text-gray-100"
+                  : "bg-gray-200 text-gray-600 hover:text-blue-500"
               }`}
           >
             {language.name}

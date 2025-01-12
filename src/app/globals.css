@@ -398,3 +398,11 @@ h6 {
 .order-form-drop-down::-webkit-scrollbar-thumb:hover {
   background: #374151;
 }
+
+.order-form-field-title {
+  @apply mb-3 text-xl text-gray-600;
+}
+
+.order-form-buttons {
+  @apply flex flex-wrap gap-4 mt-4;
+}

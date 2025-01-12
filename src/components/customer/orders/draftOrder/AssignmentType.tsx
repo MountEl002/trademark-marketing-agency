@@ -13,7 +13,6 @@ interface AssignmentOption {
 interface AssignmentTypeSelectorProps {
   value: string;
   onChange: (value: string) => void;
-  className?: string;
 }
 
 interface PopularButtons {
@@ -106,7 +105,6 @@ const assignmentOptions: AssignmentOption[] = [
 const AssignmentTypeSelector: React.FC<AssignmentTypeSelectorProps> = ({
   value,
   onChange,
-  className = "",
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -162,9 +160,9 @@ const AssignmentTypeSelector: React.FC<AssignmentTypeSelectorProps> = ({
   };
 
   return (
-    <div className={`${className}`}>
+    <div className="p-4">
       <div className="vertical-space-between mb-2">
-        <p className="mb-3 text-xl text-gray-600">Assignment type</p>
+        <p className="order-form-field-title">Assignment type</p>
         <p
           className={`text-sm transition-all duration-1000 ${
             isOpen ? "text-gray-400" : "text-white"
@@ -232,12 +230,12 @@ const AssignmentTypeSelector: React.FC<AssignmentTypeSelectorProps> = ({
       <div className="mt-8">
         <p className="text-gray-500 text-sm">Popular:</p>
         <div className="container">
-          <div className="flex flex-wrap">
+          <div className="order-form-buttons">
             {popularButtons.map((button) => (
               <button
                 key={button.id}
                 onClick={() => handleOptionSelect(button.name)}
-                className={`py-2 px-3 m-3 w-fit rounded-lg text-sm transition-all duration-500 ${
+                className={`py-2 px-3 w-fit rounded-lg text-sm transition-all duration-500 ${
                   value === button.name
                     ? "bg-blue-500 text-white hover:bg-blue-600 hover:text-gray-100"
                     : "bg-gray-200 text-gray-600 hover:text-blue-500"

@@ -330,18 +330,16 @@ function OrderPage({ params }: PageProps) {
                   : "hidden"
               }`}
             >
-              <div>
+              <div className="w-full">
                 {field.id === 1 ? (
                   <AssignmentTypeSelector
                     value={orderData.assignmentType}
                     onChange={(value) => updateField("assignmentType", value)}
-                    className="p-4"
                   />
                 ) : field.id === 2 ? (
                   <ServiceSelector
                     value={orderData.service}
                     onChange={(value: unknown) => updateField("service", value)}
-                    className="p-4"
                   />
                 ) : field.id === 3 ? (
                   <AcademicLevelSelector
@@ -349,7 +347,6 @@ function OrderPage({ params }: PageProps) {
                     onChange={(value: unknown) =>
                       updateField("academicLevel", value)
                     }
-                    className="p-4"
                   />
                 ) : field.id === 4 ? (
                   <LanguageSelector
@@ -357,7 +354,6 @@ function OrderPage({ params }: PageProps) {
                     onChange={(value: unknown) =>
                       updateField("language", value)
                     }
-                    className="p-4"
                   />
                 ) : field.id === 5 ? (
                   <SizeSelector
@@ -369,13 +365,11 @@ function OrderPage({ params }: PageProps) {
                       updateField("size", sizeString);
                       updateField("words", wordCount);
                     }}
-                    className="p-4"
                   />
                 ) : field.id === 6 ? (
                   <DeadlineSelector
                     value={orderData.deadline}
                     onChange={(value) => updateField("deadline", value)}
-                    className="p-4"
                   />
                 ) : field.id === 7 ? (
                   <AddOnsSelector
@@ -390,7 +384,6 @@ function OrderPage({ params }: PageProps) {
                         setActiveField(nextEmptyFieldId);
                       }
                     }}
-                    className="p-4"
                   />
                 ) : field.id === 8 ? (
                   <TopicSelector
@@ -402,19 +395,16 @@ function OrderPage({ params }: PageProps) {
                         setActiveField(nextEmptyFieldId);
                       }
                     }}
-                    className="p-4"
                   />
                 ) : field.id === 9 ? (
                   <SubjectSelector
                     value={orderData.subject}
                     onChange={(value) => updateField("subject", value)}
-                    className="p-4"
                   />
                 ) : field.id === 10 ? (
                   <InstructionsEditor
                     value={orderData.instructions}
                     onUpdate={handleInstructionsUpdate}
-                    className="p-4"
                   />
                 ) : null}
               </div>

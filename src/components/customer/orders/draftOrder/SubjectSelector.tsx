@@ -34,7 +34,6 @@ interface PopularButtons {
 interface SubjectSelectorProps {
   value: string;
   onChange: (value: string) => void;
-  className?: string;
 }
 
 const SubjectOptions: SubjectOption[] = [
@@ -736,7 +735,6 @@ const popularButtons: PopularButtons[] = [
 const SubjectSelector: React.FC<SubjectSelectorProps> = ({
   value,
   onChange,
-  className = "",
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -792,7 +790,7 @@ const SubjectSelector: React.FC<SubjectSelectorProps> = ({
   };
 
   return (
-    <div className={`${className}`}>
+    <div className="p-4">
       <div className="vertical-space-between mb-2">
         <p className="mb-3 text-xl text-gray-600">Subject</p>
         <p
