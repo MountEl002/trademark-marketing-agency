@@ -26,6 +26,11 @@ interface SubjectOption {
     | "Social sciences";
 }
 
+interface PopularButtons {
+  id: number;
+  name: string;
+}
+
 interface SubjectSelectorProps {
   value: string;
   onChange: (value: string) => void;
@@ -712,6 +717,22 @@ const SubjectOptions: SubjectOption[] = [
   },
 ];
 
+const popularButtons: PopularButtons[] = [
+  { id: 1, name: "Nursing" },
+  { id: 2, name: "Business and management" },
+  { id: 3, name: "History" },
+  { id: 4, name: "English" },
+  { id: 5, name: "Marketing" },
+  { id: 6, name: "Healthcare" },
+  { id: 7, name: "Psychology" },
+  { id: 8, name: "Entrepreneurship" },
+  { id: 9, name: "Information Technology" },
+  { id: 10, name: "Accounting" },
+  { id: 11, name: "Finannce" },
+  { id: 12, name: "Mathematics" },
+  { id: 13, name: "Economics" },
+];
+
 const SubjectSelector: React.FC<SubjectSelectorProps> = ({
   value,
   onChange,
@@ -743,12 +764,15 @@ const SubjectSelector: React.FC<SubjectSelectorProps> = ({
         !containerRef.current.contains(event.target as Node)
       ) {
         setIsOpen(false);
+        if (!value) {
+          setSearchTerm("");
+        }
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [value]);
 
   // Handle option selection
   const handleOptionSelect = (optionName: string) => {
@@ -759,28 +783,33 @@ const SubjectSelector: React.FC<SubjectSelectorProps> = ({
 
   // Handle input change
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
+    const newValue = e.target.value;
+    setSearchTerm(newValue);
+    if (newValue !== value) {
+      onChange(""); // Clear the selected value when user starts typing something new
+    }
     setIsOpen(true);
   };
 
   return (
-    <div ref={containerRef} className={`relative ${className}`}>
-      <div className="relative">
-        <div className="vertical-space-between mb-2">
-          <p className="mb-3 text-xl text-gray-600">Subject</p>
-          <p
-            className={`text-sm transition-all duration-1000 ${
-              isOpen ? "text-gray-400" : "text-white"
-            }`}
-          >
-            Select or search your subject
-          </p>
-        </div>
+    <div className={`${className}`}>
+      <div className="vertical-space-between mb-2">
+        <p className="mb-3 text-xl text-gray-600">Subject</p>
+        <p
+          className={`text-sm transition-all duration-1000 ${
+            isOpen ? "text-gray-400" : "text-white"
+          }`}
+        >
+          Select or search your subject
+        </p>
+      </div>
+      <div ref={containerRef} className="w-fit relative">
         <div
-          className={`w-[320px] p-3 bg-gray-100 rounded-md transition-all duration-500 ${
+          onClick={() => setIsOpen(true)}
+          className={`w-[324px] p-3 bg-gray-100 rounded-md transition-all duration-500 ${
             isOpen
               ? "horizontal-start gap-3 border border-blue-500"
-              : "horizontal-space-between"
+              : "horizontal-space-between cursor-pointer"
           }`}
         >
           <IoSearch
@@ -789,47 +818,67 @@ const SubjectSelector: React.FC<SubjectSelectorProps> = ({
           />
           <input
             type="text"
-            value={searchTerm || value}
+            value={isOpen ? searchTerm : value}
             onChange={handleInputChange}
             onFocus={() => setIsOpen(true)}
-            placeholder="Select your subject"
+            placeholder={value || "Select assignment"}
             className="focus:outline-none bg-transparent w-[80%]"
           />
           <FaChevronDown
             size={20}
-            onClick={() => setIsOpen(true)}
-            className={`text-gray-400 ${
-              isOpen ? "hidden" : "block cursor-pointer"
-            }`}
+            className={`text-gray-400 ${isOpen ? "hidden" : "block"}`}
           />
         </div>
-      </div>
 
-      {isOpen && (
-        <div className="Order-form-drop-down">
-          {Object.entries(groupedOptions).map(([category, options]) => (
-            <div key={category} className="category">
-              <div className="category-name">{category}</div>
-              {options.map((option) => (
-                <div
-                  key={option.id}
-                  onClick={() => handleOptionSelect(option.name)}
-                  className={`py-3 px-4 cursor-pointer rounded-md text-gray-600 truncate transition-all duration-500 ${
-                    value === option.name
-                      ? "bg-blue-500 text-white hover:bg-blue-600 hover:text-gray-100"
-                      : "hover:bg-gray-50"
-                  }`}
-                >
-                  {option.name}
+        {isOpen && (
+          <div className="absolute z-[65] order-form-drop-down-cont">
+            <div className="order-form-drop-down">
+              {Object.entries(groupedOptions).map(([category, options]) => (
+                <div key={category}>
+                  <div className="category-name">{category}</div>
+                  {options.map((option) => (
+                    <div
+                      key={option.id}
+                      onClick={() => handleOptionSelect(option.name)}
+                      className={`py-2 px-2 m-1 cursor-pointer rounded-md text-gray-600 truncate transition-all duration-500 ${
+                        value === option.name
+                          ? "bg-blue-500 text-white hover:bg-blue-600 hover:text-gray-100"
+                          : "hover:bg-gray-50"
+                      }`}
+                    >
+                      {option.name}
+                    </div>
+                  ))}
                 </div>
               ))}
+              {Object.keys(groupedOptions).length === 0 && (
+                <div className="px-3 py-2 text-gray-500">No options found</div>
+              )}
             </div>
-          ))}
-          {Object.keys(groupedOptions).length === 0 && (
-            <div className="px-3 py-2 text-gray-500">No options found</div>
-          )}
+          </div>
+        )}
+      </div>
+      {/* Pupular Buttons */}
+      <div className="mt-8">
+        <p className="text-gray-500 text-sm">Popular:</p>
+        <div className="container">
+          <div className="flex flex-wrap">
+            {popularButtons.map((button) => (
+              <button
+                key={button.id}
+                onClick={() => handleOptionSelect(button.name)}
+                className={`py-2 px-3 m-3 w-fit rounded-lg text-sm transition-all duration-500 ${
+                  value === button.name
+                    ? "bg-blue-500 text-white hover:bg-blue-600 hover:text-gray-100"
+                    : "bg-gray-200 text-gray-600 hover:text-blue-500"
+                }`}
+              >
+                {button.name}
+              </button>
+            ))}
+          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };

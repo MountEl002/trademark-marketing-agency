@@ -134,12 +134,15 @@ const AssignmentTypeSelector: React.FC<AssignmentTypeSelectorProps> = ({
         !containerRef.current.contains(event.target as Node)
       ) {
         setIsOpen(false);
+        if (!value) {
+          setSearchTerm("");
+        }
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [value]);
 
   // Handle option selection
   const handleOptionSelect = (optionName: string) => {
@@ -150,28 +153,33 @@ const AssignmentTypeSelector: React.FC<AssignmentTypeSelectorProps> = ({
 
   // Handle input change
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
+    const newValue = e.target.value;
+    setSearchTerm(newValue);
+    if (newValue !== value) {
+      onChange(""); // Clear the selected value when user starts typing something new
+    }
     setIsOpen(true);
   };
 
   return (
-    <div ref={containerRef} className={`relative ${className}`}>
-      <div>
-        <div className="vertical-space-between mb-2">
-          <p className="mb-3 text-xl text-gray-600">Assignment type</p>
-          <p
-            className={`text-sm transition-all duration-1000 ${
-              isOpen ? "text-gray-400" : "text-white"
-            }`}
-          >
-            Select or search assignment
-          </p>
-        </div>
+    <div className={`${className}`}>
+      <div className="vertical-space-between mb-2">
+        <p className="mb-3 text-xl text-gray-600">Assignment type</p>
+        <p
+          className={`text-sm transition-all duration-1000 ${
+            isOpen ? "text-gray-400" : "text-white"
+          }`}
+        >
+          Select or search assignment
+        </p>
+      </div>
+      <div ref={containerRef} className="w-fit relative">
         <div
-          className={`w-[320px] p-3 bg-gray-100 rounded-md transition-all duration-500 ${
+          onClick={() => setIsOpen(true)}
+          className={`w-[324px] p-3 bg-gray-100 rounded-md transition-all duration-500 ${
             isOpen
               ? "horizontal-start gap-3 border border-blue-500"
-              : "horizontal-space-between"
+              : "horizontal-space-between cursor-pointer"
           }`}
         >
           <IoSearch
@@ -180,47 +188,45 @@ const AssignmentTypeSelector: React.FC<AssignmentTypeSelectorProps> = ({
           />
           <input
             type="text"
-            value={searchTerm || value}
+            value={isOpen ? searchTerm : value}
             onChange={handleInputChange}
             onFocus={() => setIsOpen(true)}
-            placeholder="Select assignment"
+            placeholder={value || "Select assignment"}
             className="focus:outline-none bg-transparent w-[80%]"
           />
           <FaChevronDown
             size={20}
-            onClick={() => setIsOpen(true)}
-            className={`text-gray-400 ${
-              isOpen ? "hidden" : "block cursor-pointer"
-            }`}
+            className={`text-gray-400 ${isOpen ? "hidden" : "block"}`}
           />
         </div>
-      </div>
-
-      {isOpen && (
-        <div className="Order-form-drop-down">
-          {Object.entries(groupedOptions).map(([category, options]) => (
-            <div key={category} className="category">
-              <div className="category-name">{category}</div>
-              {options.map((option) => (
-                <div
-                  key={option.id}
-                  onClick={() => handleOptionSelect(option.name)}
-                  className={`py-3 px-4 cursor-pointer rounded-md text-gray-600 truncate transition-all duration-500 ${
-                    value === option.name
-                      ? "bg-blue-500 text-white hover:bg-blue-600 hover:text-gray-100"
-                      : "hover:bg-gray-50"
-                  }`}
-                >
-                  {option.name}
+        {isOpen && (
+          <div className="absolute z-[65] order-form-drop-down-cont">
+            <div className="order-form-drop-down">
+              {Object.entries(groupedOptions).map(([category, options]) => (
+                <div key={category}>
+                  <div className="category-name">{category}</div>
+                  {options.map((option) => (
+                    <div
+                      key={option.id}
+                      onClick={() => handleOptionSelect(option.name)}
+                      className={`p-2 my-1 mx-2 cursor-pointer rounded-md text-gray-600 truncate transition-all duration-500 ${
+                        value === option.name
+                          ? "bg-blue-500 text-white hover:bg-blue-600 hover:text-gray-100"
+                          : "hover:bg-gray-50"
+                      }`}
+                    >
+                      {option.name}
+                    </div>
+                  ))}
                 </div>
               ))}
+              {Object.keys(groupedOptions).length === 0 && (
+                <div className="px-1 py-2 text-gray-500">No options found</div>
+              )}
             </div>
-          ))}
-          {Object.keys(groupedOptions).length === 0 && (
-            <div className="px-3 py-2 text-gray-500">No options found</div>
-          )}
-        </div>
-      )}
+          </div>
+        )}
+      </div>
 
       {/* Pupular Buttons */}
       <div className="mt-8">
@@ -231,7 +237,7 @@ const AssignmentTypeSelector: React.FC<AssignmentTypeSelectorProps> = ({
               <button
                 key={button.id}
                 onClick={() => handleOptionSelect(button.name)}
-                className={`py-2 px-3 my-3 mr-3 w-fit rounded-lg text-sm transition-all duration-500 ${
+                className={`py-2 px-3 m-3 w-fit rounded-lg text-sm transition-all duration-500 ${
                   value === button.name
                     ? "bg-blue-500 text-white hover:bg-blue-600 hover:text-gray-100"
                     : "bg-gray-200 text-gray-600 hover:text-blue-500"

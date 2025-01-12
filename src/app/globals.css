@@ -369,14 +369,32 @@ h6 {
   @apply border border-x-transparent p-3 hover:bg-blue-200;
 }
 
-.Order-form-drop-down {
-  @apply mt-1 bg-gray-200 rounded-md shadow-lg h-[335px] w-[320px] overflow-y-auto overflow-x-hidden text-sm;
+.order-form-drop-down-cont {
+  @apply mt-1 p-2 bg-gray-200 rounded-md shadow-lg w-[324px];
 }
 
-.Order-form-drop-down .category {
-  @apply px-1;
+.order-form-drop-down {
+  @apply max-h-[335px] overflow-y-auto overflow-x-hidden text-sm;
 }
 
-.category .category-name {
-  @apply text-blue-500 border-b border-gray-400 py-3 mx-4 mb-1;
+.category-name {
+  @apply text-blue-500 border-b border-gray-400 py-3 mx-2;
+}
+
+.order-form-drop-down::-webkit-scrollbar {
+  width: 0.5rem;
+}
+
+.order-form-drop-down::-webkit-scrollbar-track {
+  background: #9ca3af;
+  border-radius: 100vw;
+}
+
+.order-form-drop-down::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 100vw;
+}
+
+.order-form-drop-down::-webkit-scrollbar-thumb:hover {
+  background: #374151;
 }

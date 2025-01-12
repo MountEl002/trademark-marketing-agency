@@ -324,7 +324,7 @@ function OrderPage({ params }: PageProps) {
               </div>
             </div>
             <div
-              className={`bg-white rounded-lg py-3 px-2 transition-all duration-300 ease-in-out overflow-hidden ${
+              className={`bg-white rounded-lg py-3 px-2 transition-all duration-300 ${
                 activeField === field.id
                   ? "flex flex-col items-start justify-start h-fit"
                   : "hidden"
