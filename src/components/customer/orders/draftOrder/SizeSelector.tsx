@@ -17,13 +17,13 @@ const parseValueString = (
   if (!value) return null;
 
   const match = value.match(
-    /(\d+\.?\d*) pages, (\d+) words, (Single|Double) space/
+    /^(\d+) words, \(~ (\d+\.?\d*) page(?:s)?\), (Single|Double) spacing$/
   );
   if (!match) return null;
 
   return {
-    pages: match[1],
-    words: match[2],
+    pages: match[2],
+    words: match[1],
     spacing: match[3] as LineSpacingType,
   };
 };
@@ -150,9 +150,11 @@ const SizeSelector: React.FC<SizeSelectorProps> = ({ value, onChange }) => {
       pages = wordsToPages(inputValue, lineSpacing);
     }
 
-    const sizeString = `${Math.round(parseFloat(words))} words, (~ ${parseFloat(
-      pages
-    ).toFixed(1)} pages), ${lineSpacing} spacing`;
+    const finalwords = Math.round(parseFloat(words));
+    const finalPages = parseFloat(pages).toFixed(1);
+    const sizeString = `${finalwords} words, (~ ${finalPages} page${
+      parseFloat(pages) !== 1 ? "s" : ""
+    }), ${lineSpacing} spacing`;
     onChange(sizeString);
   };
 
@@ -230,7 +232,10 @@ const SizeSelector: React.FC<SizeSelectorProps> = ({ value, onChange }) => {
           <div className="absolute left-1/2 -translate-x-1/2 -bottom-8">
             {inputValue && mode === "Words" && (
               <p className="text-sm text-gray-400 mt-1">
-                ~ {wordsToPages(inputValue, lineSpacing)} pages
+                ~ {wordsToPages(inputValue, lineSpacing)} page
+                {parseFloat(wordsToPages(inputValue, lineSpacing)) !== 1
+                  ? "s"
+                  : ""}
               </p>
             )}
             {inputValue && mode === "Pages" && (
@@ -242,7 +247,7 @@ const SizeSelector: React.FC<SizeSelectorProps> = ({ value, onChange }) => {
         </div>
 
         {/* Toggle line spacing */}
-        <div ref={containerRef} className="w-full">
+        <div ref={containerRef} className="w-full mt-6 md:mt-0">
           <button
             type="button"
             onClick={() => setShowSpacingOptions(!showSpacingOptions)}
@@ -294,19 +299,18 @@ const SizeSelector: React.FC<SizeSelectorProps> = ({ value, onChange }) => {
       </div>
 
       {/* Save Button */}
-      <div className="horizontal w-full mt-6">
+      <div className="order-form-save-button group mt-6">
         <button
           type="button"
           onClick={() => {
             handleSave();
             setSizeInputFocus(false);
           }}
-          className="w-fit pl-24 p-0.5 group bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center justify-center"
         >
           Save
           <IoChevronDown
             size={30}
-            className="ml-20 text-white rounded-sm transition-all duration-500 bg-blue-400 group-hover:bg-blue-500"
+            className="chev-icon group-hover:bg-blue-500"
           />
         </button>
       </div>

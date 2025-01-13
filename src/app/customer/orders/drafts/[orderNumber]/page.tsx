@@ -18,6 +18,7 @@ import SizeSelector from "@/components/customer/orders/draftOrder/SizeSelector";
 import DeadlineSelector from "@/components/customer/orders/draftOrder/DeadlineSelector";
 import InstructionsEditor from "@/components/customer/orders/draftOrder/InstructionsEditor";
 import ConfirmationDialog from "@/components/customer/orders/draftOrder/ConfirmationDialog";
+import CountdownDisplay from "@/components/customer/orders/draftOrder/CountdownDisplayer";
 
 interface PageProps {
   params: Promise<{
@@ -32,7 +33,10 @@ interface OrderData {
   language: string;
   size: string;
   words: number;
-  deadline: string;
+  deadline: {
+    date: string;
+    formattedDate: string;
+  };
   addOns: string;
   topic: string;
   subject: string;
@@ -48,7 +52,7 @@ function OrderPage({ params }: PageProps) {
     language: "",
     size: "",
     words: 0,
-    deadline: "",
+    deadline: { date: "", formattedDate: "" },
     addOns: "",
     topic: "",
     subject: "",
@@ -294,9 +298,14 @@ function OrderPage({ params }: PageProps) {
               <div className="first-div">
                 <p>{field.name}</p>
                 <p>
-                  {field.id === 10 && orderData.instructions
-                    ? "Successfully added instruction and/or files"
-                    : field.value || field.placeHolder}
+                  {field.id === 6 && orderData.deadline ? (
+                    <>
+                      {orderData.deadline.formattedDate} (
+                      <CountdownDisplay targetDate={orderData.deadline.date} />)
+                    </>
+                  ) : (
+                    field.value?.toString() || field.placeHolder
+                  )}
                   {!field.value && field.neccessity === "required" && (
                     <span className="animate-pulse ml-2 inline text-red-600">
                       ({field.neccessity})

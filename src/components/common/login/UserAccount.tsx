@@ -33,7 +33,7 @@ const UserAccount = () => {
   }`;
 
   return (
-    <Link href="#" className="relative vertical group transition-all h-full">
+    <div className="relative vertical group transition-all h-full cursor-pointer">
       <p className={myAccountLinkStyles}>
         <span>My Account</span>
         <FaChevronDown className={myAccountChevronLinkStyles} />
@@ -73,7 +73,7 @@ const UserAccount = () => {
           <SecondNavBarMobile />
         </div>
       )}
-    </Link>
+    </div>
   );
 };
 

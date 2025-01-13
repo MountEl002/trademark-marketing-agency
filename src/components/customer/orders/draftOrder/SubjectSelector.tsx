@@ -819,7 +819,7 @@ const SubjectSelector: React.FC<SubjectSelectorProps> = ({
             value={isOpen ? searchTerm : value}
             onChange={handleInputChange}
             onFocus={() => setIsOpen(true)}
-            placeholder={value || "Select assignment"}
+            placeholder={value || "Select your subject"}
             className="focus:outline-none bg-transparent w-[80%]"
           />
           <FaChevronDown

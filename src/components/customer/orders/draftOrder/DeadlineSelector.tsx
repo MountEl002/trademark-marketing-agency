@@ -1,31 +1,52 @@
 "use client";
 
 import { useState } from "react";
-import {
-  format,
-  differenceInDays,
-  differenceInHours,
-  differenceInMinutes,
-} from "date-fns";
+import { format, addHours, addDays } from "date-fns";
+import { IoChevronDown } from "react-icons/io5";
 
 interface DeadlineSelectorProps {
-  value: string;
-  onChange: (value: string) => void;
+  value:
+    | {
+        date: string;
+        formattedDate: string;
+      }
+    | string; // Include string type for backward compatibility
+  onChange: (value: { date: string; formattedDate: string }) => void;
 }
+interface PopularButtons {
+  id: number;
+  name: string;
+  hours: number;
+}
+
+const popularButtons: PopularButtons[] = [
+  { id: 1, name: "3 hours", hours: 3 },
+  { id: 2, name: "6 hours", hours: 6 },
+  { id: 3, name: "12 hours", hours: 12 },
+  { id: 4, name: "1 day", hours: 24 },
+  { id: 5, name: "2 days", hours: 48 },
+  { id: 6, name: "3 days", hours: 72 },
+  { id: 7, name: "5 days", hours: 120 },
+  { id: 8, name: "7 days", hours: 168 },
+  { id: 9, name: "10 days", hours: 240 },
+];
 
 const DeadlineSelector = ({ value, onChange }: DeadlineSelectorProps) => {
   // Extract date and time from value prop if it exists
   const extractDateTime = () => {
-    if (!value) return { date: "", time: "" };
+    if (!value || typeof value === "string") {
+      console.log("Value/deadline not found or in old format");
+      return { date: "", time: "" };
+    }
 
     try {
-      const dateStr = value.split("(")[0].trim();
-      const date = new Date(dateStr);
+      const date = new Date(value.date);
       return {
         date: format(date, "yyyy-MM-dd"),
         time: format(date, "HH:mm"),
       };
-    } catch {
+    } catch (error) {
+      console.log("Error parsing date:", error);
       return { date: "", time: "" };
     }
   };
@@ -34,38 +55,65 @@ const DeadlineSelector = ({ value, onChange }: DeadlineSelectorProps) => {
   const [selectedDate, setSelectedDate] = useState(date);
   const [selectedTime, setSelectedTime] = useState(time);
   const [errorMessage, setErrorMessage] = useState("");
+  const [activeButtonId, setActiveButtonId] = useState<number | null>(null);
 
-  // Function to format the countdown string
-  const getCountdownString = (targetDate: Date) => {
+  // Function to handle popular button clicks
+  const handlePopularButtonClick = (button: PopularButtons) => {
     const now = new Date();
-    const days = differenceInDays(targetDate, now);
-    const hours = differenceInHours(targetDate, now) % 24;
-    const minutes = differenceInMinutes(targetDate, now) % 60;
+    let targetDate: Date;
 
-    if (days > 0) {
-      return `Due in ${days} day${days > 1 ? "s" : ""} ${hours} hour${
-        hours !== 1 ? "s" : ""
-      } ${minutes} minute${minutes !== 1 ? "s" : ""}`;
-    } else if (hours > 0) {
-      return `Due in ${hours} hour${hours !== 1 ? "s" : ""} ${minutes} minute${
-        minutes !== 1 ? "s" : ""
-      }`;
-    } else if (minutes > 0) {
-      return `Due in ${minutes} minute${minutes !== 1 ? "s" : ""}`;
+    if (button.name.includes("days")) {
+      targetDate = addDays(now, button.hours / 24);
     } else {
-      return "Deadline expired. Please select a new deadline";
+      targetDate = addHours(now, button.hours);
     }
+
+    setSelectedDate(format(targetDate, "yyyy-MM-dd"));
+    setSelectedTime(format(targetDate, "HH:mm"));
+    setActiveButtonId(button.id);
+    setErrorMessage("");
+
+    setTimeout(() => {
+      setActiveButtonId(null);
+    }, 1000 * 60);
   };
+
+  // // Function to format the countdown string
+  // const getCountdownString = (targetDate: Date) => {
+  //   const now = new Date();
+  //   const days = differenceInDays(targetDate, now);
+  //   const hours = differenceInHours(targetDate, now) % 24;
+  //   const minutes = differenceInMinutes(targetDate, now) % 60;
+
+  //   if (days > 0) {
+  //     const hoursString =
+  //       hours > 0 ? ` ${hours} hour${hours !== 1 ? "s" : ""}` : "";
+  //     const minutesString =
+  //       minutes > 0 ? ` ${minutes} minute${minutes !== 1 ? "s" : ""}` : "";
+  //     return `Due in ${days} day${
+  //       days !== 1 ? "s" : ""
+  //     }${hoursString}${minutesString}`;
+  //   } else if (hours > 0) {
+  //     const minutesString =
+  //       minutes > 0 ? ` ${minutes} minute${minutes !== 1 ? "s" : ""}` : "";
+  //     return `Due in ${hours} hour${hours !== 1 ? "s" : ""}${minutesString}`;
+  //   } else if (minutes > 0) {
+  //     return `Due in ${minutes} minute${minutes !== 1 ? "s" : ""}`;
+  //   } else {
+  //     return "Deadline expired. Please select a new deadline";
+  //   }
+  // };
 
   const handleSave = () => {
     if (!selectedDate || !selectedTime) {
       setErrorMessage("Please select both date and time");
       return;
     }
-
     const selectedDateTime = new Date(`${selectedDate}T${selectedTime}`);
     const now = new Date();
-    const minDeadline = new Date(now.getTime() + 60 * 60 * 1000); // 1 hour from now
+    const minDeadline = new Date(
+      now.getTime() + 3 * 60 * 60 * 1000 - 1000 * 60 * 10
+    ); // 3 hours from now with a 10 minutes slippage
 
     if (selectedDateTime < minDeadline) {
       setErrorMessage("Deadline must be at least 1 hour from now");
@@ -73,56 +121,86 @@ const DeadlineSelector = ({ value, onChange }: DeadlineSelectorProps) => {
     }
 
     const formattedDate = format(selectedDateTime, "MMMM d, yyyy HHmm'hrs'");
-    const countdownString = getCountdownString(selectedDateTime);
-    const deadlineString = `${formattedDate} (${countdownString})`;
-    onChange(deadlineString);
+    onChange({
+      date: selectedDateTime.toISOString(),
+      formattedDate: formattedDate,
+    });
   };
 
   return (
-    <div className="p-4">
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
-          Select Date
-        </label>
-        <input
-          type="date"
-          value={selectedDate}
-          onChange={(e) => {
-            setSelectedDate(e.target.value);
-            setErrorMessage("");
-          }}
-          className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-        />
+    <div className="Vertical-start p-4">
+      <p className="order-form-field-title">Deadline</p>
+
+      {/* Date and time selection  */}
+      <div className="flex flex-row items-center justify-start gap-8 md:gap-3 my-6 w-full">
+        {/* Date Selection */}
+        <div className="w-fit">
+          <label className="block text-sm text-gray-400">Select Date</label>
+          <input
+            type="date"
+            value={selectedDate}
+            onChange={(e) => {
+              setSelectedDate(e.target.value);
+              setErrorMessage("");
+            }}
+            className="block w-full px-3 py-2 text-gray-500 bg-gray-200 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+
+        {/* Time Selection */}
+        <div className="w-fit">
+          <label className="block text-sm text-gray-400">Select Time</label>
+          <input
+            type="time"
+            value={selectedTime}
+            onChange={(e) => {
+              setSelectedTime(e.target.value);
+              setErrorMessage("");
+            }}
+            className="block w-full px-3 py-2 text-gray-500 bg-gray-200 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
       </div>
 
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
-          Select Time
-        </label>
-        <input
-          type="time"
-          value={selectedTime}
-          onChange={(e) => {
-            setSelectedTime(e.target.value);
-            setErrorMessage("");
-          }}
-          className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-        />
+      {errorMessage && (
+        <p className="animate-pulse text-red-600 text-sm">{errorMessage}</p>
+      )}
+
+      {/* Popular Buttons */}
+      <div className="my-8">
+        <p className="text-gray-500 text-sm">Popular:</p>
+        <div className="container">
+          <div className="order-form-buttons">
+            {popularButtons.map((button) => (
+              <button
+                key={button.id}
+                onClick={() => handlePopularButtonClick(button)}
+                className={`py-2 px-3 w-fit rounded-lg text-sm transition-all duration-500 ${
+                  activeButtonId === button.id
+                    ? "bg-blue-500 text-white hover:bg-blue-600"
+                    : "bg-gray-200 text-gray-600 hover:text-blue-500"
+                }`}
+              >
+                {button.name}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
-      {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
-
-      <button
-        onClick={handleSave}
-        disabled={!selectedDate || !selectedTime}
-        className={`w-full py-2 px-4 rounded-md text-white font-medium ${
-          !selectedDate || !selectedTime
-            ? "bg-gray-400 cursor-not-allowed"
-            : "bg-blue-600 hover:bg-blue-700"
-        }`}
-      >
-        Save Deadline
-      </button>
+      {/* Save Button */}
+      <div className="order-form-save-button">
+        <button
+          onClick={handleSave}
+          className="group transition-all duration-500"
+        >
+          Save Deadline
+          <IoChevronDown
+            size={30}
+            className="chev-icon group-hover:bg-blue-500"
+          />
+        </button>
+      </div>
     </div>
   );
 };

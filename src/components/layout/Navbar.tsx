@@ -175,10 +175,7 @@ const Navbar = () => {
               How to order
             </Link>
             {/* Services */}
-            <Link
-              href="#"
-              className="relative vertical group transition-all h-full"
-            >
+            <div className="relative vertical group transition-all h-full cursor-pointer">
               <p className={servicesLinkStyles}>
                 <span>Services</span>
                 <FaChevronDown className={servicesChevronLinkStyles} />
@@ -229,13 +226,10 @@ const Navbar = () => {
                   </div>
                 </div>
               )}
-            </Link>
+            </div>
 
             {/* Offers */}
-            <Link
-              href="#"
-              className="relative vertical group transition-all h-full"
-            >
+            <div className="relative vertical group transition-all h-full cursor-pointer">
               <p className={offersLinkStyles}>
                 <span>Offers</span>
                 <FaChevronDown className={offersChevronLinkStyles} />
@@ -263,7 +257,7 @@ const Navbar = () => {
                   </div>
                 </div>
               )}
-            </Link>
+            </div>
 
             {/* Prices */}
             <Link href="/prices" className={pricesLinkStyles}>
@@ -274,10 +268,7 @@ const Navbar = () => {
               Reviews
             </Link>
             {/* Resources */}
-            <Link
-              href="#"
-              className="relative group transition-all h-full hidden lg:flex flex-col items-center justify-center"
-            >
+            <div className="relative group transition-all h-full hidden lg:flex flex-col items-center justify-center cursor-pointer">
               <p className={resourcesLinkStyles}>
                 <span>Resources</span>
                 <FaChevronDown className={resourcesChevronLinkStyles} />
@@ -305,7 +296,7 @@ const Navbar = () => {
                   </div>
                 </div>
               )}
-            </Link>
+            </div>
           </div>
           {/* Right Section */}
           <UserAccessControl />
@@ -401,7 +392,7 @@ function MobileNav({ closeMobileMenu }: { closeMobileMenu: () => void }) {
             How to order
           </Link>
           {/*Mobile Menu --  Services */}
-          <Link href="" className="w-full group transition-all">
+          <div className="w-full group transition-all cursor-pointer">
             <p className={servicesLinkStyles}>
               <span>Services</span>
               <FaChevronDown className={servicesChevronLinkStyles} />
@@ -450,10 +441,10 @@ function MobileNav({ closeMobileMenu }: { closeMobileMenu: () => void }) {
                 </div>
               </div>
             </div>
-          </Link>
+          </div>
 
           {/*Mobile Menu --  Offers */}
-          <Link href="#" className="w-full relative group transition-all">
+          <div className="w-full relative group transition-all cursor-pointer">
             <p className={offersLinkStyles}>
               <span>Offers</span>
               <FaChevronDown className={offersChevronLinkStyles} />
@@ -479,7 +470,7 @@ function MobileNav({ closeMobileMenu }: { closeMobileMenu: () => void }) {
                 </div>
               </div>
             </div>
-          </Link>
+          </div>
 
           {/*Mobile Menu --  Prices */}
           <Link
@@ -498,7 +489,7 @@ function MobileNav({ closeMobileMenu }: { closeMobileMenu: () => void }) {
             Reviews
           </Link>
           {/*Mobile Menu --  Resources */}
-          <Link href="#" className="w-full relative group transition-all">
+          <div className="w-full relative group transition-all cursor-pointer">
             <p className={resourcesLinkStyles}>
               <span>Resources</span>
               <FaChevronDown className={resourcesChevronLinkStyles} />
@@ -524,7 +515,7 @@ function MobileNav({ closeMobileMenu }: { closeMobileMenu: () => void }) {
                 </div>
               </div>
             </div>
-          </Link>
+          </div>
         </div>
       </div>
     </div>

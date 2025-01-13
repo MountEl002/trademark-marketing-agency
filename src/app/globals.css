@@ -406,3 +406,15 @@ h6 {
 .order-form-buttons {
   @apply flex flex-wrap gap-4 mt-4;
 }
+
+.order-form-save-button {
+  @apply horizontal w-full;
+}
+
+.order-form-save-button button {
+  @apply w-fit pl-24 p-0.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center justify-center;
+}
+
+.order-form-save-button .chev-icon {
+  @apply ml-20 text-white rounded-sm transition-all duration-500 bg-blue-400;
+}
