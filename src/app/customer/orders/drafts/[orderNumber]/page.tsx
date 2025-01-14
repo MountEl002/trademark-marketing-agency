@@ -18,7 +18,7 @@ import SizeSelector from "@/components/customer/orders/draftOrder/SizeSelector";
 import DeadlineSelector from "@/components/customer/orders/draftOrder/DeadlineSelector";
 import InstructionsEditor from "@/components/customer/orders/draftOrder/InstructionsEditor";
 import ConfirmationDialog from "@/components/customer/orders/draftOrder/ConfirmationDialog";
-import CountdownDisplay from "@/components/customer/orders/draftOrder/CountdownDisplayer";
+import CountdownDisplayer from "@/components/customer/orders/draftOrder/CountdownDisplayer";
 
 interface PageProps {
   params: Promise<{
@@ -95,6 +95,8 @@ function OrderPage({ params }: PageProps) {
     const nextEmptyField = fields.find(
       (field) => !orderData[field.field as keyof OrderData]
     );
+    console.log("Next empty field is: ", nextEmptyField?.name);
+
     return nextEmptyField?.id || null;
   };
 
@@ -140,11 +142,12 @@ function OrderPage({ params }: PageProps) {
       ...prev,
       [field]: value,
     }));
-    updateFirebase(field, value);
 
     // Find and activate next empty field
     const nextEmptyField = findNextEmptyField();
     setActiveField(nextEmptyField);
+
+    updateFirebase(field, value);
   };
 
   const handleClick = (id: number) => {
@@ -301,7 +304,10 @@ function OrderPage({ params }: PageProps) {
                   {field.id === 6 && orderData.deadline ? (
                     <>
                       {orderData.deadline.formattedDate} (
-                      <CountdownDisplay targetDate={orderData.deadline.date} />)
+                      <CountdownDisplayer
+                        targetDate={orderData.deadline.date}
+                      />
+                      )
                     </>
                   ) : (
                     field.value?.toString() || field.placeHolder

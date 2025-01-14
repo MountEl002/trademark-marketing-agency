@@ -13,39 +13,68 @@ const TopicSelector: React.FC<TopicSelectorProps> = ({
   onContinue,
 }) => {
   const [localTopic, setLocalTopic] = useState(value);
+  const [inputBoxActive, setInputBoxActive] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleFocus = () => {
+    setInputBoxActive(true);
+    setErrorMessage("");
+  };
 
   const handleSubmit = () => {
     onChange(localTopic);
+    if (localTopic.length === 0) {
+      setErrorMessage("Topic is required");
+    }
     if (onContinue) {
       onContinue();
     }
   };
 
   return (
-    <div className="vertical-start gap-4">
-      <div className="w-full">
+    <div className="vertical-start p-4">
+      <p className="order-form-field-title">Assignment&apos;s topic or name</p>
+
+      <div className="w-full mb-6">
         <label
           htmlFor="topic"
-          className="block text-sm font-medium text-gray-700 mb-2"
+          className={`text-sm transition-all duration-1000 ${
+            inputBoxActive ? "text-gray-400" : "text-white"
+          }`}
         >
-          Enter your topic
+          Select or search your subject
         </label>
-        <textarea
+        <input
           id="topic"
           value={localTopic}
+          onFocus={handleFocus}
+          onBlur={() => setInputBoxActive(false)}
           onChange={(e) => setLocalTopic(e.target.value)}
-          className="w-full min-h-[100px] p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-          placeholder="Enter the topic of your assignment..."
+          className={`w-full focus:outline-none p-3 mb-2 transition-all duration-500  rounded-lg box-border ${
+            errorMessage
+              ? "border border-red-500"
+              : inputBoxActive
+              ? "bg-gray-100 border border-blue-500"
+              : "bg-gray-200"
+          }`}
+          placeholder={value || "Name your assignment"}
         />
+        {errorMessage && !inputBoxActive && (
+          <p className="animate-pulse text-red-600 text-sm">{errorMessage}</p>
+        )}
       </div>
 
-      <div className="w-full flex justify-end">
+      {/* Save Button */}
+      <div className="order-form-save-button">
         <button
           onClick={handleSubmit}
-          className="relative group horizontal px-8 py-2 rounded-md bg-blue-600 hover:bg-blue-700 transition-all duration-500"
+          className="group transition-all duration-500"
         >
-          <span className="text-white text-sm mr-6">Continue</span>
-          <IoChevronDown className="absolute right-1 text-xl text-white rounded-sm transition-all duration-500 bg-blue-500 group-hover:bg-blue-600" />
+          Save
+          <IoChevronDown
+            size={30}
+            className="chev-icon group-hover:bg-blue-500"
+          />
         </button>
       </div>
     </div>

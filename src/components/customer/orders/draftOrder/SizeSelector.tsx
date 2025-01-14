@@ -299,13 +299,14 @@ const SizeSelector: React.FC<SizeSelectorProps> = ({ value, onChange }) => {
       </div>
 
       {/* Save Button */}
-      <div className="order-form-save-button group mt-6">
+      <div className="order-form-save-button mt-6">
         <button
           type="button"
           onClick={() => {
             handleSave();
             setSizeInputFocus(false);
           }}
+          className="group"
         >
           Save
           <IoChevronDown

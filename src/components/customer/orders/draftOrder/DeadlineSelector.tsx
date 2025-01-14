@@ -78,32 +78,6 @@ const DeadlineSelector = ({ value, onChange }: DeadlineSelectorProps) => {
     }, 1000 * 60);
   };
 
-  // // Function to format the countdown string
-  // const getCountdownString = (targetDate: Date) => {
-  //   const now = new Date();
-  //   const days = differenceInDays(targetDate, now);
-  //   const hours = differenceInHours(targetDate, now) % 24;
-  //   const minutes = differenceInMinutes(targetDate, now) % 60;
-
-  //   if (days > 0) {
-  //     const hoursString =
-  //       hours > 0 ? ` ${hours} hour${hours !== 1 ? "s" : ""}` : "";
-  //     const minutesString =
-  //       minutes > 0 ? ` ${minutes} minute${minutes !== 1 ? "s" : ""}` : "";
-  //     return `Due in ${days} day${
-  //       days !== 1 ? "s" : ""
-  //     }${hoursString}${minutesString}`;
-  //   } else if (hours > 0) {
-  //     const minutesString =
-  //       minutes > 0 ? ` ${minutes} minute${minutes !== 1 ? "s" : ""}` : "";
-  //     return `Due in ${hours} hour${hours !== 1 ? "s" : ""}${minutesString}`;
-  //   } else if (minutes > 0) {
-  //     return `Due in ${minutes} minute${minutes !== 1 ? "s" : ""}`;
-  //   } else {
-  //     return "Deadline expired. Please select a new deadline";
-  //   }
-  // };
-
   const handleSave = () => {
     if (!selectedDate || !selectedTime) {
       setErrorMessage("Please select both date and time");
