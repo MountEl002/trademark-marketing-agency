@@ -90,13 +90,17 @@ function OrderPage({ params }: PageProps) {
     }
   };
 
-  // Function to find the next empty field
   const findNextEmptyField = () => {
-    const nextEmptyField = fields.find(
+    // Start searching from the field after the current active field
+    const fieldsAfterCurrent = fields.filter(
+      (field) => field.id > (activeField || 0)
+    );
+
+    const nextEmptyField = fieldsAfterCurrent.find(
       (field) => !orderData[field.field as keyof OrderData]
     );
-    console.log("Next empty field is: ", nextEmptyField?.name);
 
+    console.log("Next empty field is: ", nextEmptyField?.name);
     return nextEmptyField?.id || null;
   };
 
@@ -107,7 +111,44 @@ function OrderPage({ params }: PageProps) {
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-          setOrderData(docSnap.data() as OrderData);
+          const data = docSnap.data() as OrderData;
+          setOrderData(data);
+
+          // Find the first empty field on page load
+          switch (true) {
+            case !data.assignmentType:
+              setActiveField(1);
+              break;
+            case !data.service:
+              setActiveField(2);
+              break;
+            case !data.academicLevel:
+              setActiveField(3);
+              break;
+            case !data.language:
+              setActiveField(4);
+              break;
+            case !data.size:
+              setActiveField(5);
+              break;
+            case !data.deadline.date:
+              setActiveField(6);
+              break;
+            case !data.addOns:
+              setActiveField(7);
+              break;
+            case !data.topic:
+              setActiveField(8);
+              break;
+            case !data.subject:
+              setActiveField(9);
+              break;
+            case !data.instructions:
+              setActiveField(10);
+              break;
+            default:
+              setActiveField(null);
+          }
         } else {
           console.error("No such document!");
           router.push("/customer/orders/drafts");
