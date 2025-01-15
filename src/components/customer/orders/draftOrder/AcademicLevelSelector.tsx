@@ -7,7 +7,7 @@ interface AcademicLevelSelectorProps {
 
 const academicLevels = [
   { id: "1", name: "Middle School" },
-  { id: "2", name: "High school" },
+  { id: "2", name: "High School" },
   { id: "3", name: "College" },
   { id: "4", name: "Bachelor's" },
   { id: "5", name: "Master's" },

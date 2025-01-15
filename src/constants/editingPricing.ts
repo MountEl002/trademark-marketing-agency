@@ -1,4 +1,4 @@
-// constants/pricing.ts
+// constants/editingPricing.ts
 
 import { PricingData, TimeFrame, AcademicLevel } from '@/types/pricing';
 
@@ -67,7 +67,9 @@ export const PRICING_DATA: PricingData = {
 
 // Helper functions with proper typing
 export const getPrice = (level: AcademicLevel, timeframe: TimeFrame): number => {
+  console.log(PRICING_DATA['College']['3 hrs'])
   return PRICING_DATA[level][timeframe];
+  
 };
 
 export const getAllTimeframes = (): TimeFrame[] => {
@@ -76,4 +78,17 @@ export const getAllTimeframes = (): TimeFrame[] => {
 
 export const getAllLevels = (): AcademicLevel[] => {
   return Object.keys(PRICING_DATA) as AcademicLevel[];
+};
+
+export const editingTotalPrice = (
+  academicLevel: AcademicLevel,
+  deadline: TimeFrame,
+  wordCount: number
+): number => {
+  if (academicLevel === undefined || deadline === undefined) return 0
+  const basePrice = getPrice(academicLevel, deadline);
+  const multiplier = Math.ceil(wordCount / 275);
+  const totalPrice = basePrice * multiplier;
+
+  return Number(totalPrice.toFixed(2));
 };

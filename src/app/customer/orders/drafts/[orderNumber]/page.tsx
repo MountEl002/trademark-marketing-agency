@@ -19,6 +19,13 @@ import DeadlineSelector from "@/components/customer/orders/draftOrder/DeadlineSe
 import InstructionsEditor from "@/components/customer/orders/draftOrder/InstructionsEditor";
 import ConfirmationDialog from "@/components/customer/orders/draftOrder/ConfirmationDialog";
 import CountdownDisplayer from "@/components/customer/orders/draftOrder/CountdownDisplayer";
+import { calculateDeadlineString } from "@/constants/calculateDeadlineString";
+import { AcademicLevel, TimeFrame } from "@/types/pricing";
+import { WritingTotalPriceMapper } from "@/utils/writingPriceMapper";
+import { editingPriceMapper } from "@/utils/editingPriceMapper";
+import { rewritingPriceMapper } from "@/utils/rewritingPriceMapper";
+import { proofreadingPriceMapper } from "@/utils/proofreadingPriceMapper";
+import { IoChevronForwardSharp } from "react-icons/io5";
 
 interface PageProps {
   params: Promise<{
@@ -66,9 +73,73 @@ function OrderPage({ params }: PageProps) {
   const [errorDiscarding, setErrorDiscarding] = useState(false);
   const [successDiscarding, setSuccessDiscarding] = useState(false);
   const [discarding, setDiscarding] = useState(false);
+
   const router = useRouter();
 
-  console.log(addOnsTotalPrice);
+  // PRICE CALCULATION SECTION
+  const allFieldsFilled = [
+    orderData.academicLevel,
+    orderData.deadline,
+    orderData.size,
+    orderData.assignmentType,
+    orderData.instructions,
+    orderData.language,
+    orderData.service,
+    orderData.subject,
+    orderData.topic,
+  ];
+
+  const areAllFieldsFilled = () => {
+    return allFieldsFilled.every((field) => field !== null && field !== "");
+  };
+
+  // Price calculation section
+  const calculateServicePrice = () => {
+    if (!areAllFieldsFilled()) return null;
+
+    const deadlineString = calculateDeadlineString(
+      orderData.deadline.date
+    ) as TimeFrame;
+    const academicLevelString = orderData.academicLevel as AcademicLevel;
+
+    switch (orderData.service.toLowerCase()) {
+      case "writing":
+        return WritingTotalPriceMapper(
+          academicLevelString,
+          deadlineString,
+          orderData.words
+        );
+
+      case "editing":
+        return editingPriceMapper(
+          academicLevelString,
+          deadlineString,
+          orderData.words
+        );
+
+      case "proofreading":
+        return proofreadingPriceMapper(
+          academicLevelString,
+          deadlineString,
+          orderData.words
+        );
+
+      case "rewriting":
+        return rewritingPriceMapper(
+          academicLevelString,
+          deadlineString,
+          orderData.words
+        );
+
+      default:
+        console.warn("Unknown service type:", orderData.service);
+        return null;
+    }
+  };
+
+  const servicePrice = calculateServicePrice();
+  const totalPrice = (servicePrice?.price ?? 0) + addOnsTotalPrice;
+  console.log("The price for writing service is: ", servicePrice?.price ?? 0);
 
   // Function to handle draft deletion
   const handleDiscardDraft = async () => {
@@ -414,12 +485,10 @@ function OrderPage({ params }: PageProps) {
                 ) : field.id === 5 ? (
                   <SizeSelector
                     value={orderData.size}
-                    onChange={(sizeString) => {
-                      // Extract word count from the size string
-                      const wordCount = parseInt(sizeString.split(" ")[2]);
+                    onChange={(data) => {
                       // Update both fields using the existing updateField function
-                      updateField("size", sizeString);
-                      updateField("words", wordCount);
+                      updateField("size", data.sizeString);
+                      updateField("words", data.finalWords);
                     }}
                   />
                 ) : field.id === 6 ? (
@@ -468,6 +537,28 @@ function OrderPage({ params }: PageProps) {
           </div>
         ))}
       </div>
+
+      {/* Totol price of the order */}
+      {areAllFieldsFilled() && (
+        <div className="py-2 bg-green-300 w-full">
+          <div className="horizontal-space-between max-w-4xl mx-auto px-3">
+            <p className="text-base text-gray-600">
+              Total price:{" "}
+              <span className="text-gray-700 font-medium">${totalPrice}</span>
+            </p>
+            {/* Add funds Button */}
+            <div className="order-form-save-button mt-6">
+              <button type="button" className="group">
+                Add funds
+                <IoChevronForwardSharp
+                  size={30}
+                  className="chev-icon group-hover:bg-blue-500"
+                />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

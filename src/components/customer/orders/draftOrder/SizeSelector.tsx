@@ -3,7 +3,13 @@ import { IoAdd, IoRemove, IoChevronDown } from "react-icons/io5";
 
 interface SizeSelectorProps {
   value: string;
-  onChange: (sizeString: string) => void;
+  onChange: ({
+    sizeString,
+    finalWords,
+  }: {
+    sizeString: string;
+    finalWords: number;
+  }) => void;
 }
 
 // Parse the initial value string to extract pages/words
@@ -150,12 +156,14 @@ const SizeSelector: React.FC<SizeSelectorProps> = ({ value, onChange }) => {
       pages = wordsToPages(inputValue, lineSpacing);
     }
 
-    const finalwords = Math.round(parseFloat(words));
+    const finalWords = Math.round(parseFloat(words));
+    console.log("The final wiords chosen by the user is: ", finalWords);
+    console.log(typeof finalWords);
     const finalPages = parseFloat(pages).toFixed(1);
-    const sizeString = `${finalwords} words, (~ ${finalPages} page${
+    const sizeString = `${finalWords} words, (~ ${finalPages} page${
       parseFloat(pages) !== 1 ? "s" : ""
     }), ${lineSpacing} spacing`;
-    onChange(sizeString);
+    onChange({ sizeString: sizeString, finalWords: finalWords });
   };
 
   // Handle click outside

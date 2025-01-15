@@ -64,6 +64,10 @@ export const useOrderCreation = () => {
         topic: "",
         subject: "",
         instructions: "",
+        price: 0,
+        sources: "",
+        style: "",
+        userBalance: "",
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };

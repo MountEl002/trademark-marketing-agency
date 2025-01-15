@@ -9,6 +9,8 @@ const WritingPricing = () => {
   const timeframes = getAllTimeframes();
   const levels = getAllLevels();
 
+  console.log("The price is:", PRICING_DATA["College"]["3 hrs"]);
+
   return (
     <div className="prices-table">
       <table>
