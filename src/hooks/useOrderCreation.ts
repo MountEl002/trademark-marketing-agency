@@ -67,7 +67,7 @@ export const useOrderCreation = () => {
         price: 0,
         sources: "",
         style: "",
-        userBalance: "",
+        userBalance: 0,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };

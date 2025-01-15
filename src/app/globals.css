@@ -418,3 +418,11 @@ h6 {
 .order-form-save-button .chev-icon {
   @apply ml-20 text-white rounded-sm transition-all duration-500 bg-blue-400;
 }
+
+.add-funds-button button {
+  @apply w-fit pl-8 sm:pl-14 p-0.5 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center justify-center;
+}
+
+.add-funds-button .chev-icon {
+  @apply ml-4 sm:ml-10 text-white rounded-sm transition-all duration-500 bg-green-400;
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { use, useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { IoChevronDown } from "react-icons/io5";
 import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
@@ -26,6 +26,8 @@ import { editingPriceMapper } from "@/utils/editingPriceMapper";
 import { rewritingPriceMapper } from "@/utils/rewritingPriceMapper";
 import { proofreadingPriceMapper } from "@/utils/proofreadingPriceMapper";
 import { IoChevronForwardSharp } from "react-icons/io5";
+import StyleSelector from "@/components/customer/orders/draftOrder/StyleSelecteor";
+import SourcesSelector from "@/components/customer/orders/draftOrder/SourcesSelector";
 
 interface PageProps {
   params: Promise<{
@@ -48,6 +50,10 @@ interface OrderData {
   topic: string;
   subject: string;
   instructions: string;
+  price: number;
+  sources: string;
+  style: string;
+  userBalance: number;
 }
 
 function OrderPage({ params }: PageProps) {
@@ -64,10 +70,15 @@ function OrderPage({ params }: PageProps) {
     topic: "",
     subject: "",
     instructions: "",
+    price: 0,
+    sources: "",
+    style: "",
+    userBalance: 0,
   });
 
   const [loading, setLoading] = useState(true);
   const [activeField, setActiveField] = useState<number | null>(null);
+  const fieldRefs = useRef<Array<HTMLDivElement | null>>([]);
   const [addOnsTotalPrice, setAddOnsTotalPrice] = useState(0);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [errorDiscarding, setErrorDiscarding] = useState(false);
@@ -87,6 +98,8 @@ function OrderPage({ params }: PageProps) {
     orderData.service,
     orderData.subject,
     orderData.topic,
+    orderData.sources,
+    orderData.style,
   ];
 
   const areAllFieldsFilled = () => {
@@ -140,6 +153,7 @@ function OrderPage({ params }: PageProps) {
   const servicePrice = calculateServicePrice();
   const totalPrice = (servicePrice?.price ?? 0) + addOnsTotalPrice;
   console.log("The price for writing service is: ", servicePrice?.price ?? 0);
+  console.log("The total price is: ", totalPrice);
 
   // Function to handle draft deletion
   const handleDiscardDraft = async () => {
@@ -150,6 +164,8 @@ function OrderPage({ params }: PageProps) {
       setDiscarding(false);
       setSuccessDiscarding(true);
       setTimeout(() => {
+        setShowConfirmation(false);
+        setSuccessDiscarding(false);
         router.push("/customer/orders/drafts");
       }, 2000);
     } catch (error) {
@@ -175,6 +191,7 @@ function OrderPage({ params }: PageProps) {
     return nextEmptyField?.id || null;
   };
 
+  // Fetch data from Firebase before page load
   useEffect(() => {
     const fetchOrderData = async () => {
       try {
@@ -271,6 +288,8 @@ function OrderPage({ params }: PageProps) {
     // Handle the uploaded files as needed
   };
 
+  // Update the price field
+
   const fields = [
     {
       id: 1,
@@ -352,7 +371,48 @@ function OrderPage({ params }: PageProps) {
       value: orderData.instructions,
       field: "instructions" as keyof OrderData,
     },
+    {
+      id: 11,
+      name: "Style",
+      placeHolder: "Select your citation style",
+      neccessity: "required",
+      value: orderData.style,
+      field: "style" as keyof OrderData,
+    },
+    {
+      id: 12,
+      name: "sources",
+      placeHolder: "Select the required number of sources",
+      neccessity: "required",
+      value: orderData.sources,
+      field: "sources" as keyof OrderData,
+    },
   ];
+
+  // Initialize refs array in useEffect to avoid issues with changing array length
+  useEffect(() => {
+    fieldRefs.current = fieldRefs.current.slice(0, fields.length);
+  }, [fields.length]);
+
+  // Scroll to active field effect
+  useEffect(() => {
+    if (activeField !== null) {
+      const activeElement = fieldRefs.current[activeField - 1];
+      if (activeElement) {
+        // Calculate positions
+        const elementRect = activeElement.getBoundingClientRect();
+        const absoluteElementTop = elementRect.top + window.pageYOffset;
+        const middle =
+          absoluteElementTop - window.innerHeight / 2 + elementRect.height / 2;
+
+        // Smooth scroll to the element
+        window.scrollTo({
+          top: middle,
+          behavior: "smooth",
+        });
+      }
+    }
+  }, [activeField]);
 
   if (loading) {
     return (
@@ -363,7 +423,7 @@ function OrderPage({ params }: PageProps) {
   }
 
   return (
-    <div className="bg-gray-200 min-h-screen overflow-hidden">
+    <div className="bg-gray-200 min-h-screen overflow-hidden pb-80">
       <div className="fixed inset-x-0 top-0 h-24 z-[60] py-8 bg-gray-200">
         <div className="horizontal-space-between max-w-4xl mx-auto px-3">
           <div>
@@ -399,9 +459,14 @@ function OrderPage({ params }: PageProps) {
       />
 
       {/* List of fields */}
-      <div className="grid grid-cols-1 gap-2 my-24 max-w-4xl mx-auto px-3">
+      <div className="grid grid-cols-1 gap-2 mb-[0.18rem] mt-[6.3rem] max-w-4xl mx-auto px-3">
         {fields.map((field) => (
-          <div key={field.id}>
+          <div
+            key={field.id}
+            ref={(element) => {
+              fieldRefs.current[field.id - 1] = element;
+            }}
+          >
             <div
               onClick={() => handleClick(field.id)}
               className={`draft-order-grids-min group ${
@@ -531,6 +596,16 @@ function OrderPage({ params }: PageProps) {
                     value={orderData.instructions}
                     onUpdate={handleInstructionsUpdate}
                   />
+                ) : field.id === 11 ? (
+                  <StyleSelector
+                    value={orderData.style}
+                    onChange={(value: unknown) => updateField("style", value)}
+                  />
+                ) : field.id === 12 ? (
+                  <SourcesSelector
+                    value={orderData.sources}
+                    onChange={(value) => updateField("sources", value)}
+                  />
                 ) : null}
               </div>
             </div>
@@ -540,21 +615,24 @@ function OrderPage({ params }: PageProps) {
 
       {/* Totol price of the order */}
       {areAllFieldsFilled() && (
-        <div className="py-2 bg-green-300 w-full">
-          <div className="horizontal-space-between max-w-4xl mx-auto px-3">
-            <p className="text-base text-gray-600">
-              Total price:{" "}
-              <span className="text-gray-700 font-medium">${totalPrice}</span>
-            </p>
-            {/* Add funds Button */}
-            <div className="order-form-save-button mt-6">
-              <button type="button" className="group">
-                Add funds
-                <IoChevronForwardSharp
-                  size={30}
-                  className="chev-icon group-hover:bg-blue-500"
-                />
-              </button>
+        <div className="py-2 w-full">
+          <div className="max-w-4xl mx-auto px-3">
+            <div className="horizontal-space-between pl-3 pr-2 py-2 rounded-lg bg-gray-100 hover:bg-white">
+              <div className="horizontal-space-between w-1/3 gap-3">
+                <p className="w-fit">Total price:</p>
+                <p className="text-gray-700 font-medium">${totalPrice}</p>
+              </div>
+              <p className="text-base text-gray-600"></p>
+              {/* Add funds Button */}
+              <div className="add-funds-button text-sm">
+                <button type="button" className="group">
+                  Add funds
+                  <IoChevronForwardSharp
+                    size={30}
+                    className="chev-icon group-hover:bg-green-500"
+                  />
+                </button>
+              </div>
             </div>
           </div>
         </div>
