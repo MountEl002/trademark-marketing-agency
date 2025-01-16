@@ -155,6 +155,7 @@ const SourcesSelector: React.FC<SourcesSelectorProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
+  const [displayValue, setDisplayValue] = useState(value);
 
   // Filter options based on search term
   const filteredOptions = sourcesOptions.filter((option) =>
@@ -178,9 +179,8 @@ const SourcesSelector: React.FC<SourcesSelectorProps> = ({
         !containerRef.current.contains(event.target as Node)
       ) {
         setIsOpen(false);
-        if (!value) {
-          setSearchTerm("");
-        }
+        setSearchTerm("");
+        setDisplayValue(value); // Reset display value to selected value
       }
     };
 
@@ -199,9 +199,7 @@ const SourcesSelector: React.FC<SourcesSelectorProps> = ({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     setSearchTerm(newValue);
-    if (newValue !== value) {
-      onChange(""); // Clear the selected value when user starts typing something new
-    }
+    setDisplayValue(newValue);
     setIsOpen(true);
   };
 
@@ -232,7 +230,7 @@ const SourcesSelector: React.FC<SourcesSelectorProps> = ({
           />
           <input
             type="text"
-            value={isOpen ? searchTerm : value}
+            value={isOpen ? searchTerm : displayValue}
             onChange={handleInputChange}
             onFocus={() => setIsOpen(true)}
             placeholder={value || "Number of sources required"}

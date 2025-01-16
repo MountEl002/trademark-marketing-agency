@@ -51,26 +51,32 @@ const InstructionsEditor: React.FC<InstructionsEditorProps> = ({
     setDropBoxActive(true);
   };
 
-  const handleFileDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDropBoxActive(false);
+  const handleFiles = useCallback(
+    (newFiles: File[]) => {
+      const fileInfos: UploadedFileInfo[] = newFiles.map((file) => ({
+        file,
+        progress: 0,
+        status: "pending",
+        id: Math.random().toString(36).substr(2, 9),
+      }));
 
-    const droppedFiles = Array.from(e.dataTransfer.files);
-    handleFiles(droppedFiles);
-  }, []);
+      setFiles((prev) => [...prev, ...fileInfos]);
+      if (errorMessage) setErrorMessage("");
+    },
+    [errorMessage]
+  );
 
-  const handleFiles = (newFiles: File[]) => {
-    const fileInfos: UploadedFileInfo[] = newFiles.map((file) => ({
-      file,
-      progress: 0,
-      status: "pending",
-      id: Math.random().toString(36).substr(2, 9),
-    }));
+  const handleFileDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setDropBoxActive(false);
 
-    setFiles((prev) => [...prev, ...fileInfos]);
-    if (errorMessage) setErrorMessage("");
-  };
+      const droppedFiles = Array.from(e.dataTransfer.files);
+      handleFiles(droppedFiles);
+    },
+    [handleFiles]
+  );
 
   const uploadFiles = async () => {
     // Validate that either instructions or files are present

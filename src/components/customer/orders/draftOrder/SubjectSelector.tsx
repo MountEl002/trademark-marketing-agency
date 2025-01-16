@@ -739,6 +739,7 @@ const SubjectSelector: React.FC<SubjectSelectorProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
+  const [displayValue, setDisplayValue] = useState(value);
 
   // Filter options based on search term
   const filteredOptions = SubjectOptions.filter((option) =>
@@ -762,9 +763,8 @@ const SubjectSelector: React.FC<SubjectSelectorProps> = ({
         !containerRef.current.contains(event.target as Node)
       ) {
         setIsOpen(false);
-        if (!value) {
-          setSearchTerm("");
-        }
+        setSearchTerm("");
+        setDisplayValue(value); // Reset display value to selected value
       }
     };
 
@@ -783,11 +783,14 @@ const SubjectSelector: React.FC<SubjectSelectorProps> = ({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     setSearchTerm(newValue);
-    if (newValue !== value) {
-      onChange(""); // Clear the selected value when user starts typing something new
-    }
+    setDisplayValue(newValue);
     setIsOpen(true);
   };
+
+  // Update display value when value prop changes
+  useEffect(() => {
+    setDisplayValue(value);
+  }, [value]);
 
   return (
     <div className="p-4">
@@ -816,7 +819,7 @@ const SubjectSelector: React.FC<SubjectSelectorProps> = ({
           />
           <input
             type="text"
-            value={isOpen ? searchTerm : value}
+            value={isOpen ? searchTerm : displayValue}
             onChange={handleInputChange}
             onFocus={() => setIsOpen(true)}
             placeholder={value || "Select your subject"}
