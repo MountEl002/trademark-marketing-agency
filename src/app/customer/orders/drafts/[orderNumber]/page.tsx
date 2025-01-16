@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useState, useRef, useCallback } from "react";
+import { use, useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { IoChevronDown } from "react-icons/io5";
 import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
@@ -88,35 +88,23 @@ function OrderPage({ params }: PageProps) {
   const router = useRouter();
 
   // PRICE CALCULATION SECTION
-  const areAllFieldsFilled = useCallback(() => {
-    const allFieldsFilled = [
-      orderData.academicLevel,
-      orderData.deadline,
-      orderData.size,
-      orderData.assignmentType,
-      orderData.instructions,
-      orderData.language,
-      orderData.service,
-      orderData.subject,
-      orderData.topic,
-      orderData.sources,
-      orderData.style,
-    ];
-
-    return allFieldsFilled.every((field) => field !== null && field !== "");
-  }, [
+  const allFieldsFilled = [
     orderData.academicLevel,
-    orderData.assignmentType,
     orderData.deadline,
+    orderData.size,
+    orderData.assignmentType,
     orderData.instructions,
     orderData.language,
     orderData.service,
-    orderData.size,
-    orderData.sources,
-    orderData.style,
     orderData.subject,
     orderData.topic,
-  ]);
+    orderData.sources,
+    orderData.style,
+  ];
+
+  const areAllFieldsFilled = () => {
+    return allFieldsFilled.every((field) => field !== null && field !== "");
+  };
 
   // Price calculation section
   const calculateServicePrice = () => {
@@ -235,11 +223,7 @@ function OrderPage({ params }: PageProps) {
               setActiveField(6);
               break;
             case !data.addOns:
-              if (areAllFieldsFilled()) {
-                setActiveField(null);
-              } else {
-                setActiveField(7);
-              }
+              setActiveField(7);
               break;
             case !data.topic:
               setActiveField(8);
@@ -266,7 +250,7 @@ function OrderPage({ params }: PageProps) {
     };
 
     fetchOrderData();
-  }, [areAllFieldsFilled, orderNumber, router]);
+  }, [orderNumber, router]);
 
   // Function to update Firebase
   const updateFirebase = async (field: string, value: unknown) => {
