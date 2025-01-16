@@ -1,16 +1,9 @@
 import React, { useState, useCallback, useRef } from "react";
-import { useEditor, EditorContent } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import Document from "@tiptap/extension-document";
-import Paragraph from "@tiptap/extension-paragraph";
-import Text from "@tiptap/extension-text";
-import Bold from "@tiptap/extension-bold";
-import Italic from "@tiptap/extension-italic";
-import BulletList from "@tiptap/extension-bullet-list";
-import OrderedList from "@tiptap/extension-ordered-list";
-import ListItem from "@tiptap/extension-list-item";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { storage } from "@/lib/firebase";
+import { IoChevronDown } from "react-icons/io5";
+import { VscFileSymlinkFile } from "react-icons/vsc";
+import { HiOutlineInformationCircle } from "react-icons/hi2";
 
 interface InstructionsEditorProps {
   value: string;
@@ -30,32 +23,38 @@ const InstructionsEditor: React.FC<InstructionsEditorProps> = ({
   onUpdate,
 }) => {
   const [localInstructions, setLocalInstructions] = useState(value);
+  const [inputBoxActive, setInputBoxActive] = useState(false);
+  const [dropBoxActive, setDropBoxActive] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
   const [files, setFiles] = useState<UploadedFileInfo[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const editor = useEditor({
-    extensions: [
-      StarterKit,
-      Document,
-      Paragraph,
-      Text,
-      Bold,
-      Italic,
-      BulletList,
-      OrderedList,
-      ListItem,
-    ],
-    content: value,
-    onUpdate: ({ editor }) => {
-      setLocalInstructions(editor.getHTML());
-    },
-  });
+  // Textarea functions
+  const handleFocus = () => {
+    setInputBoxActive(true);
+    setErrorMessage("");
+  };
+
+  const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>): void => {
+    const textarea = e.target;
+    textarea.style.height = "auto";
+    textarea.style.height = `${textarea.scrollHeight}px`;
+    setLocalInstructions(textarea.value);
+    if (errorMessage) setErrorMessage("");
+  };
+
+  const handleFileDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDropBoxActive(true);
+  };
 
   const handleFileDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    setDropBoxActive(false);
 
     const droppedFiles = Array.from(e.dataTransfer.files);
     handleFiles(droppedFiles);
@@ -70,9 +69,17 @@ const InstructionsEditor: React.FC<InstructionsEditorProps> = ({
     }));
 
     setFiles((prev) => [...prev, ...fileInfos]);
+    if (errorMessage) setErrorMessage("");
   };
 
   const uploadFiles = async () => {
+    // Validate that either instructions or files are present
+    if (localInstructions.trim().length === 0 && files.length === 0) {
+      setErrorMessage("Please provide instructions or upload files");
+      setInputBoxActive(true);
+      return;
+    }
+
     setIsUploading(true);
     setUploadProgress(0);
     const pendingFiles = files.filter((f) => f.status === "pending");
@@ -152,85 +159,72 @@ const InstructionsEditor: React.FC<InstructionsEditorProps> = ({
     setFiles((prev) => prev.filter((f) => f.id !== id));
   };
 
-  if (!editor) {
-    return null;
-  }
-
   return (
-    <div className="p-4">
-      <div className="flex flex-wrap gap-2 border-b pb-2">
-        <button
-          onClick={() => editor.chain().focus().toggleBold().run()}
-          className={`editor-button ${editor.isActive("bold") ? "active" : ""}`}
-        >
-          B
-        </button>
-        <button
-          onClick={() => editor.chain().focus().toggleItalic().run()}
-          className={`editor-button ${
-            editor.isActive("italic") ? "active" : ""
-          }`}
-        >
-          I
-        </button>
-        <button
-          onClick={() => editor.chain().focus().toggleBulletList().run()}
-          className={`editor-button ${
-            editor.isActive("bulletList") ? "active" : ""
-          }`}
-        >
-          •
-        </button>
-        <button
-          onClick={() => editor.chain().focus().toggleOrderedList().run()}
-          className={`editor-button ${
-            editor.isActive("orderedList") ? "active" : ""
-          }`}
-        >
-          1.
-        </button>
-      </div>
-
-      <div
-        className="min-h-[200px] border rounded-lg p-4"
-        onDrop={handleFileDrop}
-        onDragOver={(e) => e.preventDefault()}
-      >
-        <EditorContent editor={editor} />
-      </div>
-
-      <div className="space-y-2">
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-          >
-            Browse Files
-          </button>
-          <span className="text-sm text-gray-500">
-            or drag and drop files anywhere
-          </span>
+    <div
+      onDragOver={handleFileDragOver}
+      onDrop={handleFileDrop}
+      className="relative vertical-start p-4"
+    >
+      {dropBoxActive && (
+        <div className="absolute inset-0 vertical gap-6 -mx-2 -my-3 bg-black opacity-50 rounded-lg">
+          <p className="text-white text-xl sm:text-2xl">Drop here</p>
+          <VscFileSymlinkFile size={35} className="text-white" />
         </div>
-        <input
-          ref={fileInputRef}
-          type="file"
-          multiple
-          className="hidden"
-          onChange={(e) => {
-            if (e.target.files) {
-              handleFiles(Array.from(e.target.files));
-            }
-          }}
-          accept=".doc,.docx,.pdf,.xlsx,.xls,.zip,.rar"
+      )}
+      <p className="order-form-field-title">Instructions</p>
+
+      {/* Typing/pasting instructions section */}
+      <div
+        className={`w-full h-fit p-3 mb-2 transition-all duration-500  rounded-lg box-border text-sm ${
+          errorMessage
+            ? "border border-red-500"
+            : inputBoxActive
+            ? "bg-gray-50 border border-blue-500"
+            : "bg-gray-100"
+        }`}
+      >
+        <textarea
+          value={localInstructions}
+          onFocus={handleFocus}
+          onBlur={() => setInputBoxActive(false)}
+          onChange={handleInput}
+          placeholder="Describe your assignment. Share references, links to articles or resources, and list any other instructions."
+          className=" w-full bg-transparent rounded-lg focus:outline-none min-h-36 resize-none overflow-hidden"
+          style={{ height: "auto" }}
         />
       </div>
+      {errorMessage && (
+        <p className="animate-pulse text-red-600 text-sm">{errorMessage}</p>
+      )}
+
+      {/* Uploading files section */}
+      <button
+        onClick={() => fileInputRef.current?.click()}
+        className="horizontal mt-8 gap-2 w-full bg-gray-100 transition-all duration-500 rounded-lg border-dashed border border-red-800 hover:border-blue-500 px-2 py-6 text-gray-600"
+      >
+        <VscFileSymlinkFile size={22} />
+        <span className="text-blue-500">Browse</span>
+        or drag and drop files here
+      </button>
+      <input
+        ref={fileInputRef}
+        type="file"
+        multiple
+        className="hidden"
+        onChange={(e) => {
+          if (e.target.files) {
+            handleFiles(Array.from(e.target.files));
+          }
+        }}
+        accept=".doc,.docx,.pdf,.xlsx,.xls,.zip,.rar"
+      />
 
       {files.length > 0 && (
-        <div className="space-y-2">
+        <div className="space-y-2 mt-4 w-full">
           {files.map((file) => (
             <div
               key={file.id}
-              className="flex items-center justify-between p-2 border rounded"
+              className="horizontal-space-between w-full bg-gray-300 text-gray-700 p-2 border rounded-md"
             >
               <span className="truncate">{file.file.name}</span>
               <div className="flex items-center gap-2">
@@ -260,13 +254,26 @@ const InstructionsEditor: React.FC<InstructionsEditorProps> = ({
         </div>
       )}
 
-      <div className="flex justify-end">
+      <div className="horizontal-start gap-2 text-sm mt-2">
+        <HiOutlineInformationCircle size={23} />
+        <p>
+          Maximun file size is 150 MB. Also, you can add a Dropbox or Sendspace
+          link in the instructions.
+        </p>
+      </div>
+
+      {/* Save Button */}
+      <div className="order-form-save-button mt-8">
         <button
           onClick={uploadFiles}
           disabled={isUploading}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+          className="group transition-all duration-500"
         >
-          {isUploading ? "Uploading..." : "Next"}
+          Save
+          <IoChevronDown
+            size={30}
+            className="chev-icon group-hover:bg-blue-500"
+          />
         </button>
       </div>
 

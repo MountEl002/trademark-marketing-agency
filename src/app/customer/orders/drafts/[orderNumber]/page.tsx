@@ -477,7 +477,7 @@ function OrderPage({ params }: PageProps) {
             >
               <div className="first-div">
                 <p>{field.name}</p>
-                <p>
+                <p className={`${field.id === 10 ? "truncate ml-5" : ""}`}>
                   {field.id === 6 && orderData.deadline ? (
                     <>
                       {orderData.deadline.formattedDate} (
