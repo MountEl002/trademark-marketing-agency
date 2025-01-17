@@ -59,3 +59,12 @@ git status ##Review that **only** changes staged are renames
 ## Commit your changes after reviewing:
 git commit -a -m "Fixing file name casing"
 git push origin main
+
+How to move into a directory whose name has special characters:
+cd -LiteralPath "[orderNumber]"
+
+Get a list of commits with their hashes and messages:
+git log --oneline
+
+How to generate a unique character set using node:
+node -e "console.log(require('crypto').randomBytes(32).toStringBytes(32).toString('hex'))"

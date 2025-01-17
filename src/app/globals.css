@@ -338,7 +338,7 @@ h6 {
 }
 
 .draft-order-grids-min .first-div {
-  @apply flex flex-col items-start min-[500px]:flex-row min-[500px]:items-center justify-start w-[90%] text-sm;
+  @apply flex flex-col items-start min-[500px]:flex-row min-[500px]:items-center justify-start w-[90%] text-sm bg-green-500;
 }
 
 .draft-order-grids-min .first-div p:first-child {

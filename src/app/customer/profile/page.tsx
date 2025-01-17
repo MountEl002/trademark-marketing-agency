@@ -1,11 +1,11 @@
 import React from "react";
-import SideBar from "@/components/customer/SecondNavbar";
+import UserNumber from "@/components/customer/UserNumber";
 
 const Profile = () => {
   return (
     <>
-      <div className="">
-        <SideBar />
+      <div className="mt-60">
+        <UserNumber />
       </div>
     </>
   );

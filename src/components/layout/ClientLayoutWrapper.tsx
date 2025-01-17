@@ -12,11 +12,12 @@ export function ClientLayoutWrapper({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const hideComponentsOn = ["/login", "/signup", "/admin", "/forgot-password"];
+  const hideComponentsOn = ["/login", "/signup", "/forgot-password"];
 
   const isDraftOrderPage = pathname?.startsWith("/customer/orders/drafts/");
+  const isAdminPage = pathname?.startsWith("/admin");
   const shouldHideComponents =
-    hideComponentsOn.includes(pathname) || isDraftOrderPage;
+    hideComponentsOn.includes(pathname) || isDraftOrderPage || isAdminPage;
 
   if (shouldHideComponents) {
     return <>{children}</>;
