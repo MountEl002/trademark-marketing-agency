@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 import { getAuth, signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
+import UserBalances from "@/components/admin/dashboard/UserBalances";
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -69,6 +70,9 @@ export default function AdminDashboard() {
           <p className="text-3xl font-bold">{stats.totalUsers}</p>
         </div>
         {/* Add more stat cards */}
+        <div className="mt-8">
+          <UserBalances />
+        </div>
       </div>
 
       {/* Add more dashboard sections */}
