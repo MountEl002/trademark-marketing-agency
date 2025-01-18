@@ -8,6 +8,12 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
+import {
+  GoogleAuthProvider,
+  signInWithPopup,
+  UserCredential,
+} from "firebase/auth";
+import { useRouter } from "next/navigation";
 import { doc, setDoc, getDoc, runTransaction } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 
@@ -18,6 +24,7 @@ interface AuthContextType {
   signup: (email: string, password: string) => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
@@ -46,6 +53,7 @@ async function getNextUserNumber(): Promise<number> {
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [userNumber, setUserNumber] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -67,6 +75,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     return unsubscribe;
   }, []);
+
+  const signInWithGoogle = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+      const userCredential: UserCredential = await signInWithPopup(
+        auth,
+        provider
+      );
+      const user = userCredential.user;
+
+      // Check if this is a new user
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+
+      if (!userDoc.exists()) {
+        // New user - get next number and create profile
+        const userNumber = await getNextUserNumber();
+        await setDoc(doc(db, "users", user.uid), {
+          email: user.email,
+          userNumber: userNumber,
+          createdAt: new Date().toISOString(),
+        });
+
+        setUserNumber(userNumber.toString());
+        router.push("/customer/orders/new");
+      } else {
+        // Existing user - set their number and redirect
+        setUserNumber(userDoc.data().userNumber.toString());
+        router.push("/customer/orders/open");
+      }
+    } catch (error) {
+      console.error("Error signing in with Google:", error);
+      throw error;
+    }
+  };
 
   const signup = async (email: string, password: string) => {
     const userCredential = await createUserWithEmailAndPassword(
@@ -111,7 +153,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, userNumber, loading, signup, login, logout }}
+      value={{
+        user,
+        userNumber,
+        loading,
+        signup,
+        login,
+        logout,
+        signInWithGoogle,
+      }}
     >
       {!loading && children}
     </AuthContext.Provider>
