@@ -334,15 +334,15 @@ h6 {
 }
 
 .draft-order-grids-min {
-  @apply bg-gray-100 rounded-lg w-full h-fit pl-3 py-2 pr-2 cursor-pointer hover:bg-white transition-all duration-500;
+  @apply bg-gray-100 rounded-lg w-full h-fit p-2 cursor-pointer hover:bg-white transition-all duration-500;
 }
 
 .draft-order-grids-min .first-div {
-  @apply flex flex-col items-start min-[500px]:flex-row min-[500px]:items-center justify-start w-[90%] text-sm bg-green-500;
+  @apply grid grid-cols-1 sm:grid-cols-12 gap-4 w-full text-sm;
 }
 
 .draft-order-grids-min .first-div p:first-child {
-  @apply w-[33%] sm:w-[25%] text-gray-500;
+  @apply sm:col-span-2 mr-3 sm:mr-0  text-gray-500;
 }
 
 .draft-order-grids-min .second-div {

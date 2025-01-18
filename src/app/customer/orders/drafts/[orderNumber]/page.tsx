@@ -477,7 +477,11 @@ function OrderPage({ params }: PageProps) {
             >
               <div className="first-div">
                 <p>{field.name}</p>
-                <p className={`${field.id === 10 ? "truncate ml-5" : ""}`}>
+                <p
+                  className={`sm:col-span-10 truncate ${
+                    field.id === 10 ? "" : ""
+                  }`}
+                >
                   {field.id === 6 && orderData.deadline ? (
                     <>
                       {orderData.deadline.formattedDate} (
@@ -496,6 +500,8 @@ function OrderPage({ params }: PageProps) {
                   )}
                 </p>
               </div>
+
+              {/* Edit/Fill button */}
               <div
                 className={`second-div transition-all duration-500 ${
                   field.value
