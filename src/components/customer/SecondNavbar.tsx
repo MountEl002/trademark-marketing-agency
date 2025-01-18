@@ -9,20 +9,32 @@ import { FaFolderOpen } from "react-icons/fa";
 import { MdMessage } from "react-icons/md";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
+import { useBalance } from "@/hooks/useBalance";
 interface NavbarItem {
   id: number;
   name: string;
   linkTo: string;
-  currentState?: string;
+  currentState?: React.ReactNode;
   itemIcon: IconType;
 }
 
 const SecondNavBar = () => {
+  function BalanceDisplay() {
+    const { balance, loading, error } = useBalance();
+
+    if (loading)
+      return (
+        <span className="animate-spin border-2 border-blue-500 border-t-transparent h-2 w-2"></span>
+      );
+    if (error) return <span>_.__</span>;
+
+    return <span>${balance}</span>;
+  }
+
   const { user } = useAuth();
   const pathname = usePathname();
 
-  const accountBalance = "$0.00";
+  const accountBalance = BalanceDisplay();
   const totalOrders = "0";
   const unReadNotifications = "0";
   const unReadChats = "0";

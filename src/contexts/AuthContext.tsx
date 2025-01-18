@@ -1,3 +1,4 @@
+// AuthContext.tsx
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
@@ -14,43 +15,12 @@ import {
   UserCredential,
 } from "firebase/auth";
 import { useRouter } from "next/navigation";
-import { doc, setDoc, getDoc, runTransaction } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
-
-interface AuthContextType {
-  user: User | null;
-  userNumber: string | null;
-  loading: boolean;
-  signup: (email: string, password: string) => Promise<void>;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => Promise<void>;
-  signInWithGoogle: () => Promise<void>;
-}
+import { AuthContextType } from "@/types/transaction";
+import { getNextUserNumber, initializeUserDocuments } from "./userService";
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
-
-async function getNextUserNumber(): Promise<number> {
-  const result = await runTransaction(db, async (transaction) => {
-    const counterDoc = await transaction.get(doc(db, "counters", "userNumber"));
-
-    if (!counterDoc.exists()) {
-      // Initialize counter if it doesn't exist
-      transaction.set(doc(db, "counters", "userNumber"), {
-        currentNumber: 7000,
-      });
-      return 7000;
-    }
-
-    const newNumber = counterDoc.data().currentNumber + 1;
-    transaction.update(doc(db, "counters", "userNumber"), {
-      currentNumber: newNumber,
-    });
-
-    return newNumber;
-  });
-
-  return result;
-}
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -62,7 +32,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
       if (user) {
-        // Fetch user number from Firestore
         const userDoc = await getDoc(doc(db, "users", user.uid));
         if (userDoc.exists()) {
           setUserNumber(userDoc.data().userNumber.toString());
@@ -85,22 +54,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       );
       const user = userCredential.user;
 
-      // Check if this is a new user
       const userDoc = await getDoc(doc(db, "users", user.uid));
 
       if (!userDoc.exists()) {
-        // New user - get next number and create profile
         const userNumber = await getNextUserNumber();
-        await setDoc(doc(db, "users", user.uid), {
-          email: user.email,
-          userNumber: userNumber,
-          createdAt: new Date().toISOString(),
-        });
+        await initializeUserDocuments(user.uid, user.email, userNumber);
 
         setUserNumber(userNumber.toString());
         router.push("/customer/orders/new");
       } else {
-        // Existing user - set their number and redirect
         setUserNumber(userDoc.data().userNumber.toString());
         router.push("/customer/orders/open");
       }
@@ -118,15 +80,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     );
     const user = userCredential.user;
 
-    // Get next sequential number
     const userNumber = await getNextUserNumber();
-
-    // Store user data
-    await setDoc(doc(db, "users", user.uid), {
-      email: user.email,
-      userNumber: userNumber,
-      createdAt: new Date().toISOString(),
-    });
+    await initializeUserDocuments(user.uid, user.email, userNumber);
 
     setUserNumber(userNumber.toString());
   };
@@ -139,7 +94,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     );
     const user = userCredential.user;
 
-    // Fetch user number
     const userDoc = await getDoc(doc(db, "users", user.uid));
     if (userDoc.exists()) {
       setUserNumber(userDoc.data().userNumber.toString());
