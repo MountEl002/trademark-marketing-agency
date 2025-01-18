@@ -68,3 +68,13 @@ git log --oneline
 
 How to generate a unique character set using node:
 node -e "console.log(require('crypto').randomBytes(32).toStringBytes(32).toString('hex'))"
+
+Force update the remote repository after resetting to the previous commit, you can use:
+git push --force origin alpha-release
+
+ To completely remove the changes and return to the exact state of the previous commit:
+ git reset --hard HEAD~1 or
+git reset --hard 759acc3
+
+To keep the changes in your working directory but undo the commit:
+git reset HEAD~1
