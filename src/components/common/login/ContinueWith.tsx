@@ -1,24 +1,24 @@
 import React from "react";
 import ContinueWithGoogle from "./ContinueWithGoogle";
-import ContinueWithApple from "./ContinueWithApple";
 import ContinueWithFacebook from "./ContinueWithFb";
-import ContinueWithTwitter from "./ContinueWithTwitter";
+// import ContinueWithTwitter from "./ContinueWithTwitter";
+// import ContinueWithApple from "./ContinueWithApple";
 
 const ContinueWith = () => {
   return (
-    <div className="w-full horizontal-space-between">
+    <div className="grid grid-cols-2 w-full gap-10">
       <div>
         <ContinueWithGoogle />
       </div>
       <div>
-        <ContinueWithApple />
-      </div>
-      <div>
         <ContinueWithFacebook />
       </div>
-      <div>
+      {/* <div>
         <ContinueWithTwitter />
       </div>
+      <div>
+        <ContinueWithApple />
+      </div> */}
     </div>
   );
 };

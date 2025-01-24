@@ -3,9 +3,11 @@ import Image from "next/image";
 import GoogleLogo from "@/assests/googleLogo.png";
 import { Tooltip } from "react-tooltip";
 import { useAuth } from "@/contexts/AuthContext";
+import { usePathname } from "next/navigation";
 
 const ContinueWithGoogle = () => {
   const { signInWithGoogle } = useAuth();
+  const pathName = usePathname();
 
   const handleGoogleSignIn = async () => {
     try {
@@ -20,7 +22,9 @@ const ContinueWithGoogle = () => {
       <div
         onClick={handleGoogleSignIn}
         data-tooltip-id="div-tooltip"
-        data-tooltip-content="Use your Google account to Sign Up!"
+        data-tooltip-content={`Use your Facebook account to ${
+          pathName === "/login" ? "Login" : "Sign Up!"
+        }`}
         className="continue-with-gaft"
       >
         <Image

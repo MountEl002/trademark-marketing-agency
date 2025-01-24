@@ -11,6 +11,7 @@ import {
 } from "firebase/auth";
 import {
   GoogleAuthProvider,
+  FacebookAuthProvider,
   signInWithPopup,
   UserCredential,
 } from "firebase/auth";
@@ -72,6 +73,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const signInWithFacebook = async () => {
+    try {
+      const provider = new FacebookAuthProvider();
+      const userCredential: UserCredential = await signInWithPopup(
+        auth,
+        provider
+      );
+      const user = userCredential.user;
+
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+
+      if (!userDoc.exists()) {
+        const userNumber = await getNextUserNumber();
+        await initializeUserDocuments(user.uid, user.email, userNumber);
+
+        setUserNumber(userNumber.toString());
+        router.push("/customer/orders/new");
+      } else {
+        setUserNumber(userDoc.data().userNumber.toString());
+        router.push("/customer/orders/open");
+      }
+    } catch (error) {
+      console.error("Error signing in with Facebook:", error);
+      throw error;
+    }
+  };
+
   const signup = async (email: string, password: string) => {
     const userCredential = await createUserWithEmailAndPassword(
       auth,
@@ -115,6 +143,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         login,
         logout,
         signInWithGoogle,
+        signInWithFacebook,
       }}
     >
       {!loading && children}
