@@ -82,7 +82,7 @@ export default function ActiveOrdersList() {
             key={active.id}
             className="group cursor-pointer transition-all duration-500"
             onClick={() =>
-              router.push(`/customer/orders/ActiveOrders/${active.orderNumber}`)
+              router.push(`/customer/orders/open/${active.orderNumber}`)
             }
           >
             <div className="horizontal-space-between rounded-lg bg-gray-100 hover:bg-gray-50 p-4 my-2">

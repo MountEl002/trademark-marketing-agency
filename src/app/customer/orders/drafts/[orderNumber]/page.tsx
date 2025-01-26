@@ -116,7 +116,6 @@ function OrderPage({ params }: PageProps) {
   };
 
   const { balance } = useBalance();
-  console.log(balance);
 
   // Price calculation section
   const calculateServicePrice = () => {
@@ -157,15 +156,12 @@ function OrderPage({ params }: PageProps) {
         );
 
       default:
-        console.warn("Unknown service type:", orderData.service);
         return null;
     }
   };
 
   const servicePrice = calculateServicePrice();
   const totalPrice = (servicePrice?.price ?? 0) + addOnsTotalPrice;
-  console.log("The price for writing service is: ", servicePrice?.price ?? 0);
-  console.log("The total price is: ", totalPrice);
 
   // Function to handle draft deletion
   const handleDiscardDraft = async () => {
@@ -198,8 +194,6 @@ function OrderPage({ params }: PageProps) {
     const nextEmptyField = fieldsAfterCurrent.find(
       (field) => !orderData[field.field as keyof OrderData]
     );
-
-    console.log("Next empty field is: ", nextEmptyField?.name);
     return nextEmptyField?.id || null;
   };
 
@@ -251,7 +245,7 @@ function OrderPage({ params }: PageProps) {
           }
         } else {
           console.error("No such document!");
-          router.push("/customer/orders/drafts");
+          router.push("/customer/orders/new");
         }
       } catch (error) {
         console.error("Error fetching order data:", error);
@@ -440,6 +434,7 @@ function OrderPage({ params }: PageProps) {
       try {
         await modifyOrderStatus(orderNumber, "Active");
         setActivationSuccesful(true);
+        await updateFirebase("price", totalPrice);
       } catch {
         setActivationFailed(true);
       }

@@ -25,7 +25,7 @@ const OrdersNavbar = () => {
             key={item.href}
             href={item.href}
             className={`relative inline-block px-3 py-4 text-lg transition-all duration-500 ${
-              pathname === item.href
+              pathname.startsWith(item.href)
                 ? "text-blue-600 hover:text-blue-800"
                 : "text-gray-500 hover:text-gray-700"
             }`}
@@ -33,7 +33,7 @@ const OrdersNavbar = () => {
             <span>{item.label}</span>
             <span
               className={`absolute w-full border-b -bottom-[0.45] left-0 border-blue-600 ${
-                pathname === item.href ? "block" : "hidden"
+                pathname.startsWith(item.href) ? "block" : "hidden"
               }`}
             ></span>
           </Link>
