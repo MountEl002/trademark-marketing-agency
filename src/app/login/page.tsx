@@ -20,6 +20,20 @@ const LoginPage = () => {
   const [stayLoggedIn, setStayLoggedIn] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [emialFieldActive, setEmailFieldActive] = useState(false);
+  const [passwordFieldActive, setPasswordFieldActive] = useState(false);
+
+  const emialFieldBorder = `transition-all duration-500 border ${
+    emialFieldActive
+      ? "border-blue-500 bg-gray-50"
+      : "border-transparent bg-gray-100"
+  }`;
+
+  const passwordFieldBorder = `transition-all duration-500 border ${
+    passwordFieldActive
+      ? "border-blue-500 bg-gray-50"
+      : "border-transparent bg-gray-100"
+  }`;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,7 +45,8 @@ const LoginPage = () => {
       console.log("Login attempted with:", { email, stayLoggedIn });
     } catch (error) {
       if (error instanceof FirebaseError) {
-        switch (error.code) {
+        setError(error.message);
+        switch (error.message) {
           case "auth/user-not-found":
           case "auth/wrong-password":
             setError("Invalid email or password");
@@ -42,8 +57,10 @@ const LoginPage = () => {
           case "auth/too-many-requests":
             setError("Too many failed attempts. Please try again later");
             break;
+          case "Firebase: Error (auth/invalid-credential).":
+            setError("Wrong email or password.");
+            break;
           default:
-            setError(error.message);
         }
         setTimeout(() => {
           setError("");
@@ -81,11 +98,19 @@ const LoginPage = () => {
               <label htmlFor="email" className="label-email-password">
                 Email
               </label>
-              <div className="relative container-input-email-password">
+              <div
+                className={`relative container-input-email-password ${emialFieldBorder}`}
+              >
                 <input
                   id="email"
                   type="email"
                   value={email}
+                  onFocus={() => {
+                    setEmailFieldActive(true);
+                  }}
+                  onBlur={() => {
+                    setEmailFieldActive(false);
+                  }}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email"
                   className="input-email-password"
@@ -97,10 +122,18 @@ const LoginPage = () => {
               <label htmlFor="password" className="label-email-password">
                 Password
               </label>
-              <div className="relative container-input-email-password">
+              <div
+                className={`relative container-input-email-password ${passwordFieldBorder}`}
+              >
                 <input
                   id="password"
                   type={showPassword ? "text" : "password"}
+                  onFocus={() => {
+                    setPasswordFieldActive(true);
+                  }}
+                  onBlur={() => {
+                    setPasswordFieldActive(false);
+                  }}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"

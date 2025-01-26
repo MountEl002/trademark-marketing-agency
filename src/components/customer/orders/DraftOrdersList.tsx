@@ -11,12 +11,12 @@ import LoadingAnimantion from "@/components/common/LoadingAnimantion";
 import ConfirmationDialog from "./draftOrder/ConfirmationDialog";
 
 interface DraftOrder {
-  id: string; // Added id to the interface
+  id: string;
   orderNumber: number;
   createdAt: string;
   updatedAt: string;
-  userId: string; // Also adding userId for completeness
-  status: string; // Adding status field
+  userId: string;
+  status: string;
 }
 
 export default function DraftOrdersList() {

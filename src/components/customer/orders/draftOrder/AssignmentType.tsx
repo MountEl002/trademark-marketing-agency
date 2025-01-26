@@ -172,10 +172,10 @@ const AssignmentTypeSelector: React.FC<AssignmentTypeSelectorProps> = ({
       <div ref={containerRef} className="w-fit relative">
         <div
           onClick={() => setIsOpen(true)}
-          className={`w-[324px] p-3 bg-gray-100 rounded-md transition-all duration-500 ${
+          className={`w-[324px] p-3 bg-gray-100 border rounded-md transition-all duration-500 ${
             isOpen
-              ? "horizontal-start gap-3 border border-blue-500"
-              : "horizontal-space-between cursor-pointer"
+              ? "horizontal-start gap-3 border-blue-500"
+              : "horizontal-space-between border-transparent cursor-pointer"
           }`}
         >
           <IoSearch

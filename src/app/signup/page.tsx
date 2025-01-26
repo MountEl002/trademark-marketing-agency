@@ -19,6 +19,20 @@ const SignUpPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [emialFieldActive, setEmailFieldActive] = useState(false);
+  const [passwordFieldActive, setPasswordFieldActive] = useState(false);
+
+  const emialFieldBorder = `transition-all duration-500 border ${
+    emialFieldActive
+      ? "border-blue-500 bg-gray-50"
+      : "border-transparent bg-gray-100"
+  }`;
+
+  const passwordFieldBorder = `transition-all duration-500 border ${
+    passwordFieldActive
+      ? "border-blue-500 bg-gray-50"
+      : "border-transparent bg-gray-100"
+  }`;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,10 +84,18 @@ const SignUpPage = () => {
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <label className="label-email-password">Email</label>
-              <div className="relative container-input-email-password">
+              <div
+                className={`relative container-input-email-password ${emialFieldBorder}`}
+              >
                 <input
                   type="email"
                   value={email}
+                  onFocus={() => {
+                    setEmailFieldActive(true);
+                  }}
+                  onBlur={() => {
+                    setEmailFieldActive(false);
+                  }}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email"
                   className="input-email-password"
@@ -85,11 +107,19 @@ const SignUpPage = () => {
               <label htmlFor="password" className="label-email-password">
                 Password
               </label>
-              <div className="relative container-input-email-password">
+              <div
+                className={`relative container-input-email-password ${passwordFieldBorder}`}
+              >
                 <input
                   id="password"
                   type={showPassword ? "text" : "password"}
                   value={password}
+                  onFocus={() => {
+                    setPasswordFieldActive(true);
+                  }}
+                  onBlur={() => {
+                    setPasswordFieldActive(false);
+                  }}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
                   className="input-email-password"

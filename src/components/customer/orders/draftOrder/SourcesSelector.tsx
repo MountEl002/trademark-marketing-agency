@@ -218,10 +218,10 @@ const SourcesSelector: React.FC<SourcesSelectorProps> = ({
       <div ref={containerRef} className="w-fit relative">
         <div
           onClick={() => setIsOpen(true)}
-          className={`w-[324px] p-3 bg-gray-100 rounded-md transition-all duration-500 ${
+          className={`w-[324px] p-3 rounded-md border transition-all duration-500 ${
             isOpen
-              ? "horizontal-start gap-3 border border-blue-500"
-              : "horizontal-space-between cursor-pointer"
+              ? "horizontal-start bg-gray-50 gap-3 border-blue-500"
+              : "horizontal-space-between bg-gray-100 border-transparent cursor-pointer"
           }`}
         >
           <IoSearch
@@ -234,7 +234,7 @@ const SourcesSelector: React.FC<SourcesSelectorProps> = ({
             onChange={handleInputChange}
             onFocus={() => setIsOpen(true)}
             placeholder={value || "Number of sources required"}
-            className="focus:outline-none bg-transparent w-[80%]"
+            className="outline-none bg-transparent w-[80%]"
           />
           <FaChevronDown
             size={20}

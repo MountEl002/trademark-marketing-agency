@@ -181,12 +181,12 @@ const InstructionsEditor: React.FC<InstructionsEditorProps> = ({
 
       {/* Typing/pasting instructions section */}
       <div
-        className={`w-full h-fit p-3 mb-2 transition-all duration-500  rounded-lg box-border text-sm ${
+        className={`w-full h-fit p-3 mb-2 transition-all duration-500 border rounded-lg box-border text-sm ${
           errorMessage
-            ? "border border-red-500"
+            ? "border-red-500"
             : inputBoxActive
-            ? "bg-gray-50 border border-blue-500"
-            : "bg-gray-100"
+            ? "bg-gray-50 border-blue-500"
+            : "bg-gray-100 border-transparent"
         }`}
       >
         <textarea
@@ -195,7 +195,7 @@ const InstructionsEditor: React.FC<InstructionsEditorProps> = ({
           onBlur={() => setInputBoxActive(false)}
           onChange={handleInput}
           placeholder="Describe your assignment. Share references, links to articles or resources, and list any other instructions."
-          className=" w-full bg-transparent rounded-lg focus:outline-none min-h-36 resize-none overflow-hidden"
+          className=" w-full bg-transparent rounded-lg outline-none min-h-36 resize-none overflow-hidden"
           style={{ height: "auto" }}
         />
       </div>

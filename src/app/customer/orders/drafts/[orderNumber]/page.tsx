@@ -28,6 +28,10 @@ import { proofreadingPriceMapper } from "@/utils/proofreadingPriceMapper";
 import { IoChevronForwardSharp } from "react-icons/io5";
 import StyleSelector from "@/components/customer/orders/draftOrder/StyleSelecteor";
 import SourcesSelector from "@/components/customer/orders/draftOrder/SourcesSelector";
+import { useBalance } from "@/hooks/useBalance";
+import { Tooltip } from "react-tooltip";
+import { useOrderStatusModifier } from "@/utils/useOrderStatusModifier";
+import OrderActivationDialog from "@/components/customer/orders/draftOrder/OrderActivationDialog";
 
 interface PageProps {
   params: Promise<{
@@ -81,11 +85,16 @@ function OrderPage({ params }: PageProps) {
   const fieldRefs = useRef<Array<HTMLDivElement | null>>([]);
   const [addOnsTotalPrice, setAddOnsTotalPrice] = useState(0);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showActivationDialog, setShowActivationDialog] = useState(false);
   const [errorDiscarding, setErrorDiscarding] = useState(false);
   const [successDiscarding, setSuccessDiscarding] = useState(false);
   const [discarding, setDiscarding] = useState(false);
+  const [activationSuccesful, setActivationSuccesful] = useState(false);
+  const [activationFailed, setActivationFailed] = useState(false);
 
   const router = useRouter();
+  const { modifyOrderStatus, isModifying, modificationError } =
+    useOrderStatusModifier();
 
   // PRICE CALCULATION SECTION
   const allFieldsFilled = [
@@ -105,6 +114,9 @@ function OrderPage({ params }: PageProps) {
   const areAllFieldsFilled = () => {
     return allFieldsFilled.every((field) => field !== null && field !== "");
   };
+
+  const { balance } = useBalance();
+  console.log(balance);
 
   // Price calculation section
   const calculateServicePrice = () => {
@@ -422,6 +434,33 @@ function OrderPage({ params }: PageProps) {
     );
   }
 
+  const handleOrderActivation = async () => {
+    setShowActivationDialog(true);
+    if (balance > totalPrice) {
+      try {
+        await modifyOrderStatus(orderNumber, "Active");
+        setActivationSuccesful(true);
+      } catch {
+        setActivationFailed(true);
+      }
+    } else {
+      setActivationFailed(true);
+    }
+  };
+
+  const openActiveOrders = () => {
+    router.push("/customer/orders/open");
+    setActivationSuccesful(false);
+    setActivationFailed(false);
+    setShowActivationDialog(false);
+  };
+
+  const goBackToDraft = () => {
+    setActivationSuccesful(false);
+    setActivationFailed(false);
+    setShowActivationDialog(false);
+  };
+
   return (
     <div className="bg-gray-200 min-h-screen overflow-hidden pb-80">
       <div className="fixed inset-x-0 top-0 h-24 z-[60] py-8 bg-gray-200">
@@ -456,6 +495,17 @@ function OrderPage({ params }: PageProps) {
         onConfirm={handleDiscardDraft}
         title="Discard Draft"
         message="Are you sure you want to discard this draft? This action cannot be undone."
+      />
+
+      {/* Order activation dialog component */}
+      <OrderActivationDialog
+        isOpen={showActivationDialog}
+        activating={isModifying}
+        successActivating={activationSuccesful}
+        errorActivating={activationFailed}
+        openActiveOrders={openActiveOrders}
+        goBackToDraft={goBackToDraft}
+        modificationError={modificationError}
       />
 
       {/* List of fields */}
@@ -629,16 +679,39 @@ function OrderPage({ params }: PageProps) {
                 <p className="text-gray-700 font-medium">${totalPrice}</p>
               </div>
               <p className="text-base text-gray-600"></p>
-              {/* Add funds Button */}
-              <div className="add-funds-button text-sm">
-                <button type="button" className="group">
-                  Add funds
-                  <IoChevronForwardSharp
-                    size={30}
-                    className="chev-icon group-hover:bg-green-500"
-                  />
-                </button>
-              </div>
+              {/* Add funds Button and Activate order button */}
+              {balance > totalPrice ? (
+                <div
+                  onClick={handleOrderActivation}
+                  data-tooltip-id="activate-order-tooltip"
+                  data-tooltip-content="Click to submit the order and we will start working on it immediately."
+                  className="add-funds-button text-sm"
+                >
+                  <button type="button" className="group">
+                    Activate order
+                    <IoChevronForwardSharp
+                      size={30}
+                      className="chev-icon group-hover:bg-green-500"
+                    />
+                  </button>
+                  <Tooltip id="activate-order-tooltip" />
+                </div>
+              ) : (
+                <div
+                  data-tooltip-id="add-funds-tooltip"
+                  data-tooltip-content="Click to click to add funds to your account so that we can start working on this order immediately."
+                  className="add-funds-button text-sm"
+                >
+                  <button type="button" className="group">
+                    Add funds
+                    <IoChevronForwardSharp
+                      size={30}
+                      className="chev-icon group-hover:bg-green-500"
+                    />
+                  </button>
+                  <Tooltip id="add-funds-tooltip" />
+                </div>
+              )}
             </div>
           </div>
         </div>

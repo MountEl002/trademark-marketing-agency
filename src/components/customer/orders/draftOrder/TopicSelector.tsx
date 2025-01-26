@@ -50,12 +50,12 @@ const TopicSelector: React.FC<TopicSelectorProps> = ({
           onFocus={handleFocus}
           onBlur={() => setInputBoxActive(false)}
           onChange={(e) => setLocalTopic(e.target.value)}
-          className={`w-full focus:outline-none p-3 mb-2 transition-all duration-500  rounded-lg box-border ${
+          className={`w-full outline-none p-3 mb-2 transition-all duration-500 border rounded-lg ${
             errorMessage
-              ? "border border-red-500"
+              ? "border-red-500"
               : inputBoxActive
               ? "bg-gray-100 border border-blue-500"
-              : "bg-gray-200"
+              : "border-transparent bg-gray-200"
           }`}
           placeholder={value || "Name your assignment"}
         />

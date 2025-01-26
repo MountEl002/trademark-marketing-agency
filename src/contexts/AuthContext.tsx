@@ -33,11 +33,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
       if (user) {
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (userDoc.exists()) {
-          setUserNumber(userDoc.data().userNumber.toString());
+        try {
+          const userDoc = await getDoc(doc(db, "users", user.uid));
+          if (userDoc.exists()) {
+            const userNumber = userDoc.data().userNumber;
+            setUserNumber(userNumber != null ? userNumber.toString() : null);
+          } else {
+            console.log("User doc does not exist");
+            setUserNumber(null);
+          }
+        } catch (error) {
+          console.error("Error fetching user document:", error);
+          setUserNumber(null);
         }
       } else {
+        console.log("User doc does not exist");
         setUserNumber(null);
       }
       setLoading(false);

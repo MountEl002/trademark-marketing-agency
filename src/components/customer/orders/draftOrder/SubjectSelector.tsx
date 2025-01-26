@@ -807,10 +807,10 @@ const SubjectSelector: React.FC<SubjectSelectorProps> = ({
       <div ref={containerRef} className="w-fit relative">
         <div
           onClick={() => setIsOpen(true)}
-          className={`w-[324px] p-3 bg-gray-100 rounded-md transition-all duration-500 ${
+          className={`w-[324px] p-3 rounded-md border transition-all duration-500 ${
             isOpen
-              ? "horizontal-start gap-3 border border-blue-500"
-              : "horizontal-space-between cursor-pointer"
+              ? "horizontal-start gap-3 bg-gray-50 border-blue-500"
+              : "horizontal-space-between bg-gray-100 border-transparent cursor-pointer"
           }`}
         >
           <IoSearch
@@ -823,7 +823,7 @@ const SubjectSelector: React.FC<SubjectSelectorProps> = ({
             onChange={handleInputChange}
             onFocus={() => setIsOpen(true)}
             placeholder={value || "Select your subject"}
-            className="focus:outline-none bg-transparent w-[80%]"
+            className="outline-none bg-transparent w-[80%]"
           />
           <FaChevronDown
             size={20}
