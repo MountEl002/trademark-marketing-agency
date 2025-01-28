@@ -1,26 +1,30 @@
 import React, { useState, useCallback, useRef } from "react";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { storage } from "@/lib/firebase";
 import { IoChevronDown } from "react-icons/io5";
 import { VscFileSymlinkFile } from "react-icons/vsc";
 import { HiOutlineInformationCircle } from "react-icons/hi2";
+import { uploadFilesToS3, validateFiles } from "@/utils/s3-upload";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface InstructionsEditorProps {
   value: string;
+  orderNumber: string;
   onUpdate: (instructions: string, files: UploadedFileInfo[]) => void;
 }
 
 interface UploadedFileInfo {
-  file: File;
+  fileKey: string;
+  fileName: string;
+  fileUrl?: string;
   progress: number;
   status: "pending" | "uploading" | "completed" | "error";
   id: string;
-  url?: string;
+  file?: File;
 }
 
 const InstructionsEditor: React.FC<InstructionsEditorProps> = ({
   value,
   onUpdate,
+  orderNumber,
 }) => {
   const [localInstructions, setLocalInstructions] = useState(value);
   const [inputBoxActive, setInputBoxActive] = useState(false);
@@ -31,6 +35,8 @@ const InstructionsEditor: React.FC<InstructionsEditorProps> = ({
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
 
   // Textarea functions
   const handleFocus = () => {
@@ -51,13 +57,80 @@ const InstructionsEditor: React.FC<InstructionsEditorProps> = ({
     setDropBoxActive(true);
   };
 
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    // Only deactivate if leaving the container
+    if (
+      containerRef.current &&
+      e.relatedTarget &&
+      !containerRef.current.contains(e.relatedTarget as Node)
+    ) {
+      setDropBoxActive(false);
+    }
+  };
+
   const handleFiles = useCallback(
     (newFiles: File[]) => {
+      // Validate files
+      const validation = validateFiles(newFiles, {
+        maxSizeInMB: 200,
+        allowedTypes: [
+          // Images
+          "image/jpeg",
+          "image/png",
+          "image/gif",
+          "image/webp",
+
+          // Documents
+          "application/pdf",
+          "application/msword",
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          "application/vnd.oasis.opendocument.text",
+          "text/plain",
+          "text/rtf",
+
+          // Spreadsheets
+          "application/vnd.ms-excel",
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "application/vnd.oasis.opendocument.spreadsheet",
+
+          // Presentations
+          "application/vnd.ms-powerpoint",
+          "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+          "application/vnd.oasis.opendocument.presentation",
+
+          // Archives
+          "application/zip",
+          "application/x-zip-compressed",
+          "application/x-rar-compressed",
+          "application/x-7z-compressed",
+
+          // Videos
+          "video/mp4",
+          "video/mpeg",
+          "video/quicktime",
+          "video/x-msvideo",
+          "video/x-ms-wmv",
+          "video/webm",
+          "video/3gpp",
+          "video/3gpp2",
+          "video/x-matroska",
+        ],
+        maxFiles: 100,
+      });
+
+      if (!validation.valid) {
+        setErrorMessage(validation.errors[0]);
+        return;
+      }
+
       const fileInfos: UploadedFileInfo[] = newFiles.map((file) => ({
-        file,
+        fileName: file.name,
+        fileKey: "",
         progress: 0,
         status: "pending",
         id: Math.random().toString(36).substr(2, 9),
+        file: file, // Store the actual File object
       }));
 
       setFiles((prev) => [...prev, ...fileInfos]);
@@ -79,6 +152,10 @@ const InstructionsEditor: React.FC<InstructionsEditorProps> = ({
   );
 
   const uploadFiles = async () => {
+    if (!user) {
+      setErrorMessage("User is not authenticated.");
+      return;
+    }
     // Validate that either instructions or files are present
     if (localInstructions.trim().length === 0 && files.length === 0) {
       setErrorMessage("Please provide instructions or upload files");
@@ -96,66 +173,47 @@ const InstructionsEditor: React.FC<InstructionsEditorProps> = ({
       return;
     }
 
-    const uploadPromises = pendingFiles.map((fileInfo) => {
-      const storageRef = ref(
-        storage,
-        `uploads/${fileInfo.id}-${fileInfo.file.name}`
-      );
-      const uploadTask = uploadBytesResumable(storageRef, fileInfo.file);
-
-      return new Promise<void>((resolve, reject) => {
-        uploadTask.on(
-          "state_changed",
-          (snapshot) => {
-            const progress =
-              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            setFiles((prev) => {
-              const newFiles = prev.map((f) =>
-                f.id === fileInfo.id
-                  ? { ...f, progress, status: "uploading" as const }
-                  : f
-              );
-
-              // Calculate total progress across all files
-              const totalProgress =
-                newFiles.reduce((acc, file) => {
-                  if (file.status === "completed") return acc + 100;
-                  if (file.status === "uploading") return acc + file.progress;
-                  return acc;
-                }, 0) / newFiles.length;
-
-              setUploadProgress(totalProgress);
-              return newFiles;
-            });
-          },
-          (error) => {
-            setFiles((prev) =>
-              prev.map((f) =>
-                f.id === fileInfo.id ? { ...f, status: "error" as const } : f
-              )
-            );
-            reject(error);
-          },
-          async () => {
-            const downloadUrl = await getDownloadURL(uploadTask.snapshot.ref);
-            setFiles((prev) =>
-              prev.map((f) =>
-                f.id === fileInfo.id
-                  ? { ...f, status: "completed" as const, url: downloadUrl }
-                  : f
-              )
-            );
-            resolve();
-          }
-        );
-      });
-    });
-
     try {
-      await Promise.all(uploadPromises);
+      // Get the actual File objects from our stored data
+      const filesToUpload = pendingFiles
+        .map((fileInfo) => fileInfo.file)
+        .filter((file): file is File => file !== undefined);
+
+      if (filesToUpload.length === 0) {
+        throw new Error("No valid files to upload");
+      }
+
+      // Upload to S3
+      const uploadedFiles = await uploadFilesToS3(
+        filesToUpload,
+        user.uid,
+        orderNumber
+      );
+
+      // Update local state with uploaded file information
+      setFiles((prev) =>
+        prev.map((file) => {
+          const uploadedFile = uploadedFiles.find(
+            (uf) => uf.fileName === file.fileName
+          );
+          if (uploadedFile) {
+            return {
+              ...file,
+              fileKey: uploadedFile.fileKey,
+              fileUrl: uploadedFile.fileUrl,
+              status: "completed" as const,
+              progress: 100,
+            };
+          }
+          return file;
+        })
+      );
+
+      // Call onUpdate with updated files
       onUpdate(localInstructions, files);
     } catch (error) {
       console.error("Error uploading files:", error);
+      setErrorMessage("Failed to upload files. Please try again.");
     } finally {
       setIsUploading(false);
     }
@@ -167,7 +225,9 @@ const InstructionsEditor: React.FC<InstructionsEditorProps> = ({
 
   return (
     <div
+      ref={containerRef}
       onDragOver={handleFileDragOver}
+      onDragLeave={handleDragLeave}
       onDrop={handleFileDrop}
       className="relative vertical-start p-4"
     >
@@ -232,7 +292,7 @@ const InstructionsEditor: React.FC<InstructionsEditorProps> = ({
               key={file.id}
               className="horizontal-space-between w-full bg-gray-300 text-gray-700 p-2 border rounded-md"
             >
-              <span className="truncate">{file.file.name}</span>
+              <span className="truncate">{file.fileName}</span>
               <div className="flex items-center gap-2">
                 {file.status === "uploading" && (
                   <div className="w-24 h-2 bg-gray-200 rounded-full">
@@ -263,8 +323,8 @@ const InstructionsEditor: React.FC<InstructionsEditorProps> = ({
       <div className="horizontal-start gap-2 text-sm mt-2">
         <HiOutlineInformationCircle size={23} />
         <p>
-          Maximun file size is 150 MB. Also, you can add a Dropbox or Sendspace
-          link in the instructions.
+          Maximun file size is 200 MB. Also, you can add a Dropbox, Sendspace,
+          or Google dirve link in the instructions.
         </p>
       </div>
 

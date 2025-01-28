@@ -645,6 +645,7 @@ function OrderPage({ params }: PageProps) {
                 ) : field.id === 10 ? (
                   <InstructionsEditor
                     value={orderData.instructions}
+                    orderNumber={orderNumber}
                     onUpdate={handleInstructionsUpdate}
                   />
                 ) : field.id === 11 ? (
