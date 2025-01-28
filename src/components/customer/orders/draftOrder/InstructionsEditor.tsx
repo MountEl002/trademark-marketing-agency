@@ -4,34 +4,37 @@ import { VscFileSymlinkFile } from "react-icons/vsc";
 import { HiOutlineInformationCircle } from "react-icons/hi2";
 import { uploadFilesToS3, validateFiles } from "@/utils/s3-upload";
 import { useAuth } from "@/contexts/AuthContext";
+import { UploadedFileInfo } from "@/types/order";
+import LoadingAnimantion from "@/components/common/LoadingAnimantion";
 
 interface InstructionsEditorProps {
   value: string;
   orderNumber: string;
   onUpdate: (instructions: string, files: UploadedFileInfo[]) => void;
-}
-
-interface UploadedFileInfo {
-  fileKey: string;
-  fileName: string;
-  fileUrl?: string;
-  progress: number;
-  status: "pending" | "uploading" | "completed" | "error";
-  id: string;
-  file?: File;
+  orderFiles?: UploadedFileInfo[];
 }
 
 const InstructionsEditor: React.FC<InstructionsEditorProps> = ({
   value,
   onUpdate,
   orderNumber,
+  orderFiles = [],
 }) => {
   const [localInstructions, setLocalInstructions] = useState(value);
   const [inputBoxActive, setInputBoxActive] = useState(false);
   const [dropBoxActive, setDropBoxActive] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const [files, setFiles] = useState<UploadedFileInfo[]>([]);
+  // Initialize files state with existing orderFiles
+  const [files, setFiles] = useState<UploadedFileInfo[]>(() =>
+    orderFiles.map((file) => ({
+      ...file,
+      status: "completed" as const,
+      progress: 100,
+      id: file.fileKey || Math.random().toString(36).substr(2, 9),
+    }))
+  );
+
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -292,7 +295,12 @@ const InstructionsEditor: React.FC<InstructionsEditorProps> = ({
               key={file.id}
               className="horizontal-space-between w-full bg-gray-300 text-gray-700 p-2 border rounded-md"
             >
-              <span className="truncate">{file.fileName}</span>
+              <div className="flex flex-col">
+                <span className="truncate">{file.fileName}</span>
+                {file.uploadedAt && (
+                  <span className="text-xs text-gray-600">saved on cloud</span>
+                )}
+              </div>
               <div className="flex items-center gap-2">
                 {file.status === "uploading" && (
                   <div className="w-24 h-2 bg-gray-200 rounded-full">
@@ -344,8 +352,9 @@ const InstructionsEditor: React.FC<InstructionsEditorProps> = ({
       </div>
 
       {isUploading && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-4 rounded-lg w-80">
+        <div className="vertical z-[62] fixed inset-0 bg-black bg-opacity-50">
+          <div className="vertical gap-5 bg-white p-4 rounded-lg w-80">
+            <LoadingAnimantion />
             <div className="space-y-2">
               <div className="text-center">Uploading files...</div>
               <div className="w-full h-2 bg-gray-200 rounded-full">

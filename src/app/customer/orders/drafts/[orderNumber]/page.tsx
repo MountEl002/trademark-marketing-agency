@@ -32,6 +32,7 @@ import { useBalance } from "@/hooks/useBalance";
 import { Tooltip } from "react-tooltip";
 import { useOrderStatusModifier } from "@/utils/useOrderStatusModifier";
 import OrderActivationDialog from "@/components/customer/orders/draftOrder/OrderActivationDialog";
+import { UploadedFileInfo } from "@/types/order";
 
 interface PageProps {
   params: Promise<{
@@ -54,6 +55,7 @@ interface OrderData {
   topic: string;
   subject: string;
   instructions: string;
+  orderFiles: UploadedFileInfo[];
   price: number;
   sources: string;
   style: string;
@@ -74,6 +76,7 @@ function OrderPage({ params }: PageProps) {
     topic: "",
     subject: "",
     instructions: "",
+    orderFiles: [],
     price: 0,
     sources: "",
     style: "",
@@ -647,6 +650,7 @@ function OrderPage({ params }: PageProps) {
                     value={orderData.instructions}
                     orderNumber={orderNumber}
                     onUpdate={handleInstructionsUpdate}
+                    orderFiles={orderData.orderFiles}
                   />
                 ) : field.id === 11 ? (
                   <StyleSelector
