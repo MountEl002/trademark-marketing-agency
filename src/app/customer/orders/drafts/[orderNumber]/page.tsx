@@ -62,6 +62,19 @@ interface OrderData {
   userBalance: number;
 }
 
+const formatInstructionsDisplay = (
+  instructions: string,
+  files: UploadedFileInfo[]
+) => {
+  if (!instructions && files.length === 0) {
+    return "";
+  }
+
+  const filePrefix =
+    files.length > 0 ? `| Attached files (${files.length}) | ` : "";
+  return `${filePrefix}${instructions}`;
+};
+
 function OrderPage({ params }: PageProps) {
   const { orderNumber } = use(params);
   const [orderData, setOrderData] = useState<OrderData>({
@@ -294,7 +307,6 @@ function OrderPage({ params }: PageProps) {
 
   const handleInstructionsUpdate = (instructions: string) => {
     updateField("instructions", instructions);
-    // Handle the uploaded files as needed
   };
 
   // Update the price field
@@ -377,7 +389,10 @@ function OrderPage({ params }: PageProps) {
       name: "Instructions",
       placeHolder: "Write instructions and/or attach files",
       neccessity: "required",
-      value: orderData.instructions,
+      value: formatInstructionsDisplay(
+        orderData.instructions,
+        orderData.orderFiles
+      ),
       field: "instructions" as keyof OrderData,
     },
     {

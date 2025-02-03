@@ -140,10 +140,10 @@ export default function DraftOrdersList() {
               <div>
                 <button
                   onClick={(e) => handleDiscardDraft(draft, e)}
-                  className="text-red-500"
+                  className="text-gray-50 bg-red-500 px-4 py-2 rounded-lg hover:bg-red-700 transition-all duration-500"
                 >
                   Discard
-                </button>{" "}
+                </button>
               </div>
             </div>
           </div>

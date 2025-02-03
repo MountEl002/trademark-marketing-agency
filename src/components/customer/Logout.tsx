@@ -33,7 +33,7 @@ const Logout = ({ onLogoutSuccess }: LogoutProps) => {
     <button
       onClick={handleLogout}
       disabled={loading}
-      className={`text-red-400 hover:text-red-600 hover:font-semibold transition-all duration-500 ${
+      className={`text-gray-50 bg-red-500 px-6 py-2 rounded-lg hover:bg-red-700 transition-all duration-500 ${
         loading ? "opacity-50 cursor-not-allowed" : ""
       }`}
     >

@@ -1,8 +1,9 @@
 import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
-import { doc, getDoc, updateDoc, arrayRemove } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import type { FileUploadResponse } from "@/utils/s3-upload"; // Adjust the import path as needed
 
-// Initialize S3 Client
+// Initialize S3 Client (reusing the same configuration)
 const s3Client = new S3Client({
   region: process.env.NEXT_PUBLIC_AWS_REGION,
   credentials: {
@@ -11,149 +12,156 @@ const s3Client = new S3Client({
   },
   endpoint: `https://s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com`,
   forcePathStyle: true,
+  customUserAgent: "hq-essay/1.0.0",
 });
 
 interface DeleteFileParams {
   fileKey: string;
-  orderNumber: number;
-  orderStatus: string;
   userId: string;
-  isAdmin?: boolean;
+  orderNumber?: string;
+  isSuperAdmin?: boolean;
 }
 
 interface DeleteFileResponse {
   success: boolean;
   message: string;
-}
-
-interface FileMetadata {
-  fileKey: string;
-  fileUrl: string;
-  fileName: string;
-  fileType: string;
-  uploadedAt: Date;
-  userId: string;
-  orderNumber: number;
-  orderStatus: string;
-}
-
-interface OrderFileData {
-  files: FileMetadata[];
-  userId: string;
-  orderNumber: number;
-  orderStatus: string;
-  createdAt: Date;
-  updatedAt: Date;
+  deletedFile?: {
+    fileKey: string;
+    fileName: string;
+    fileUrl: string;
+  };
 }
 
 /**
- * Deletes a single file from S3 and updates Firebase metadata
+ * Deletes a file from S3 and updates Firebase metadata
  */
-export async function deleteFile({
+export async function deleteFileFromS3({
   fileKey,
-  orderNumber,
-  orderStatus,
   userId,
-  isAdmin = false,
+  orderNumber,
+  isSuperAdmin = false,
 }: DeleteFileParams): Promise<DeleteFileResponse> {
   try {
-    // Permission check
-    if (!isAdmin && orderStatus !== 'draft') {
-      return {
-        success: false,
-        message: "Only files in draft orders can be deleted by users",
-      };
-    }
-
-    // Verify file exists and belongs to the correct order and user
-    const orderFileRef = doc(db, "orders", orderNumber.toString(), "files", userId);
-    const orderFileDoc = await getDoc(orderFileRef);
-
-    if (!orderFileDoc.exists()) {
-      return {
-        success: false,
-        message: "File metadata not found",
-      };
-    }
-
-    const fileData = orderFileDoc.data() as OrderFileData;
-    const fileExists = fileData.files.some((file: FileMetadata) => file.fileKey === fileKey);
-
-    if (!fileExists) {
-      return {
-        success: false,
-        message: "File not found in the specified order",
-      };
+    // Validate user permission
+    if (!isSuperAdmin) {
+      const userDoc = await getDoc(doc(db, "users", userId));
+      if (!userDoc.exists()) {
+        throw new Error("User not found");
+      }
     }
 
     // Delete from S3
-    await s3Client.send(
-      new DeleteObjectCommand({
-        Bucket: process.env.NEXT_PUBLIC_S3_BUCKET_NAME as string,
-        Key: fileKey,
-      })
+    await deleteFileFromS3Bucket(fileKey);
+
+    // Update Firebase metadata
+    const deletedFile = await removeFileMetadataFromFirebase(
+      fileKey,
+      userId,
+      orderNumber
     );
 
-    // Get file metadata to remove
-    const fileToRemove = fileData.files.find(
-      (file: FileMetadata) => file.fileKey === fileKey
+    return {
+      success: true,
+      message: "File deleted successfully",
+      deletedFile,
+    };
+  } catch (error) {
+    console.error("Error in deleteFileFromS3:", error);
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to delete file"
     );
+  }
+}
 
-    if (!fileToRemove) {
-      return {
-        success: false,
-        message: "File metadata not found for deletion",
-      };
+/**
+ * Deletes a single file from S3 bucket
+ */
+async function deleteFileFromS3Bucket(fileKey: string): Promise<void> {
+  try {
+    const deleteParams = {
+      Bucket: process.env.NEXT_PUBLIC_S3_BUCKET_NAME as string,
+      Key: fileKey,
+    };
+
+    await s3Client.send(new DeleteObjectCommand(deleteParams));
+  } catch (error) {
+    console.error("Error deleting file from S3:", error);
+    throw new Error("Failed to delete file from S3");
+  }
+}
+
+interface OrderFile {
+  fileKey: string;
+  fileName: string;
+  fileUrl: string;
+  fileType: string;
+  uploadedAt: Date;
+  uploadedBy: string;
+}
+
+/**
+ * Removes file metadata from Firebase documents
+ */
+async function removeFileMetadataFromFirebase(
+  fileKey: string,
+  userId: string,
+  orderNumber?: string
+): Promise<{ fileKey: string; fileName: string; fileUrl: string }> {
+  const userFileRef = doc(db, "files", userId);
+
+  try {
+    // Get current files data
+    const docSnap = await getDoc(userFileRef);
+    if (!docSnap.exists()) {
+      throw new Error("User files document not found");
     }
 
-    // Update order's files collection
-    await updateDoc(orderFileRef, {
-      files: arrayRemove(fileToRemove),
+    const userData = docSnap.data();
+    const files = userData.files as FileUploadResponse[];
+
+    // Find the file to be deleted
+    const fileIndex = files.findIndex((file) => file.fileKey === fileKey);
+    if (fileIndex === -1) {
+      throw new Error("File not found in user's files");
+    }
+
+    const deletedFile = files[fileIndex];
+    const updatedFiles = files.filter((_, index) => index !== fileIndex);
+
+    // Update user's files collection
+    await updateDoc(userFileRef, {
+      files: updatedFiles,
       updatedAt: new Date(),
     });
 
-    // Update user's files collection
-    const userFileRef = doc(db, "files", userId);
-    const userFileDoc = await getDoc(userFileRef);
+    // Update order document if orderNumber is provided
+    if (orderNumber) {
+      const orderRef = doc(db, "orders", orderNumber);
+      const orderDoc = await getDoc(orderRef);
 
-    if (userFileDoc.exists()) {
-      await updateDoc(userFileRef, {
-        files: arrayRemove(fileToRemove),
+      if (!orderDoc.exists()) {
+        throw new Error("Order not found");
+      }
+
+      const orderData = orderDoc.data();
+      const orderFiles = orderData.orderFiles as OrderFile[];
+      const updatedOrderFiles = orderFiles.filter(
+        (file) => file.fileKey !== fileKey
+      );
+
+      await updateDoc(orderRef, {
+        orderFiles: updatedOrderFiles,
         updatedAt: new Date(),
       });
     }
 
     return {
-      success: true,
-      message: "File deleted successfully",
+      fileKey: deletedFile.fileKey,
+      fileName: deletedFile.fileName,
+      fileUrl: deletedFile.fileUrl,
     };
   } catch (error) {
-    console.error("Error deleting file:", error);
-    return {
-      success: false,
-      message: error instanceof Error ? error.message : "Failed to delete file",
-    };
-  }
-}
-
-/**
- * Verifies if a user has permission to delete a file
- */
-export async function canDeleteFile({
-  orderNumber,
-  orderStatus,
-  userId,
-  isAdmin = false,
-}: Omit<DeleteFileParams, 'fileKey'>): Promise<boolean> {
-  if (isAdmin) return true;
-  if (orderStatus !== 'draft') return false;
-
-  try {
-    const orderFileRef = doc(db, "orders", orderNumber.toString(), "files", userId);
-    const orderFileDoc = await getDoc(orderFileRef);
-
-    return orderFileDoc.exists();
-  } catch {
-    return false;
+    console.error("Error updating Firebase:", error);
+    throw new Error("Failed to update file metadata in Firebase");
   }
 }

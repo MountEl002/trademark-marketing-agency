@@ -3,9 +3,13 @@ import { IoChevronDown } from "react-icons/io5";
 import { VscFileSymlinkFile } from "react-icons/vsc";
 import { HiOutlineInformationCircle } from "react-icons/hi2";
 import { uploadFilesToS3, validateFiles } from "@/utils/s3-upload";
+import { deleteFileFromS3 } from "@/utils/delete-file";
 import { useAuth } from "@/contexts/AuthContext";
 import { UploadedFileInfo } from "@/types/order";
 import LoadingAnimantion from "@/components/common/LoadingAnimantion";
+import FileDownloadButton from "@/components/common/FileDownloadButton";
+import { FaEllipsisVertical } from "react-icons/fa6";
+import { AiOutlineDelete } from "react-icons/ai";
 
 interface InstructionsEditorProps {
   value: string;
@@ -24,6 +28,7 @@ const InstructionsEditor: React.FC<InstructionsEditorProps> = ({
   const [inputBoxActive, setInputBoxActive] = useState(false);
   const [dropBoxActive, setDropBoxActive] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isDeletingFile, setIsDeletingFile] = useState(false);
 
   // Initialize files state with existing orderFiles
   const [files, setFiles] = useState<UploadedFileInfo[]>(() =>
@@ -222,8 +227,34 @@ const InstructionsEditor: React.FC<InstructionsEditorProps> = ({
     }
   };
 
-  const removeFile = (id: string) => {
-    setFiles((prev) => prev.filter((f) => f.id !== id));
+  const removeFile = async (id: string) => {
+    const fileToDelete = files.find((f) => f.id === id);
+    if (!fileToDelete) return;
+
+    try {
+      setIsDeletingFile(true);
+
+      // If the file has been uploaded to S3 (has a fileKey), delete it from cloud
+      if (fileToDelete.fileKey && fileToDelete.status === "completed" && user) {
+        await deleteFileFromS3({
+          fileKey: fileToDelete.fileKey,
+          userId: user.uid,
+          orderNumber,
+        });
+      }
+
+      // Remove from local state
+      setFiles((prev) => prev.filter((f) => f.id !== id));
+
+      // Update parent component
+      const updatedFiles = files.filter((f) => f.id !== id);
+      onUpdate(localInstructions, updatedFiles);
+    } catch (error) {
+      console.error("Error removing file:", error);
+      setErrorMessage("Failed to delete file. Please try again.");
+    } finally {
+      setIsDeletingFile(false);
+    }
   };
 
   return (
@@ -293,13 +324,15 @@ const InstructionsEditor: React.FC<InstructionsEditorProps> = ({
           {files.map((file) => (
             <div
               key={file.id}
-              className="horizontal-space-between w-full bg-gray-300 text-gray-700 p-2 border rounded-md"
+              className="horizontal-space-between gap-2 relative w-full h-fit bg-gray-300 text-gray-700 px-2 border rounded-md"
             >
-              <div className="flex flex-col">
+              <div className="flex flex-row gap-2 truncate my-1">
                 <span className="truncate">{file.fileName}</span>
-                {file.uploadedAt && (
-                  <span className="text-xs text-gray-600">saved on cloud</span>
-                )}
+                <div>
+                  {file.status === "completed" && (
+                    <span className="text-sm text-green-600">✓ Saved</span>
+                  )}
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 {file.status === "uploading" && (
@@ -310,18 +343,30 @@ const InstructionsEditor: React.FC<InstructionsEditorProps> = ({
                     />
                   </div>
                 )}
-                {file.status === "completed" && (
-                  <span className="text-green-600">✓</span>
-                )}
                 {file.status === "error" && (
                   <span className="text-red-600">✗</span>
                 )}
-                <button
-                  onClick={() => removeFile(file.id)}
-                  className="text-red-600 hover:text-red-700"
-                >
-                  ×
-                </button>
+              </div>
+              <div className="absolute right-2 p-2 group vertical h-full text-gray-500 hover:text-gray-800 transtion-all duration-500">
+                <FaEllipsisVertical size={18} />
+                <div className="absolute hidden group-hover:flex flex-col items-center justify-center gap-1 z-40 bg-gray-200 -right-2 top-full rounded-md p-2">
+                  <FileDownloadButton
+                    fileName={file.fileName}
+                    fileKey={file.fileKey}
+                    localFile={file.file}
+                    orderNumber={orderNumber}
+                  />
+                  <button
+                    onClick={() => removeFile(file.id)}
+                    disabled={isDeletingFile}
+                    className={`horizontal-start gap-2 w-full p-2 text-red-600 bg-transparent rounded-md text-base transition-all duration-500 hover:text-gray-50 hover:bg-red-600 ${
+                      isDeletingFile ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
+                  >
+                    <AiOutlineDelete size={20} />
+                    <span>Delete</span>
+                  </button>
+                </div>
               </div>
             </div>
           ))}
