@@ -35,7 +35,6 @@ const DeadlineSelector = ({ value, onChange }: DeadlineSelectorProps) => {
   // Extract date and time from value prop if it exists
   const extractDateTime = () => {
     if (!value || typeof value === "string") {
-      console.log("Value/deadline not found or in old format");
       return { date: "", time: "" };
     }
 
@@ -46,7 +45,7 @@ const DeadlineSelector = ({ value, onChange }: DeadlineSelectorProps) => {
         time: format(date, "HH:mm"),
       };
     } catch (error) {
-      console.log("Error parsing date:", error);
+      console.error("Error parsing date:", error);
       return { date: "", time: "" };
     }
   };

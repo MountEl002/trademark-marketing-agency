@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { IoChevronDown } from "react-icons/io5";
 import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import Link from "next/link";
 import AssignmentTypeSelector from "@/components/customer/orders/draftOrder/AssignmentType";
 import ServiceSelector from "@/components/customer/orders/draftOrder/ServiceSelector";
 import AcademicLevelSelector from "@/components/customer/orders/draftOrder/AcademicLevelSelector";
@@ -33,6 +32,10 @@ import { Tooltip } from "react-tooltip";
 import { useOrderStatusModifier } from "@/utils/useOrderStatusModifier";
 import OrderActivationDialog from "@/components/customer/orders/draftOrder/OrderActivationDialog";
 import { UploadedFileInfo } from "@/types/order";
+import CloseButton from "@/components/common/CloseButton";
+import DiscardButton from "@/components/common/DiscardButton";
+import { deleteAllOrderFiles } from "@/utils/delete-all-order-files";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface PageProps {
   params: Promise<{
@@ -61,19 +64,6 @@ interface OrderData {
   style: string;
   userBalance: number;
 }
-
-const formatInstructionsDisplay = (
-  instructions: string,
-  files: UploadedFileInfo[]
-) => {
-  if (!instructions && files.length === 0) {
-    return "";
-  }
-
-  const filePrefix =
-    files.length > 0 ? `| Attached files (${files.length}) | ` : "";
-  return `${filePrefix}${instructions}`;
-};
 
 function OrderPage({ params }: PageProps) {
   const { orderNumber } = use(params);
@@ -109,9 +99,13 @@ function OrderPage({ params }: PageProps) {
   const [activationFailed, setActivationFailed] = useState(false);
 
   const router = useRouter();
+  const { user } = useAuth();
   const { modifyOrderStatus, isModifying, modificationError } =
     useOrderStatusModifier();
 
+  const handlePageClose = () => {
+    router.push("/customer/orders/drafts");
+  };
   // PRICE CALCULATION SECTION
   const allFieldsFilled = [
     orderData.academicLevel,
@@ -185,6 +179,24 @@ function OrderPage({ params }: PageProps) {
       const orderRef = doc(db, "orders", orderNumber.toString());
       setDiscarding(true);
       await deleteDoc(orderRef);
+      if (user) {
+        try {
+          const result = await deleteAllOrderFiles(
+            orderNumber,
+            user.uid,
+            false
+          );
+          console.log(`Deleted ${result.deletedFiles.length} files`);
+
+          if (!result.success && result.errors) {
+            console.error("Some files failed to delete:", result.errors);
+          }
+        } catch (error) {
+          console.error("Failed to delete order files:", error);
+        }
+      } else {
+        throw new Error("User is not authenticated");
+      }
       setDiscarding(false);
       setSuccessDiscarding(true);
       setTimeout(() => {
@@ -305,8 +317,33 @@ function OrderPage({ params }: PageProps) {
     setActiveField(activeField === id ? null : id);
   };
 
-  const handleInstructionsUpdate = (instructions: string) => {
+  const handleInstructionsUpdate = (
+    instructions: string,
+    files: UploadedFileInfo[]
+  ) => {
     updateField("instructions", instructions);
+    updateField("orderFiles", files);
+  };
+
+  const formatInstructionsDisplay = (
+    instructions?: string | null,
+    files?: UploadedFileInfo[] | null
+  ): string => {
+    // Ensure instructions and files are defined and not null
+    const safeInstructions = instructions || "";
+    const safeFiles = files || [];
+
+    // If both instructions and files are empty, return empty string
+    if (!safeInstructions.trim() && safeFiles.length === 0) {
+      return "";
+    }
+
+    // Create file prefix if files exist
+    const filePrefix =
+      safeFiles.length > 0 ? `| Attached files (${safeFiles.length}) | ` : "";
+
+    // Combine file prefix and instructions
+    return `${filePrefix}${safeInstructions}`.trim();
   };
 
   // Update the price field
@@ -476,24 +513,17 @@ function OrderPage({ params }: PageProps) {
 
   return (
     <div className="bg-gray-200 min-h-screen overflow-hidden pb-80">
-      <div className="fixed inset-x-0 top-0 h-24 z-[60] py-8 bg-gray-200">
-        <div className="horizontal-space-between max-w-4xl mx-auto px-3">
+      <div className="fixed inset-x-0 top-0 min-[360px]:h-24 z-[60] py-8 bg-gray-200">
+        <div className="flex flex-col min-[360px]:flex-row gap-2 items-center justify-between max-w-4xl mx-auto px-3">
           <div>
             <h4 className="!mb-0">
-              Order {orderNumber}{" "}
+              Order {orderNumber}
               <span className="text-gray-500 font-medium">(Draft)</span>
             </h4>
           </div>
           <div className="horizontal gap-3">
-            <button
-              onClick={() => setShowConfirmation(true)}
-              className="button-red"
-            >
-              Discard
-            </button>
-            <Link className="button-blue" href="/customer/orders/drafts">
-              Close
-            </Link>
+            <DiscardButton onClick={() => setShowConfirmation(true)} />
+            <CloseButton onClick={handlePageClose} />
           </div>
         </div>
       </div>

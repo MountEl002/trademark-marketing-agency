@@ -9,8 +9,7 @@ import { UploadedFileInfo } from "@/types/order";
 import LoadingAnimantion from "@/components/common/LoadingAnimantion";
 import FileDownloadButton from "@/components/common/FileDownloadButton";
 import { FaEllipsisVertical } from "react-icons/fa6";
-import { AiOutlineDelete } from "react-icons/ai";
-
+import { MdOutlineDelete } from "react-icons/md";
 interface InstructionsEditorProps {
   value: string;
   orderNumber: string;
@@ -218,7 +217,11 @@ const InstructionsEditor: React.FC<InstructionsEditorProps> = ({
       );
 
       // Call onUpdate with updated files
-      onUpdate(localInstructions, files);
+      // Before calling onUpdate, remove the File object
+      const filesWithoutFileObjects = files.filter(
+        (file) => delete file.file && true
+      );
+      onUpdate(localInstructions, filesWithoutFileObjects);
     } catch (error) {
       console.error("Error uploading files:", error);
       setErrorMessage("Failed to upload files. Please try again.");
@@ -247,8 +250,8 @@ const InstructionsEditor: React.FC<InstructionsEditorProps> = ({
       setFiles((prev) => prev.filter((f) => f.id !== id));
 
       // Update parent component
-      const updatedFiles = files.filter((f) => f.id !== id);
-      onUpdate(localInstructions, updatedFiles);
+      // const updatedFiles = files.filter((f) => f.id !== id);
+      // onUpdate(localInstructions, updatedFiles);
     } catch (error) {
       console.error("Error removing file:", error);
       setErrorMessage("Failed to delete file. Please try again.");
@@ -359,12 +362,20 @@ const InstructionsEditor: React.FC<InstructionsEditorProps> = ({
                   <button
                     onClick={() => removeFile(file.id)}
                     disabled={isDeletingFile}
-                    className={`horizontal-start gap-2 w-full p-2 text-red-600 bg-transparent rounded-md text-base transition-all duration-500 hover:text-gray-50 hover:bg-red-600 ${
-                      isDeletingFile ? "opacity-50 cursor-not-allowed" : ""
+                    className={`w-full p-2 text-red-600 bg-transparent rounded-md text-base transition-all duration-500 hover:text-gray-50 hover:bg-red-600 ${
+                      isDeletingFile
+                        ? "horizontal cursor-not-allowed"
+                        : "horizontal-start gap-2"
                     }`}
                   >
-                    <AiOutlineDelete size={20} />
-                    <span>Delete</span>
+                    {isDeletingFile ? (
+                      <LoadingAnimantion />
+                    ) : (
+                      <>
+                        <MdOutlineDelete size={20} />
+                        <span>Delete</span>
+                      </>
+                    )}
                   </button>
                 </div>
               </div>

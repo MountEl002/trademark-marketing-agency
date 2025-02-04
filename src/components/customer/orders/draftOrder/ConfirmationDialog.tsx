@@ -1,3 +1,5 @@
+import CloseButton from "@/components/common/CloseButton";
+import DiscardButton from "@/components/common/DiscardButton";
 import LoadingAnimantion from "@/components/common/LoadingAnimantion";
 
 interface ConfirmationDialogProps {
@@ -35,9 +37,7 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
             <>
               <p>Draft discarded successfully!</p>
               <div className="w-full horizontal mt-8">
-                <button onClick={onClose} className="button-blue">
-                  Close
-                </button>
+                <CloseButton onClick={onClose} />
               </div>
             </>
           ) : (
@@ -50,9 +50,7 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
                 </span>
               </p>
               <div className="w-full horizontal-end">
-                <button onClick={onClose} className="button-blue mt-8">
-                  Close
-                </button>
+                <CloseButton onClick={onClose} />
               </div>
             </>
           )
@@ -67,15 +65,8 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
                 </div>
               ) : (
                 <div className="w-full horizontal-end gap-3">
-                  <button
-                    onClick={onClose}
-                    className="px-4 py-2 text-gray-600 hover:text-gray-800"
-                  >
-                    Cancel
-                  </button>
-                  <button onClick={onConfirm} className="button-red">
-                    Discard
-                  </button>
+                  <CloseButton onClick={onClose} />
+                  <DiscardButton onClick={onConfirm} name="Confirm" />
                 </div>
               )}
             </div>

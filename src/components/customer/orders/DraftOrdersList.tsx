@@ -9,6 +9,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import ZeroOrders from "@/components/customer/orders/ZeroOrders";
 import LoadingAnimantion from "@/components/common/LoadingAnimantion";
 import ConfirmationDialog from "./draftOrder/ConfirmationDialog";
+import { deleteAllOrderFiles } from "@/utils/delete-all-order-files";
+import { MdOutlineDelete } from "react-icons/md";
 
 interface DraftOrder {
   id: string;
@@ -45,6 +47,24 @@ export default function DraftOrdersList() {
     try {
       setDiscarding(true);
       await deleteDoc(doc(db, "orders", selectedDraft.id));
+      if (user) {
+        try {
+          const result = await deleteAllOrderFiles(
+            selectedDraft.orderNumber.toString(),
+            user.uid,
+            false
+          );
+          console.log(`Deleted ${result.deletedFiles.length} files`);
+
+          if (!result.success && result.errors) {
+            console.error("Some files failed to delete:", result.errors);
+          }
+        } catch (error) {
+          console.error("Failed to delete order files:", error);
+        }
+      } else {
+        throw new Error("User is not authenticated");
+      }
       setDiscarding(false);
       setSuccessDiscarding(true);
       setTimeout(() => {
@@ -139,10 +159,14 @@ export default function DraftOrdersList() {
               </div>
               <div>
                 <button
+                  type="button"
                   onClick={(e) => handleDiscardDraft(draft, e)}
-                  className="text-gray-50 bg-red-500 px-4 py-2 rounded-lg hover:bg-red-700 transition-all duration-500"
+                  className="horizontal-start group gap-3 pr-5 min-[550px]:pr-10 bg-red-500 hover:bg-red-700 text-sm min-[550px]:text-base text-white font-semibold rounded-md transition-all duration-500"
                 >
-                  Discard
+                  <div className="vertical p-1 min-[550px]:p-2 left-1 m-[2px] bg-red-400 group-hover:bg-red-600 h-[90%] rounded transition-all duration-500">
+                    <MdOutlineDelete size={20} />
+                  </div>
+                  <span>Discard</span>
                 </button>
               </div>
             </div>

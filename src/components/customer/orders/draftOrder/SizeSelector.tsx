@@ -157,8 +157,6 @@ const SizeSelector: React.FC<SizeSelectorProps> = ({ value, onChange }) => {
     }
 
     const finalWords = Math.round(parseFloat(words));
-    console.log("The final wiords chosen by the user is: ", finalWords);
-    console.log(typeof finalWords);
     const finalPages = parseFloat(pages).toFixed(1);
     const sizeString = `${finalWords} words, (~ ${finalPages} page${
       parseFloat(pages) !== 1 ? "s" : ""
