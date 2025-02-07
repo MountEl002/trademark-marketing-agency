@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { isUserSuperAdmin } from "@/utils/admin-setup";
+import AdminChatWindow from "@/components/admin/chats/AdminChatWindow";
 
 export default function AdminLayout({
   children,
@@ -63,13 +64,14 @@ export default function AdminLayout({
 
   // Regular admin layout for authorized users
   return (
-    <div className="flex h-screen">
+    <div className="relative flex h-screen">
       <aside className="w-64 bg-gray-800 text-white p-6">
         <nav className="space-y-4">
           <h2 className="text-xl font-bold mb-6">Admin Dashboard</h2>
         </nav>
       </aside>
       <main className="flex-1 p-8 bg-gray-100 overflow-auto">{children}</main>
+      <AdminChatWindow />
     </div>
   );
 }
