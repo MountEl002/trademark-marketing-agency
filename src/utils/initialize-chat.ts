@@ -49,36 +49,56 @@ const handleAuthenticatedUser = async (userId: string): Promise<string> => {
 };
 
 const handleUnauthenticatedUser = async (): Promise<string> => {
-  // Check localStorage for existing anonymous user
-  const savedUser = localStorage.getItem(LOCAL_STORAGE_KEY);
-  if (savedUser) {
-    const anonymousUser: AnonymousUser = JSON.parse(savedUser);
+  try {
+    // Check localStorage for existing anonymous user
+    const savedUser = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (savedUser) {
+      try {
+        const anonymousUser: AnonymousUser = JSON.parse(savedUser);
 
-    // Verify the document still exists
-    const chatDocRef = doc(db, "unregisteredUsersChats", anonymousUser.number);
-    const chatDoc = await getDoc(chatDocRef);
+        // Add validation for the parsed data
+        if (!anonymousUser.number || !anonymousUser.createdAt) {
+          throw new Error("Invalid stored user data");
+        }
 
-    if (chatDoc.exists()) {
-      return anonymousUser.number;
+        // Verify the document still exists
+        const chatDocRef = doc(
+          db,
+          "unregisteredUsersChats",
+          anonymousUser.number
+        );
+        const chatDoc = await getDoc(chatDocRef);
+
+        if (chatDoc.exists()) {
+          return anonymousUser.number;
+        }
+      } catch (error) {
+        // Clear invalid or expired data
+        console.error(error);
+        localStorage.removeItem(LOCAL_STORAGE_KEY);
+      }
     }
+
+    // Get new number from counter
+    const number = await getNextUnregisteredUserNumber();
+
+    // Create chat document with expiration
+    await setDoc(doc(db, "unregisteredUsersChats", number), {
+      createdAt: Date.now(),
+    });
+
+    // Save to localStorage
+    const anonymousUser: AnonymousUser = {
+      number,
+      createdAt: Date.now(),
+    };
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(anonymousUser));
+
+    return number;
+  } catch (error) {
+    console.error("Error handling unauthenticated user:", error);
+    throw error;
   }
-
-  // Get new number from counter
-  const number = await getNextUnregisteredUserNumber();
-
-  // Create chat document
-  await setDoc(doc(db, "unregisteredUsersChats", number), {
-    createdAt: Date.now(),
-  });
-
-  // Save to localStorage
-  const anonymousUser: AnonymousUser = {
-    number,
-    createdAt: Date.now(),
-  };
-  localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(anonymousUser));
-
-  return number;
 };
 
 const getNextUnregisteredUserNumber = async (): Promise<string> => {

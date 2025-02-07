@@ -125,7 +125,6 @@ export default function AdminChatPage() {
           chatId={selectedChat.id}
           userNumber={selectedChat.userNumber}
           isRegisteredUser={selectedChat.id.length > 10} // Simple check to differentiate between registered and unregistered users
-          onClose={() => setSelectedChat(null)}
         />
       )}
     </div>

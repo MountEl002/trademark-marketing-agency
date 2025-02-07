@@ -451,3 +451,15 @@ h6 {
 .rounded-img {
   clip-path: circle(50%);
 }
+
+.chat-container {
+  @apply fixed z-[100] bg-blue-100 top-32 min-[530px]:right-3 w-[100vw] min-[530px]:w-[32rem] rounded-lg shadow-xl overflow-hidden;
+}
+
+.chat-blue-pointer {
+  @apply absolute left-[-8px] top-3 h-0 w-0 border-t-[8px] border-t-transparent border-r-[8px] border-r-blue-600 border-b-[8px] border-b-transparent;
+}
+
+.chat-green-pointer {
+  @apply absolute right-[-8px] top-3 h-0 w-0 border-t-[8px] border-t-transparent border-l-[8px] border-l-green-600 border-b-[8px] border-b-transparent;
+}
