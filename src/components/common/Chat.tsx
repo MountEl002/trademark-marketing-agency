@@ -125,7 +125,7 @@ const Chat = () => {
   return (
     <div className="fixed z-[100] bg-blue-100 top-32 right-3 w-[32rem] rounded-lg shadow-xl overflow-hidden">
       <div
-        className="flex flex-col h-[80vh]" // Changed to flex container with fixed height
+        className="flex flex-col h-[80vh]"
         style={{
           backgroundImage: `url(${ChatBackground.src})`,
           backgroundSize: "100% 100%",
@@ -200,7 +200,7 @@ const Chat = () => {
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               className="w-full h-full p-2 bg-transparent outline-none resize-none chat-scrollbars text-sm whitespace-normal overflow-x-auto"
-            ></textarea>
+            />
           </div>
           <div className="vertical gap-1 w-[10%] h-full bg-transparent">
             <div className="group bg-transparent hover:bg-blue-600 rounded-[50%] transition-all duration-500 p-2">

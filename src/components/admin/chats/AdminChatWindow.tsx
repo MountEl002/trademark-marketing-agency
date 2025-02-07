@@ -8,11 +8,14 @@ import {
   query,
   orderBy,
   onSnapshot,
-  where,
 } from "firebase/firestore";
 import Image from "next/image";
 import { IoClose, IoSend } from "react-icons/io5";
 import { FaUser } from "react-icons/fa";
+import ChatBackground from "@/assests/chatbackgroundResized.png";
+import CustomerCareAgent4 from "@/assests/CustomerCareAgent4.jpg";
+import LoadingAnimantion from "@/components/common/LoadingAnimantion";
+import { GrAttachment } from "react-icons/gr";
 
 interface Message {
   id?: string;
@@ -95,11 +98,19 @@ const AdminChatWindow = ({
   };
 
   return (
-    <div className="fixed z-[100] bg-white top-32 right-3 w-[32rem] rounded-lg shadow-xl overflow-hidden">
-      <div className="flex flex-col h-[80vh]">
+    <div className="fixed z-[100] bg-white top-4 right-3 w-[35rem] rounded-lg shadow-xl overflow-hidden">
+      <div
+        className="flex flex-col h-[95vh]"
+        style={{
+          backgroundImage: `url(${ChatBackground.src})`,
+          backgroundSize: "100% 100%",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      >
         {/* Header */}
-        <div className="flex justify-between items-center w-full bg-blue-200 p-3">
-          <div className="flex items-center gap-2">
+        <div className="horizontal-space-between w-full bg-blue-200 p-3">
+          <div className="horizontal gap-2">
             <div className="bg-white p-2 rounded-full">
               <FaUser />
             </div>
@@ -119,33 +130,52 @@ const AdminChatWindow = ({
         </div>
 
         {/* Messages container */}
-        <div className="flex-1 flex flex-col-reverse overflow-y-auto p-4 bg-gray-50">
+        <div className="flex-1 flex flex-col-reverse overflow-y-auto overflow-x-hidden chat-scrollbars p-2">
           {loading ? (
             <div className="flex justify-center items-center h-full">
               <p className="text-gray-500">Loading messages...</p>
+              <LoadingAnimantion />
             </div>
           ) : (
-            <div className="flex flex-col space-y-4">
+            <div className="flex flex-col space-y-2">
               {messages.map((message) => (
                 <div
                   key={message.id}
-                  className={`flex ${
-                    message.sender === "admin" ? "justify-end" : "justify-start"
+                  className={`flex h-fit gap-2 ${
+                    message.sender === "admin"
+                      ? "flex-row-reverse justify-start"
+                      : "flex-row"
                   }`}
                 >
+                  {message.sender === "admin" ? (
+                    <Image
+                      src={CustomerCareAgent4}
+                      alt="Customer care agent"
+                      className="rounded-img h-10 w-10 flex-shrink-0"
+                    />
+                  ) : (
+                    <div className="bg-white p-2 h-fit w-fit rounded-[50%] flex-shrink-0">
+                      <FaUser size={22} />
+                    </div>
+                  )}
                   <div
-                    className={`max-w-[75%] p-3 rounded-lg ${
+                    className={`relative max-w-[75%] p-3 rounded-lg ${
                       message.sender === "admin"
-                        ? "bg-blue-600 text-white"
-                        : "bg-gray-200 text-gray-800"
+                        ? "bg-green-600 text-white"
+                        : "bg-blue-600 text-white"
                     }`}
                   >
-                    <p className="text-sm whitespace-pre-wrap">
+                    <p className="text-sm whitespace-normal overflow-x-auto chat-scrollbars">
                       {message.text}
                     </p>
                     <p className="text-xs mt-1 opacity-75">
                       {new Date(message.timestamp).toLocaleTimeString()}
                     </p>
+                    {message.sender === "admin" ? (
+                      <div className="absolute right-[-8px] top-3 h-0 w-0 border-t-[8px] border-t-transparent border-l-[8px] border-l-green-600 border-b-[8px] border-b-transparent" />
+                    ) : (
+                      <div className="absolute left-[-8px] top-3 h-0 w-0 border-t-[8px] border-t-transparent border-r-[8px] border-r-blue-600 border-b-[8px] border-b-transparent" />
+                    )}
                   </div>
                 </div>
               ))}
@@ -154,21 +184,25 @@ const AdminChatWindow = ({
         </div>
 
         {/* Input area */}
-        <div className="border-t p-3 bg-white">
-          <div className="flex gap-2">
+        <div className="horizontal-start w-full h-20 bg-gray-100 p-1">
+          <div className="w-[90%] h-full border border-blue-500 rounded-lg p-1">
             <textarea
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyDown={handleKeyPress}
               placeholder="Type your message..."
-              className="flex-1 resize-none border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              rows={2}
+              className="w-full h-full p-2 bg-transparent outline-none resize-none chat-scrollbars text-sm whitespace-normal overflow-x-auto"
             />
+          </div>
+          <div className="vertical gap-1 w-[10%] h-full bg-transparent">
+            <div className="group bg-transparent hover:bg-blue-600 rounded-[50%] transition-all duration-500 p-2">
+              <GrAttachment className="text-blue-600 group-hover:text-white transition-all duration-500" />
+            </div>
             <button
               onClick={sendMessage}
-              className="px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="group bg-transparent hover:bg-blue-600 rounded-[50%] transition-all duration-500 p-2"
             >
-              <IoSend size={20} />
+              <IoSend className="text-blue-600 group-hover:text-white transition-all duration-500" />
             </button>
           </div>
         </div>
