@@ -5,6 +5,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ScrollToTop from "@/components/common/BackToTop";
 import SecondNavBar from "../customer/SecondNavbar";
+import Chat from "../common/Chat";
 
 export function ClientLayoutWrapper({
   children,
@@ -30,6 +31,7 @@ export function ClientLayoutWrapper({
         <SecondNavBar />
       </header>
       <main className="min-h-screen mt-16 bg-white">
+        <Chat />
         <ScrollToTop />
         {children}
       </main>

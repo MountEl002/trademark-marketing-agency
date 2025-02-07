@@ -399,6 +399,27 @@ h6 {
   background: #374151;
 }
 
+/* Chat Messages Container scrollbar */
+
+.chat-scrollbars::-webkit-scrollbar {
+  width: 0.4rem;
+  height: 0.4rem;
+}
+
+.chat-scrollbars::-webkit-scrollbar-track {
+  background: #9bb1d6;
+  border-radius: 100vw;
+}
+
+.chat-scrollbars::-webkit-scrollbar-thumb {
+  background: #455d80;
+  border-radius: 100vw;
+}
+
+.chat-scrollbars::-webkit-scrollbar-thumb:hover {
+  background: #3f567a;
+}
+
 .order-form-field-title {
   @apply mb-3 text-xl text-gray-600;
 }
@@ -425,4 +446,8 @@ h6 {
 
 .add-funds-button .chev-icon {
   @apply ml-4 sm:ml-10 text-white rounded-sm transition-all duration-500 bg-green-400;
+}
+
+.rounded-img {
+  clip-path: circle(50%);
 }
