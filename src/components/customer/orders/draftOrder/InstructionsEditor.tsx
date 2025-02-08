@@ -81,48 +81,6 @@ const InstructionsEditor: React.FC<InstructionsEditorProps> = ({
       // Validate files
       const validation = validateFiles(newFiles, {
         maxSizeInMB: 200,
-        allowedTypes: [
-          // Images
-          "image/jpeg",
-          "image/png",
-          "image/gif",
-          "image/webp",
-
-          // Documents
-          "application/pdf",
-          "application/msword",
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-          "application/vnd.oasis.opendocument.text",
-          "text/plain",
-          "text/rtf",
-
-          // Spreadsheets
-          "application/vnd.ms-excel",
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-          "application/vnd.oasis.opendocument.spreadsheet",
-
-          // Presentations
-          "application/vnd.ms-powerpoint",
-          "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-          "application/vnd.oasis.opendocument.presentation",
-
-          // Archives
-          "application/zip",
-          "application/x-zip-compressed",
-          "application/x-rar-compressed",
-          "application/x-7z-compressed",
-
-          // Videos
-          "video/mp4",
-          "video/mpeg",
-          "video/quicktime",
-          "video/x-msvideo",
-          "video/x-ms-wmv",
-          "video/webm",
-          "video/3gpp",
-          "video/3gpp2",
-          "video/x-matroska",
-        ],
         maxFiles: 100,
       });
 
@@ -269,7 +227,7 @@ const InstructionsEditor: React.FC<InstructionsEditorProps> = ({
       className="relative vertical-start p-4"
     >
       {dropBoxActive && (
-        <div className="absolute inset-0 vertical gap-6 -mx-2 -my-3 bg-black opacity-50 rounded-lg">
+        <div className="absolute inset-0 vertical z-[55] gap-6 -mx-2 -my-3 bg-black opacity-50 rounded-lg">
           <p className="text-white text-xl sm:text-2xl">Drop here</p>
           <VscFileSymlinkFile size={35} className="text-white" />
         </div>
@@ -319,7 +277,6 @@ const InstructionsEditor: React.FC<InstructionsEditorProps> = ({
             handleFiles(Array.from(e.target.files));
           }
         }}
-        accept=".doc,.docx,.pdf,.xlsx,.xls,.zip,.rar"
       />
 
       {files.length > 0 && (

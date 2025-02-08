@@ -26,9 +26,18 @@ const popularButtons: PopularButtons[] = [
   { id: 4, name: "1 day", hours: 24 },
   { id: 5, name: "2 days", hours: 48 },
   { id: 6, name: "3 days", hours: 72 },
-  { id: 7, name: "5 days", hours: 120 },
-  { id: 8, name: "7 days", hours: 168 },
-  { id: 9, name: "10 days", hours: 240 },
+  { id: 7, name: "4 days", hours: 72 },
+  { id: 8, name: "5 days", hours: 120 },
+  { id: 9, name: "6 days", hours: 120 },
+  { id: 10, name: "7 days", hours: 168 },
+  { id: 11, name: "8 days", hours: 168 },
+  { id: 12, name: "9 days", hours: 240 },
+  { id: 13, name: "10 days", hours: 240 },
+  { id: 14, name: "12 days", hours: 240 },
+  { id: 15, name: "15 days", hours: 240 },
+  { id: 16, name: "18 days", hours: 240 },
+  { id: 17, name: "25 days", hours: 240 },
+  { id: 18, name: "30 days", hours: 240 },
 ];
 
 const DeadlineSelector = ({ value, onChange }: DeadlineSelectorProps) => {
