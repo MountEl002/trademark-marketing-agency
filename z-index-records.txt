@@ -5,3 +5,4 @@ Dynamic drafts page drop-box - z-55
 order-form-drop-down-cont - z-65
 Discard Draft confirmation - z-70
 Chat - z-100
+Chat-fileDragOver-container - 1-101

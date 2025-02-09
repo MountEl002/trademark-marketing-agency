@@ -67,7 +67,7 @@ const FileDownloadButton: React.FC<FileDownloadButtonProps> = ({
       <button
         onClick={handleDownload}
         disabled={isDownloading}
-        className={`horizontal-start gap-2 w-full p-2 text-gray-600 bg-transparent rounded-md text-base transition-all duration-500 hover:bg-gray-50 
+        className={`horizontal-start gap-2 w-full p-2 text-gray-600 bg-gray-200 rounded-sm text-sm transition-all duration-500 hover:bg-gray-50 
           ${isDownloading ? "opacity-50 cursor-not-allowed" : "cursor-pointer"} 
           ${className}`}
         title="Download file"

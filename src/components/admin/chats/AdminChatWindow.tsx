@@ -19,6 +19,8 @@ import ChatToggle from "@/components/common/chat/ChatToggle";
 import ChatInput from "@/components/common/chat/ChatInput";
 import CloseButton from "@/components/common/CloseButton";
 import ChatsButton from "./ChatsButtons";
+import { UploadedFileInfo } from "@/types/order";
+import FileDownloadButton from "@/components/common/FileDownloadButton";
 
 interface ChatPreview {
   id: string;
@@ -33,6 +35,7 @@ interface Message {
   sender: "user" | "admin";
   timestamp: number;
   userNumber: string;
+  files?: UploadedFileInfo[];
 }
 
 const AdminChatWindow = () => {
@@ -131,24 +134,33 @@ const AdminChatWindow = () => {
     return () => unsubscribe();
   }, [chatId, isRegisteredUser]);
 
-  const sendMessage = async () => {
-    if (!newMessage.trim()) return;
+  const sendMessage = async (messageData: {
+    text: string;
+    files?: UploadedFileInfo[];
+  }) => {
+    if (
+      !newMessage.trim() &&
+      (!messageData.files || messageData.files.length === 0)
+    )
+      return;
 
     const chatCollection = isRegisteredUser
       ? "registeredUsersChats"
       : "unregisteredUsersChats";
 
-    const messageData: Message = {
-      text: newMessage,
+    const message: Message = {
+      text: messageData.text,
       sender: "admin",
       timestamp: Date.now(),
       userNumber: userNumber || "unknown",
+      ...(messageData.files &&
+        messageData.files.length > 0 && { files: messageData.files }),
     };
 
     try {
       await addDoc(
         collection(db, `${chatCollection}/${chatId}/messages`),
-        messageData
+        message
       );
       setNewMessage("");
     } catch (error) {
@@ -284,6 +296,26 @@ const AdminChatWindow = () => {
                                 : "bg-blue-600 text-white"
                             }`}
                           >
+                            {/* Render files if present */}
+                            {message.files && message.files.length > 0 && (
+                              <div className="mb-2 space-y-1">
+                                {message.files.map((file) => (
+                                  <div
+                                    key={file.id}
+                                    className="flex items-center gap-2 bg-white/10 rounded p-2"
+                                  >
+                                    <span className="text-xs truncate flex-1">
+                                      {file.fileName}
+                                    </span>
+                                    <FileDownloadButton
+                                      fileName={file.fileName}
+                                      fileKey={file.fileKey}
+                                      className="!p-1"
+                                    />
+                                  </div>
+                                ))}
+                              </div>
+                            )}
                             <p className="text-sm whitespace-normal overflow-x-auto chat-scrollbars">
                               {message.text}
                             </p>

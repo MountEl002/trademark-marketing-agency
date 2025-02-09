@@ -17,6 +17,8 @@ import CustomerCareAgent4 from "@/assests/CustomerCareAgent4.jpg";
 import ChatToggle from "./chat/ChatToggle";
 import ChatInput from "./chat/ChatInput";
 import CloseButton from "./CloseButton";
+import { UploadedFileInfo } from "@/types/order";
+import FileDownloadButton from "./FileDownloadButton";
 
 interface Message {
   id?: string;
@@ -24,6 +26,7 @@ interface Message {
   sender: "user" | "admin";
   timestamp: number;
   userNumber: string;
+  files?: UploadedFileInfo[];
 }
 
 const Chat = () => {
@@ -100,31 +103,36 @@ const Chat = () => {
     };
   };
   // Send message function
-  const sendMessage = async () => {
-    if (!newMessage.trim() || !userNumber) return;
+  const sendMessage = async (messageData: {
+    text: string;
+    files?: UploadedFileInfo[];
+  }) => {
+    if (
+      !messageData.text.trim() &&
+      (!messageData.files || messageData.files.length === 0)
+    )
+      return;
 
     const currentUser = auth.currentUser;
     const chatCollection = currentUser
       ? "registeredUsersChats"
       : "unregisteredUsersChats";
-
-    // Use UID for registered users, userNumber for unregistered
     const chatDocId = currentUser ? currentUser.uid : userNumber;
 
-    const messageData: Message = {
-      text: newMessage,
-      sender: currentUser ? "user" : "user", // or 'admin' if sent by admin
+    const message: Message = {
+      text: messageData.text,
+      sender: "user",
       timestamp: Date.now(),
-      userNumber: userNumber,
+      userNumber: userNumber as string,
+      ...(messageData.files &&
+        messageData.files.length > 0 && { files: messageData.files }),
     };
 
     try {
       await addDoc(
         collection(db, `${chatCollection}/${chatDocId}/messages`),
-        messageData
+        message
       );
-
-      // Clear input after sending
       setNewMessage("");
     } catch (error) {
       console.error("Error sending message:", error);
@@ -190,6 +198,26 @@ const Chat = () => {
                           : "bg-green-600 text-white"
                       }`}
                     >
+                      {/* Render files if present */}
+                      {message.files && message.files.length > 0 && (
+                        <div className="mb-2 space-y-1">
+                          {message.files.map((file) => (
+                            <div
+                              key={file.id}
+                              className="flex items-center gap-2 bg-white/10 rounded p-1"
+                            >
+                              <span className="text-xs truncate flex-1">
+                                {file.fileName}
+                              </span>
+                              <FileDownloadButton
+                                fileName={file.fileName}
+                                fileKey={file.fileKey}
+                                className="!p-1"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      )}
                       <p className="text-sm whitespace-normal overflow-x-auto chat-scrollbars">
                         {message.text}
                       </p>
