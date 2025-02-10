@@ -17,9 +17,7 @@ const s3Client = new S3Client({
 
 interface DownloadFileParams {
   fileKey: string;
-  userId: string;
   orderNumber?: string;
-  isSuperAdmin?: boolean;
 }
 
 interface DownloadFileResponse {
@@ -34,9 +32,7 @@ interface DownloadFileResponse {
  */
 export async function downloadFileFromS3({
   fileKey,
-  userId,
   orderNumber,
-  isSuperAdmin = false,
 }: DownloadFileParams): Promise<DownloadFileResponse> {
   try {
     // Validate user permission

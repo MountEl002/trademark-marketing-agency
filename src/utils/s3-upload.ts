@@ -56,8 +56,8 @@ async function fileToBuffer(file: File): Promise<Buffer> {
 export async function uploadFilesToS3(
   files: File[],
   userId: string,
-  orderNumber?: string,
-  isSuperAdmin: boolean = false
+  isSuperAdmin?: boolean,
+  orderNumber?: string
 ): Promise<FileUploadResponse[]> {
   try {
     // Validate user permission
