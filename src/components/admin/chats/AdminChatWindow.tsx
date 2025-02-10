@@ -41,7 +41,7 @@ interface Message {
 const AdminChatWindow = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loadingMessages, setLoadingMessages] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
 
   const [chats, setChats] = useState<ChatPreview[]>([]);
@@ -57,6 +57,7 @@ const AdminChatWindow = () => {
   const handleChatClick = (chat: ChatPreview) => {
     setSelectedChat(chat);
     setShowChats(false);
+    setLoadingMessages(true);
   };
 
   const handleChatsToggle = () => {
@@ -128,7 +129,7 @@ const AdminChatWindow = () => {
           } as Message)
       );
       setMessages(fetchedMessages);
-      setLoading(false);
+      setLoadingMessages(false);
     });
 
     return () => unsubscribe();
@@ -262,7 +263,7 @@ const AdminChatWindow = () => {
               <>
                 {/* Messages container */}
                 <div className="flex-1 flex flex-col-reverse overflow-y-auto overflow-x-hidden chat-scrollbars p-2">
-                  {loading ? (
+                  {loadingMessages ? (
                     <div className="vertical gap-4 h-full">
                       <p className="text-gray-500">Loading messages...</p>
                       <LoadingAnimantion />

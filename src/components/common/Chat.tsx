@@ -169,7 +169,7 @@ const Chat = () => {
             </div>
 
             {/* Messages container */}
-            <div className="flex-1 flex flex-col-reverse overflow-y-auto overflow-x-hidden chat-scrollbars p-2">
+            <div className="flex-1 flex flex-col-reverse overflow-y-auto overflow-x-hidden chat-scrollbars p-2 mr-1">
               <div className="flex flex-col space-y-2">
                 {messages.map((message) => (
                   <div

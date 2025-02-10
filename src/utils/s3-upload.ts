@@ -184,6 +184,22 @@ async function updateFirebaseFileMetadata(
         updatedAt: new Date(),
       });
     }
+
+    // Add each file to the public_files collection
+    for (const file of uploadedFiles) {
+      // Replace forward slashes with another character (like underscores or dashes)
+      const documentId = file.fileKey.replace(/\//g, "_");
+      const publicFileRef = doc(db, "publicFiles", documentId);
+      await setDoc(publicFileRef, {
+        fileName: file.fileName,
+        fileType: file.fileType,
+        fileUrl: file.fileUrl,
+        uploadedAt: file.uploadedAt,
+        uploadedBy: userId,
+        orderNumber: file.orderNumber || null,
+        fileKey: file.fileKey, // Store the original fileKey as a field
+      });
+    }
   } catch (error) {
     console.error("Error updating Firebase:", error);
     throw new Error("Failed to update file metadata in Firebase");

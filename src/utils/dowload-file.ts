@@ -1,9 +1,8 @@
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import type { FileUploadResponse } from "@/utils/s3-upload";
 
-// Initialize S3 Client (reusing the same configuration)
+// Initialize S3 Client
 const s3Client = new S3Client({
   region: process.env.NEXT_PUBLIC_AWS_REGION,
   credentials: {
@@ -17,9 +16,6 @@ const s3Client = new S3Client({
 
 interface DownloadFileParams {
   fileKey: string;
-  userId: string;
-  orderNumber?: string;
-  isSuperAdmin?: boolean;
 }
 
 interface DownloadFileResponse {
@@ -34,31 +30,16 @@ interface DownloadFileResponse {
  */
 export async function downloadFileFromS3({
   fileKey,
-  userId,
-  orderNumber,
-  isSuperAdmin = false,
 }: DownloadFileParams): Promise<DownloadFileResponse> {
   try {
-    // Validate user permission
-    if (!isSuperAdmin) {
-      const userDoc = await getDoc(doc(db, "users", userId));
-      if (!userDoc.exists()) {
-        throw new Error("User not found");
-      }
-    }
-
     // Get file metadata from Firebase
-    const fileMetadata = await getFileMetadataFromFirebase(
-      fileKey,
-      userId,
-      orderNumber
-    );
+    const fileMetadata = await getFileMetadataFromFirebase(fileKey);
     if (!fileMetadata) {
       throw new Error("File metadata not found");
     }
 
     // Download file from S3
-    const downloadedFile = await downloadFileFromS3Bucket(fileKey);
+    const downloadedFile = await downloadFileFromS3Bucket(fileMetadata.fileKey);
 
     // Create blob from array buffer
     const blob = new Blob([downloadedFile.body], {
@@ -69,7 +50,7 @@ export async function downloadFileFromS3({
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = fileMetadata.fileName; // Use original filename from metadata
+    link.download = fileMetadata.fileName;
     document.body.appendChild(link);
     link.click();
 
@@ -147,47 +128,21 @@ async function downloadFileFromS3Bucket(fileKey: string): Promise<{
  * Retrieves file metadata from Firebase
  */
 async function getFileMetadataFromFirebase(
-  fileKey: string,
-  userId: string,
-  orderNumber?: string
-): Promise<{ fileName: string; fileType: string } | null> {
+  fileKey: string
+): Promise<{ fileName: string; fileType: string; fileKey: string } | null> {
   try {
-    // First check user's files collection
-    const userFileRef = doc(db, "files", userId);
-    const docSnap = await getDoc(userFileRef);
+    // Convert the fileKey to use underscores instead of slashes for document ID
+    const documentId = fileKey.replace(/\//g, "_");
+    const publicFileRef = doc(db, "publicFiles", documentId);
+    const docSnap = await getDoc(publicFileRef);
 
     if (docSnap.exists()) {
-      const userData = docSnap.data();
-      const files = userData.files as FileUploadResponse[];
-      const fileMetadata = files.find((file) => file.fileKey === fileKey);
-
-      if (fileMetadata) {
-        return {
-          fileName: fileMetadata.fileName,
-          fileType: fileMetadata.fileType,
-        };
-      }
-    }
-
-    // If orderNumber is provided and file not found in user's files, check order document
-    if (orderNumber) {
-      const orderRef = doc(db, "orders", orderNumber);
-      const orderDoc = await getDoc(orderRef);
-
-      if (orderDoc.exists()) {
-        const orderData = orderDoc.data();
-        const orderFiles = orderData.orderFiles;
-        const fileMetadata = orderFiles.find(
-          (file: { fileKey: string }) => file.fileKey === fileKey
-        );
-
-        if (fileMetadata) {
-          return {
-            fileName: fileMetadata.fileName,
-            fileType: fileMetadata.fileType,
-          };
-        }
-      }
+      const fileData = docSnap.data();
+      return {
+        fileName: fileData.fileName,
+        fileType: fileData.fileType,
+        fileKey: fileData.fileKey, // This will be the original fileKey with slashes
+      };
     }
 
     return null;

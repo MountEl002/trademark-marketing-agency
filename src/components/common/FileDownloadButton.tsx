@@ -1,13 +1,11 @@
 import React, { useState } from "react";
 import { HiDownload } from "react-icons/hi";
 import { downloadFileFromS3 } from "@/utils/dowload-file";
-import { useAuth } from "@/contexts/AuthContext";
 
 interface FileDownloadButtonProps {
   fileName: string;
-  fileKey?: string;
+  fileKey: string;
   localFile?: File;
-  orderNumber?: string;
   className?: string;
 }
 
@@ -15,19 +13,12 @@ const FileDownloadButton: React.FC<FileDownloadButtonProps> = ({
   fileName,
   fileKey,
   localFile,
-  orderNumber,
   className = "",
 }) => {
   const [isDownloading, setIsDownloading] = useState(false);
   const [error, setError] = useState<string>("");
-  const { user } = useAuth();
 
   const handleDownload = async () => {
-    if (!user) {
-      setError("User is not authenticated");
-      return;
-    }
-
     setIsDownloading(true);
     setError("");
 
@@ -43,11 +34,12 @@ const FileDownloadButton: React.FC<FileDownloadButtonProps> = ({
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
       } else if (fileKey) {
+        if (!fileKey.trim()) {
+          throw new Error("Invalid file key provided");
+        }
         // Handle S3 file download
         await downloadFileFromS3({
           fileKey,
-          userId: user.uid,
-          orderNumber,
         });
       } else {
         throw new Error("No file available for download");
