@@ -3,7 +3,7 @@ import { IoChevronDown } from "react-icons/io5";
 
 interface AddOnsSelectorProps {
   value: string;
-  onChange: (value: string, totalPrice: number) => void;
+  onChange: (value: string, addOnsTotalPrice: number) => void;
   onContinue: () => void;
 }
 
@@ -45,13 +45,13 @@ const AddOnsSelector: React.FC<AddOnsSelectorProps> = ({
 
   const handleContinue = () => {
     // Calculate total price
-    const totalPrice = localSelectedAddOns.reduce((sum, name) => {
+    const addOnsTotalPrice = localSelectedAddOns.reduce((sum, name) => {
       const addOn = addOns.find((item) => item.name === name);
       return sum + (addOn?.price || 0);
     }, 0);
 
     // Update parent component
-    onChange(localSelectedAddOns.join(", "), totalPrice);
+    onChange(localSelectedAddOns.join(", "), addOnsTotalPrice);
     onContinue();
   };
 

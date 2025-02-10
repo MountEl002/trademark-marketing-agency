@@ -56,6 +56,7 @@ interface OrderData {
     formattedDate: string;
   };
   addOns: string;
+  addOnsTotalPrice: number;
   topic: string;
   subject: string;
   instructions: string;
@@ -77,6 +78,7 @@ function OrderPage({ params }: PageProps) {
     words: 0,
     deadline: { date: "", formattedDate: "" },
     addOns: "",
+    addOnsTotalPrice: 0,
     topic: "",
     subject: "",
     instructions: "",
@@ -236,6 +238,7 @@ function OrderPage({ params }: PageProps) {
         if (docSnap.exists()) {
           const data = docSnap.data() as OrderData;
           setOrderData(data);
+          setAddOnsTotalPrice(data.addOnsTotalPrice);
 
           // Find the first empty field on page load
           switch (true) {
@@ -665,9 +668,10 @@ function OrderPage({ params }: PageProps) {
                 ) : field.id === 7 ? (
                   <AddOnsSelector
                     value={orderData.addOns}
-                    onChange={(value, totalPrice) => {
+                    onChange={(value, addOnsTotalPrice) => {
                       updateField("addOns", value);
-                      setAddOnsTotalPrice(totalPrice);
+                      updateField("addOnsTotalPrice", addOnsTotalPrice);
+                      setAddOnsTotalPrice(addOnsTotalPrice);
                     }}
                     onContinue={() => {
                       const nextEmptyFieldId = findNextEmptyField();
