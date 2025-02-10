@@ -10,6 +10,7 @@ import { FirebaseError } from "firebase/app";
 import LightLogo from "@/components/common/LightLogo";
 import ContinueWith from "@/components/common/login/ContinueWith";
 import EmailInfo from "@/components/common/login/EmailInfo";
+import Chat from "@/components/common/Chat";
 
 const LoginPage = () => {
   const router = useRouter();
@@ -78,6 +79,7 @@ const LoginPage = () => {
 
   return (
     <section className="center-content-on-screen">
+      <Chat />
       <div className="centered-content-on-screen">
         <LightLogo />
         <div className="w-full px-4">

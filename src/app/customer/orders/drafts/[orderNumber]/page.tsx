@@ -36,6 +36,7 @@ import CloseButton from "@/components/common/CloseButton";
 import DiscardButton from "@/components/common/DiscardButton";
 import { deleteAllOrderFiles } from "@/utils/delete-all-order-files";
 import { useAuth } from "@/contexts/AuthContext";
+import Chat from "@/components/common/Chat";
 
 interface PageProps {
   params: Promise<{
@@ -513,6 +514,7 @@ function OrderPage({ params }: PageProps) {
 
   return (
     <div className="bg-gray-200 min-h-screen overflow-hidden pb-80">
+      <Chat />
       <div className="fixed inset-x-0 top-0 min-[360px]:h-24 z-[60] py-8 bg-gray-200">
         <div className="flex flex-col min-[360px]:flex-row gap-2 items-center justify-between max-w-4xl mx-auto px-3">
           <div>

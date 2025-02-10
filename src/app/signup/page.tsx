@@ -10,6 +10,7 @@ import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { Tooltip } from "react-tooltip";
 import Link from "next/link";
 import { FirebaseError } from "firebase/app";
+import Chat from "@/components/common/Chat";
 
 const SignUpPage = () => {
   const router = useRouter();
@@ -64,6 +65,7 @@ const SignUpPage = () => {
 
   return (
     <section className="center-content-on-screen">
+      <Chat />
       <div className="centered-content-on-screen">
         <LightLogo />
         <div className="w-full px-4">

@@ -1,4 +1,4 @@
-import React from "react";
+import { usePathname } from "next/navigation";
 import { SiGooglemessages } from "react-icons/si";
 
 interface ChatToggleProps {
@@ -6,8 +6,17 @@ interface ChatToggleProps {
 }
 
 const ChatToggle: React.FC<ChatToggleProps> = ({ onClick }) => {
+  const pathname = usePathname();
+
+  const className =
+    pathname === "/login" ||
+    pathname === "/signup" ||
+    pathname === "/forgot-password"
+      ? "fixed group z-[100] right-3 top-10"
+      : "fixed group z-[100] right-3 top-1/2";
+
   return (
-    <div className="fixed group z-[100] top-1/2 right-3">
+    <div className={className}>
       <button
         type="button"
         onClick={onClick}

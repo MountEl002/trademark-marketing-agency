@@ -22,7 +22,7 @@ const ContinueWithGoogle = () => {
       <div
         onClick={handleGoogleSignIn}
         data-tooltip-id="div-tooltip"
-        data-tooltip-content={`Use your Facebook account to ${
+        data-tooltip-content={`Use your Google account to ${
           pathName === "/login" ? "Login" : "Sign Up!"
         }`}
         className="continue-with-gaft"

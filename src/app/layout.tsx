@@ -48,7 +48,6 @@ export default function RootLayout({
         }`}
       >
         <Providers>
-          {" "}
           <ClientLayoutWrapper>{children}</ClientLayoutWrapper>
           <Analytics />
         </Providers>
