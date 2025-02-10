@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { HiDownload } from "react-icons/hi";
 import { downloadFileFromS3 } from "@/utils/dowload-file";
+import { useAuth } from "@/contexts/AuthContext";
+import { isUserSuperAdmin } from "@/utils/admin-setup";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 interface FileDownloadButtonProps {
   fileName: string;
@@ -17,8 +20,43 @@ const FileDownloadButton: React.FC<FileDownloadButtonProps> = ({
 }) => {
   const [isDownloading, setIsDownloading] = useState(false);
   const [error, setError] = useState<string>("");
+  const { user } = useAuth();
+  const [adminAuthStatus, setAdminAuthStatus] = useState({
+    isAdmin: false,
+    adminUid: null as string | null,
+  });
+
+  useEffect(() => {
+    const auth = getAuth();
+
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        const adminStatus = await isUserSuperAdmin(firebaseUser.uid);
+        setAdminAuthStatus({
+          isAdmin: adminStatus,
+          adminUid: adminStatus ? firebaseUser.uid : null,
+        });
+      } else {
+        setAdminAuthStatus({
+          isAdmin: false,
+          adminUid: null,
+        });
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const handleDownload = async () => {
+    if (!user && !adminAuthStatus.isAdmin) {
+      setError("User is not authenticated");
+      return;
+    }
+
+    const downLoaderId = adminAuthStatus.isAdmin
+      ? `admin_${adminAuthStatus.adminUid}`
+      : user!.uid;
+
     setIsDownloading(true);
     setError("");
 
@@ -41,6 +79,20 @@ const FileDownloadButton: React.FC<FileDownloadButtonProps> = ({
         await downloadFileFromS3({
           fileKey,
         });
+        if (adminAuthStatus.isAdmin) {
+          await downloadFileFromS3({
+            fileKey,
+            userId: downLoaderId,
+            orderNumber,
+            isSuperAdmin: true,
+          });
+        } else {
+          await downloadFileFromS3({
+            fileKey,
+            userId: downLoaderId,
+            orderNumber,
+          });
+        }
       } else {
         throw new Error("No file available for download");
       }

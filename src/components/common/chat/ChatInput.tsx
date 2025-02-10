@@ -145,10 +145,12 @@ const ChatInput: React.FC<ChatInputProps> = ({
         }
 
         const uploaderId = adminAuthStatus.isAdmin
-          ? `admin_${adminAuthStatus.adminUid}` // Use appropriate admin ID field
-          : user!.uid; // Safe to use ! here as we've checked authentication
+          ? `admin_${adminAuthStatus.adminUid}`
+          : user!.uid;
 
-        const uploadedFiles = await uploadFilesToS3(files, uploaderId);
+        const uploadedFiles = adminAuthStatus.isAdmin
+          ? await uploadFilesToS3(files, uploaderId, true)
+          : await uploadFilesToS3(files, uploaderId);
 
         // Send each file as a separate message
         for (const file of uploadedFiles) {
