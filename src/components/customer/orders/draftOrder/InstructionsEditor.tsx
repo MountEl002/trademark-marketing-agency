@@ -28,6 +28,7 @@ const InstructionsEditor: React.FC<InstructionsEditorProps> = ({
   const [dropBoxActive, setDropBoxActive] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isDeletingFile, setIsDeletingFile] = useState(false);
+  const isSuperAdmin = false;
 
   // Initialize files state with existing orderFiles
   const [files, setFiles] = useState<UploadedFileInfo[]>(() =>
@@ -152,6 +153,7 @@ const InstructionsEditor: React.FC<InstructionsEditorProps> = ({
       const uploadedFiles = await uploadFilesToS3(
         filesToUpload,
         user.uid,
+        isSuperAdmin,
         orderNumber
       );
 
@@ -314,7 +316,6 @@ const InstructionsEditor: React.FC<InstructionsEditorProps> = ({
                     fileName={file.fileName}
                     fileKey={file.fileKey}
                     localFile={file.file}
-                    orderNumber={orderNumber}
                   />
                   <button
                     onClick={() => removeFile(file.id)}

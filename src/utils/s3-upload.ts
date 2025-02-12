@@ -143,27 +143,7 @@ async function updateFirebaseFileMetadata(
   userId: string,
   orderNumber?: string
 ): Promise<void> {
-  const userFileRef = doc(db, "files", userId);
-
   try {
-    const docSnap = await getDoc(userFileRef);
-
-    // Update user's files collection
-    if (!docSnap.exists()) {
-      await setDoc(userFileRef, {
-        userId,
-        files: uploadedFiles,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
-    } else {
-      await updateDoc(userFileRef, {
-        userId,
-        files: arrayUnion(...uploadedFiles),
-        updatedAt: new Date(),
-      });
-    }
-
     // Only update order files if orderNumber is provided
     if (orderNumber) {
       const orderRef = doc(db, "orders", orderNumber);

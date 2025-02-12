@@ -1,9 +1,8 @@
 import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, deleteDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import type { FileUploadResponse } from "@/utils/s3-upload"; // Adjust the import path as needed
 
-// Initialize S3 Client (reusing the same configuration)
+// Initialize S3 Client
 const s3Client = new S3Client({
   region: process.env.NEXT_PUBLIC_AWS_REGION,
   credentials: {
@@ -14,6 +13,17 @@ const s3Client = new S3Client({
   forcePathStyle: true,
   customUserAgent: "hq-essay/1.0.0",
 });
+
+// Types
+interface PublicFileData {
+  fileName: string;
+  fileType: string;
+  fileUrl: string;
+  fileKey: string;
+  uploadedAt: Date;
+  uploadedBy: string;
+  orderNumber: string | null;
+}
 
 interface DeleteFileParams {
   fileKey: string;
@@ -30,6 +40,15 @@ interface DeleteFileResponse {
     fileName: string;
     fileUrl: string;
   };
+}
+
+interface OrderFile {
+  fileKey: string;
+  fileName: string;
+  fileUrl: string;
+  fileType: string;
+  uploadedAt: Date;
+  uploadedBy: string;
 }
 
 /**
@@ -50,13 +69,25 @@ export async function deleteFileFromS3({
       }
     }
 
+    // Get file metadata before deletion
+    const documentId = fileKey.replace(/\//g, "_");
+    const fileDoc = await getDoc(doc(db, "publicFiles", documentId));
+    if (!fileDoc.exists()) {
+      throw new Error("File metadata not found");
+    }
+
+    const fileData = fileDoc.data() as PublicFileData;
+    if (!isSuperAdmin && fileData.uploadedBy !== userId) {
+      throw new Error("Unauthorized to delete this file");
+    }
+
     // Delete from S3
     await deleteFileFromS3Bucket(fileKey);
 
     // Update Firebase metadata
     const deletedFile = await removeFileMetadataFromFirebase(
       fileKey,
-      userId,
+      fileData,
       orderNumber
     );
 
@@ -90,49 +121,18 @@ async function deleteFileFromS3Bucket(fileKey: string): Promise<void> {
   }
 }
 
-interface OrderFile {
-  fileKey: string;
-  fileName: string;
-  fileUrl: string;
-  fileType: string;
-  uploadedAt: Date;
-  uploadedBy: string;
-}
-
 /**
  * Removes file metadata from Firebase documents
  */
 async function removeFileMetadataFromFirebase(
   fileKey: string,
-  userId: string,
+  fileData: PublicFileData,
   orderNumber?: string
 ): Promise<{ fileKey: string; fileName: string; fileUrl: string }> {
-  const userFileRef = doc(db, "files", userId);
-
   try {
-    // Get current files data
-    const docSnap = await getDoc(userFileRef);
-    if (!docSnap.exists()) {
-      throw new Error("User files document not found");
-    }
-
-    const userData = docSnap.data();
-    const files = userData.files as FileUploadResponse[];
-
-    // Find the file to be deleted
-    const fileIndex = files.findIndex((file) => file.fileKey === fileKey);
-    if (fileIndex === -1) {
-      throw new Error("File not found in user's files");
-    }
-
-    const deletedFile = files[fileIndex];
-    const updatedFiles = files.filter((_, index) => index !== fileIndex);
-
-    // Update user's files collection
-    await updateDoc(userFileRef, {
-      files: updatedFiles,
-      updatedAt: new Date(),
-    });
+    // Delete the file document from publicFiles collection
+    const documentId = fileKey.replace(/\//g, "_");
+    await deleteDoc(doc(db, "publicFiles", documentId));
 
     // Update order document if orderNumber is provided
     if (orderNumber) {
@@ -143,9 +143,8 @@ async function removeFileMetadataFromFirebase(
         throw new Error("Order not found");
       }
 
-      const orderData = orderDoc.data();
-      const orderFiles = orderData.orderFiles as OrderFile[];
-      const updatedOrderFiles = orderFiles.filter(
+      const orderData = orderDoc.data() as { orderFiles: OrderFile[] };
+      const updatedOrderFiles = orderData.orderFiles.filter(
         (file) => file.fileKey !== fileKey
       );
 
@@ -156,9 +155,9 @@ async function removeFileMetadataFromFirebase(
     }
 
     return {
-      fileKey: deletedFile.fileKey,
-      fileName: deletedFile.fileName,
-      fileUrl: deletedFile.fileUrl,
+      fileKey: fileData.fileKey,
+      fileName: fileData.fileName,
+      fileUrl: fileData.fileUrl,
     };
   } catch (error) {
     console.error("Error updating Firebase:", error);

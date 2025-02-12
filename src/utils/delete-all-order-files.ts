@@ -1,12 +1,12 @@
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  deleteDoc,
+} from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { deleteFileFromS3 } from "./delete-file";
-import type { UploadedFileInfo } from "@/types/order";
-
-// First, let's extend the UploadedFileInfo interface to include orderNumber
-interface FileWithOrder extends UploadedFileInfo {
-  orderNumber?: string;
-}
 
 interface BatchDeleteResponse {
   success: boolean;
@@ -16,7 +16,6 @@ interface BatchDeleteResponse {
     fileName: string;
     fileUrl: string;
   }[];
-  errors?: string[];
 }
 
 export async function deleteAllOrderFiles(
@@ -24,87 +23,44 @@ export async function deleteAllOrderFiles(
   userId: string,
   isSuperAdmin = false
 ): Promise<BatchDeleteResponse> {
-  const deletedFiles = [];
-  const errors = [];
-
   try {
-    // Get the user's files document
-    const userFileRef = doc(db, "files", userId);
-    const userFileDoc = await getDoc(userFileRef);
-
-    if (!userFileDoc.exists()) {
-      throw new Error(`No files found for user ${userId}`);
-    }
-
-    const userData = userFileDoc.data();
-    const userFiles = userData.files as FileWithOrder[];
-
-    // Filter files that belong to the specified order
-    const orderFiles = userFiles.filter(
-      (file) => file.orderNumber === orderNumber
+    // Get all files for this order
+    const publicFilesQuery = query(
+      collection(db, "publicFiles"),
+      where("orderNumber", "==", orderNumber)
     );
+    const querySnapshot = await getDocs(publicFilesQuery);
 
-    if (orderFiles.length === 0) {
+    const deletePromises = querySnapshot.docs.map(async (doc) => {
+      const fileData = doc.data();
+      // Delete from S3
+      await deleteFileFromS3({
+        fileKey: fileData.fileKey,
+        userId,
+        isSuperAdmin,
+      });
+      // Delete from Firestore
+      await deleteDoc(doc.ref);
       return {
-        success: true,
-        message: `No files found for order ${orderNumber}`,
-        deletedFiles: [],
+        fileKey: fileData.fileKey,
+        fileName: fileData.fileName,
+        fileUrl: fileData.fileUrl,
       };
-    }
-
-    // Delete each file from S3 and track results
-    for (const file of orderFiles) {
-      try {
-        const result = await deleteFileFromS3({
-          fileKey: file.fileKey,
-          userId,
-          isSuperAdmin,
-        });
-
-        if (result.success && result.deletedFile) {
-          deletedFiles.push(result.deletedFile);
-        }
-      } catch (error) {
-        const errorMessage =
-          error instanceof Error
-            ? error.message
-            : `Failed to delete file ${file.fileName}`;
-        errors.push(errorMessage);
-        console.error(`Error deleting file ${file.fileName}:`, error);
-      }
-    }
-
-    // Update the files array in Firebase to remove the deleted files
-    const remainingFiles = userFiles.filter(
-      (file) => file.orderNumber !== orderNumber
-    );
-    await updateDoc(userFileRef, {
-      files: remainingFiles,
-      updatedAt: new Date(),
     });
 
-    // Determine overall success
-    const allFilesDeleted = deletedFiles.length === orderFiles.length;
+    const deletedFiles = await Promise.all(deletePromises);
 
     return {
-      success: allFilesDeleted,
-      message: allFilesDeleted
-        ? `Successfully deleted all ${deletedFiles.length} files for order ${orderNumber}`
-        : `Partially deleted files for order ${orderNumber}. ${deletedFiles.length} of ${orderFiles.length} files deleted`,
+      success: true,
+      message: `Successfully deleted ${deletedFiles.length} files`,
       deletedFiles,
-      ...(errors.length > 0 && { errors }),
     };
   } catch (error) {
-    const errorMessage =
-      error instanceof Error
-        ? error.message
-        : `Failed to process file deletion for order ${orderNumber}`;
-
     return {
       success: false,
-      message: errorMessage,
-      deletedFiles,
-      errors: [...errors, errorMessage],
+      message:
+        error instanceof Error ? error.message : "Failed to delete files",
+      deletedFiles: [],
     };
   }
 }

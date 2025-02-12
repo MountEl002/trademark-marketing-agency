@@ -190,10 +190,6 @@ function OrderPage({ params }: PageProps) {
             false
           );
           console.log(`Deleted ${result.deletedFiles.length} files`);
-
-          if (!result.success && result.errors) {
-            console.error("Some files failed to delete:", result.errors);
-          }
         } catch (error) {
           console.error("Failed to delete order files:", error);
         }
