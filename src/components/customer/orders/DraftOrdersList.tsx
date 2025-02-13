@@ -11,6 +11,8 @@ import LoadingAnimantion from "@/components/common/LoadingAnimantion";
 import ConfirmationDialog from "./draftOrder/ConfirmationDialog";
 import { deleteAllOrderFiles } from "@/utils/delete-all-order-files";
 import { MdOutlineDelete } from "react-icons/md";
+import { FaEllipsisVertical } from "react-icons/fa6";
+import CountdownDisplayer from "./draftOrder/CountdownDisplayer";
 
 interface DraftOrder {
   id: string;
@@ -19,6 +21,16 @@ interface DraftOrder {
   updatedAt: string;
   userId: string;
   status: string;
+  assignmentType: string;
+  language: string;
+  size: string;
+  price: number;
+  topic: string;
+  deadline: {
+    date: string;
+    formattedDate: string;
+  };
+  words: number;
 }
 
 export default function DraftOrdersList() {
@@ -34,6 +46,9 @@ export default function DraftOrdersList() {
   const { user } = useAuth();
   const router = useRouter();
 
+  const BlueSeparator = () => (
+    <span className="text-blue-700 text-xl"> | </span>
+  );
   // Delete handler
   const handleDiscardDraft = async (draft: DraftOrder, e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent navigation when clicking delete
@@ -56,8 +71,8 @@ export default function DraftOrdersList() {
           );
           console.log(`Deleted ${result.deletedFiles.length} files`);
 
-          if (!result.success && result.errors) {
-            console.error("Some files failed to delete:", result.errors);
+          if (!result.success) {
+            console.error("Some files failed to delete:", result.message);
           }
         } catch (error) {
           console.error("Failed to delete order files:", error);
@@ -138,36 +153,63 @@ export default function DraftOrdersList() {
       <div className="grid gap-1 grid-cols-1">
         {drafts.map((draft) => (
           <div
-            key={draft.id} // Changed from orderNumber to id for better uniqueness
-            className="group cursor-pointer transition-all duration-500"
+            key={draft.id}
+            className="cursor-pointer transition-all duration-500"
             onClick={() =>
               router.push(`/customer/orders/drafts/${draft.orderNumber}`)
             }
           >
-            <div className="horizontal-space-between rounded-lg bg-gray-100 hover:bg-gray-50 p-4 my-2">
-              <div className="horizontal-start gap-5">
-                <div className="text-blue-600 group-hover:text-blue-800">
-                  Order {draft.orderNumber}
+            <div className="relative flex sm:flex-row flex-col items-start sm:items-center justify-start sm:justify-between w-full gap-2 rounded-lg bg-gray-100 hover:bg-gray-50 py-2 px-4 my-2">
+              <div className="vertical-start w-full">
+                <div className="text-gray-800 truncate overflow-hidden">
+                  {draft.topic ? draft.topic : "(No topic)"}
                 </div>
-                <p className="text-sm text-gray-500 group-hover:text-blue-600">
-                  Created: {new Date(draft.createdAt).toLocaleDateString()}{" "}
-                  <span className="ml-3">
-                    Last updated:{" "}
-                    {new Date(draft.updatedAt).toLocaleDateString()}
-                  </span>
-                </p>
+                <div className="text-sm w-[90%] text-gray-500">
+                  <p className="truncate">
+                    {draft.orderNumber}
+                    {draft.words > 0 && (
+                      <>
+                        <BlueSeparator />
+                        <span>{draft.words} words</span>
+                      </>
+                    )}
+                    {draft.assignmentType && (
+                      <>
+                        <BlueSeparator /> {draft.assignmentType}
+                      </>
+                    )}
+                    {draft.language && (
+                      <>
+                        <BlueSeparator /> {draft.language}
+                      </>
+                    )}
+                  </p>
+                </div>
               </div>
-              <div>
-                <button
-                  type="button"
-                  onClick={(e) => handleDiscardDraft(draft, e)}
-                  className="horizontal-start group gap-3 pr-5 min-[550px]:pr-10 bg-red-500 hover:bg-red-700 text-sm min-[550px]:text-base text-white font-semibold rounded-md transition-all duration-500"
-                >
-                  <div className="vertical p-1 min-[550px]:p-2 left-1 m-[2px] bg-red-400 group-hover:bg-red-600 h-[90%] rounded transition-all duration-500">
-                    <MdOutlineDelete size={20} />
+              <div className="flex flex-row sm:flex-col items-start justify-start gap-2 mr-7">
+                {draft.price > 0 && (
+                  <div className="text-sm text-gray-800">
+                    <span className="truncate">~ ${draft.price}</span>
                   </div>
-                  <span>Discard</span>
-                </button>
+                )}
+                {draft.deadline && (
+                  <CountdownDisplayer targetDate={draft.deadline.date} />
+                )}
+              </div>
+              <div className="absolute right-2 p-2 group vertical h-full top-0  text-gray-500 hover:text-blue-700 transtion-all duration-500">
+                <FaEllipsisVertical size={18} />
+                <div className="absolute hidden group-hover:block z-40 bg-transparent top-full -right-2">
+                  <button
+                    type="button"
+                    onClick={(e) => handleDiscardDraft(draft, e)}
+                    className="horizontal-start group gap-3 pr-5 min-[550px]:pr-10 bg-red-500 hover:bg-red-700 text-sm min-[550px]:text-base text-white font-semibold rounded-md transition-all duration-500"
+                  >
+                    <div className="vertical p-1 min-[550px]:p-2 left-1 m-[2px] bg-red-400 group-hover:bg-red-600 h-[90%] rounded transition-all duration-500">
+                      <MdOutlineDelete size={20} />
+                    </div>
+                    <span>Discard</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>

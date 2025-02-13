@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useState, useRef } from "react";
+import { use, useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { IoChevronDown } from "react-icons/io5";
 import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
@@ -287,17 +287,26 @@ function OrderPage({ params }: PageProps) {
   }, [orderNumber, router]);
 
   // Function to update Firebase
-  const updateFirebase = async (field: string, value: unknown) => {
-    try {
-      const orderRef = doc(db, "orders", orderNumber.toString());
-      await updateDoc(orderRef, {
-        [field]: value,
-        updatedAt: new Date().toISOString(),
-      });
-    } catch (error) {
-      console.error("Error updating order:", error);
+  const updateFirebase = useCallback(
+    async (field: string, value: unknown) => {
+      try {
+        const orderRef = doc(db, "orders", orderNumber.toString());
+        await updateDoc(orderRef, {
+          [field]: value,
+          updatedAt: new Date().toISOString(),
+        });
+      } catch (error) {
+        console.error("Error updating order:", error);
+      }
+    },
+    [orderNumber]
+  );
+
+  useEffect(() => {
+    if (totalPrice > 0) {
+      updateFirebase("price", totalPrice);
     }
-  };
+  }, [totalPrice, updateFirebase]);
 
   // Generic state update function
   const updateField = (field: keyof OrderData, value: unknown) => {

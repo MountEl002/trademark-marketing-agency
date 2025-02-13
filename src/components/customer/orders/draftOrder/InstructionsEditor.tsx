@@ -229,8 +229,8 @@ const InstructionsEditor: React.FC<InstructionsEditorProps> = ({
       className="relative vertical-start p-4"
     >
       {dropBoxActive && (
-        <div className="absolute inset-0 vertical z-[55] gap-6 -mx-2 -my-3 bg-black opacity-50 rounded-lg">
-          <p className="text-white text-xl sm:text-2xl">Drop here</p>
+        <div className="absolute inset-0 vertical z-[55] gap-6 -mx-2 -my-3 bg-black backdrop-blur-sm opacity-50 rounded-lg">
+          <p className="text-white text-xl sm:text-2xl">Drop files here</p>
           <VscFileSymlinkFile size={35} className="text-white" />
         </div>
       )}

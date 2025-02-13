@@ -26,9 +26,9 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-[70] flex items-center justify-center">
+    <div className="fixed inset-0 bg-black backdrop-blur-sm bg-opacity-50 z-[70] flex items-center justify-center">
       <div
-        className={`bg-white rounded-lg p-6 max-w-md w-full mx-4 ${
+        className={`bg-gray-50 rounded-lg p-6 max-w-md w-full mx-4 ${
           successDiscarding || errorDiscarding ? "vertical" : ""
         }`}
       >

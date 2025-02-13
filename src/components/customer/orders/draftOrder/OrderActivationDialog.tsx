@@ -22,13 +22,13 @@ const OrderActivationDialog: React.FC<OrderActivationDialogProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-[70] flex items-center justify-center">
+    <div className="fixed inset-0 bg-black backdrop-blur-sm bg-opacity-50 z-[70] flex items-center justify-center">
       {activating ? (
         <LoadingAnimantion />
       ) : (
         <div
-          className={`bg-white rounded-lg p-6 max-w-md w-full mx-4 ${
-            successActivating || errorActivating ? "vertical" : ""
+          className={`bg-gray-50 rounded-lg p-6 max-w-md w-full mx-4 text-center ${
+            successActivating || errorActivating ? "vertical gap-4" : ""
           }`}
         >
           {successActivating ? (
@@ -38,12 +38,16 @@ const OrderActivationDialog: React.FC<OrderActivationDialogProps> = ({
                 working on it.
               </p>
               <p>
-                Feel free to contanct the administrator or support for progress
+                Feel free to contact us throuh the chat or email if you need any
                 update, clarification, or any other reason you might have. We
                 are available 24/7.
               </p>
               <p>
-                Thank you for choosing High-<span>Quality</span>Essay
+                Thank you for choosing{" "}
+                <span className="font-semibold">
+                  High-
+                  <span className="text-blue-700">Quality </span>Essay
+                </span>
               </p>
               <div className="w-full horizontal mt-8">
                 <button onClick={openActiveOrders} className="button-blue">

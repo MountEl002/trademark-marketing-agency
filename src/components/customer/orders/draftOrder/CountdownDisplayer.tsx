@@ -28,11 +28,9 @@ const CountdownDisplayer = ({ targetDate }: CountdownDisplayProps) => {
       if (days > 0) {
         const hoursString =
           hours > 0 ? ` ${hours} hour${hours !== 1 ? "s" : ""}` : "";
-        const minutesString =
-          minutes > 0 ? ` ${minutes} minute${minutes !== 1 ? "s" : ""}` : "";
-        return `Due in ${days} day${
-          days !== 1 ? "s" : ""
-        }${hoursString}${minutesString}`;
+        // const minutesString =
+        //   minutes > 0 ? ` ${minutes} minute${minutes !== 1 ? "s" : ""}` : "";
+        return `Due in ${days} day${days !== 1 ? "s" : ""}${hoursString}`;
       } else if (hours > 0) {
         const minutesString =
           minutes > 0 ? ` ${minutes} minute${minutes !== 1 ? "s" : ""}` : "";
@@ -56,7 +54,9 @@ const CountdownDisplayer = ({ targetDate }: CountdownDisplayProps) => {
     return () => clearInterval(interval);
   }, [targetDate]);
 
-  return <span className="text-gray-500">{countdown}</span>;
+  return (
+    <span className="text-red-500 text-sm truncate w-44">{countdown}</span>
+  );
 };
 
 export default CountdownDisplayer;
