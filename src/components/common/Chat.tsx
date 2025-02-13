@@ -16,9 +16,10 @@ import ChatBackground from "@/assests/chatbackgroundResized.png";
 import CustomerCareAgent4 from "@/assests/CustomerCareAgent4.jpg";
 import ChatToggle from "./chat/ChatToggle";
 import ChatInput from "./chat/ChatInput";
-import CloseButton from "./CloseButton";
 import { UploadedFileInfo } from "@/types/order";
 import FileDownloadButton from "./FileDownloadButton";
+import UniversalButton from "./UniversalButton";
+import { IoMdClose } from "react-icons/io";
 
 interface Message {
   id?: string;
@@ -162,9 +163,12 @@ const Chat = () => {
                   Customer {userNumber || "Loading..."}
                 </p>
               </div>
-              <CloseButton
-                name="Close chat"
+              <UniversalButton
+                icon={IoMdClose}
                 onClick={() => setChatOpen(false)}
+                text="Close chat"
+                buttonClassName="bg-blue-500 hover:bg-blue-700"
+                iconClassName="bg-blue-400 group-hover:bg-blue-600"
               />
             </div>
 

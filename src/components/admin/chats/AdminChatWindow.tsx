@@ -17,10 +17,11 @@ import CustomerCareAgent4 from "@/assests/CustomerCareAgent4.jpg";
 import LoadingAnimantion from "@/components/common/LoadingAnimantion";
 import ChatToggle from "@/components/common/chat/ChatToggle";
 import ChatInput from "@/components/common/chat/ChatInput";
-import CloseButton from "@/components/common/CloseButton";
 import ChatsButton from "./ChatsButtons";
 import { UploadedFileInfo } from "@/types/order";
 import FileDownloadButton from "@/components/common/FileDownloadButton";
+import UniversalButton from "@/components/common/UniversalButton";
+import { IoMdClose } from "react-icons/io";
 
 interface ChatPreview {
   id: string;
@@ -216,7 +217,13 @@ const AdminChatWindow = () => {
                   </p>
                 </>
               )}
-              <CloseButton name="Close" onClick={() => setChatOpen(false)} />
+              <UniversalButton
+                icon={IoMdClose}
+                onClick={() => setChatOpen(false)}
+                text="Close chat"
+                buttonClassName="bg-blue-500 hover:bg-blue-700"
+                iconClassName="bg-blue-400 group-hover:bg-blue-600"
+              />
             </div>
             {showChats ? (
               loadingChats ? (

@@ -3,6 +3,7 @@
 import { use, useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { IoChevronDown } from "react-icons/io5";
+import { IoClose } from "react-icons/io5";
 import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import AssignmentTypeSelector from "@/components/customer/orders/draftOrder/AssignmentType";
@@ -32,11 +33,12 @@ import { Tooltip } from "react-tooltip";
 import { useOrderStatusModifier } from "@/utils/useOrderStatusModifier";
 import OrderActivationDialog from "@/components/customer/orders/draftOrder/OrderActivationDialog";
 import { UploadedFileInfo } from "@/types/order";
-import CloseButton from "@/components/common/CloseButton";
-import DiscardButton from "@/components/common/DiscardButton";
 import { deleteAllOrderFiles } from "@/utils/delete-all-order-files";
 import { useAuth } from "@/contexts/AuthContext";
 import Chat from "@/components/common/Chat";
+import { MdOutlineDelete } from "react-icons/md";
+import UniversalButton from "@/components/common/UniversalButton";
+import UniversalLink from "@/components/common/UniversalLink";
 
 interface PageProps {
   params: Promise<{
@@ -106,9 +108,6 @@ function OrderPage({ params }: PageProps) {
   const { modifyOrderStatus, isModifying, modificationError } =
     useOrderStatusModifier();
 
-  const handlePageClose = () => {
-    router.push("/customer/orders/drafts");
-  };
   // PRICE CALCULATION SECTION
   const allFieldsFilled = [
     orderData.academicLevel,
@@ -532,8 +531,20 @@ function OrderPage({ params }: PageProps) {
             </h4>
           </div>
           <div className="horizontal gap-3">
-            <DiscardButton onClick={() => setShowConfirmation(true)} />
-            <CloseButton onClick={handlePageClose} />
+            <UniversalButton
+              icon={MdOutlineDelete}
+              text="Discard"
+              onClick={() => setShowConfirmation(true)}
+              buttonClassName="bg-red-500 hover:bg-red-700"
+              iconClassName="bg-red-400 group-hover:bg-red-600"
+            />
+            <UniversalLink
+              href="/customer/orders/drafts"
+              icon={IoClose}
+              text="Close"
+              linkClassName="bg-blue-500 hover:bg-blue-700"
+              iconClassName="bg-blue-400 group-hover:bg-blue-600"
+            />
           </div>
         </div>
       </div>

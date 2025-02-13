@@ -463,3 +463,7 @@ h6 {
 .chat-green-pointer {
   @apply absolute right-[-8px] top-3 h-0 w-0 border-t-[8px] border-t-transparent border-l-[8px] border-l-green-600 border-b-[8px] border-b-transparent;
 }
+
+.order-details-container {
+  @apply relative flex md:flex-row flex-col items-start md:items-center justify-start md:justify-between w-full gap-2 rounded-lg bg-gray-100 hover:bg-gray-50 py-2 px-4 my-2;
+}

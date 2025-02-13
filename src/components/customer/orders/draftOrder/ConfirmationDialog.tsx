@@ -1,6 +1,6 @@
-import CloseButton from "@/components/common/CloseButton";
-import DiscardButton from "@/components/common/DiscardButton";
 import LoadingAnimantion from "@/components/common/LoadingAnimantion";
+import UniversalButton from "@/components/common/UniversalButton";
+import { MdOutlineDelete } from "react-icons/md";
 
 interface ConfirmationDialogProps {
   isOpen: boolean;
@@ -25,6 +25,16 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
 }) => {
   if (!isOpen) return null;
 
+  const CloseButton = () => (
+    <UniversalButton
+      icon={MdOutlineDelete}
+      onClick={onClose}
+      text="Close"
+      buttonClassName="bg-blue-500 hover:bg-blue-700"
+      iconClassName="bg-blue-400 group-hover:bg-blue-600"
+    />
+  );
+
   return (
     <div className="fixed inset-0 bg-black backdrop-blur-sm bg-opacity-50 z-[70] flex items-center justify-center">
       <div
@@ -37,7 +47,7 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
             <>
               <p>Draft discarded successfully!</p>
               <div className="w-full horizontal mt-8">
-                <CloseButton onClick={onClose} />
+                <CloseButton />
               </div>
             </>
           ) : (
@@ -50,7 +60,7 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
                 </span>
               </p>
               <div className="w-full horizontal-end">
-                <CloseButton onClick={onClose} />
+                <CloseButton />
               </div>
             </>
           )
@@ -65,8 +75,14 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
                 </div>
               ) : (
                 <div className="w-full horizontal-end gap-3">
-                  <CloseButton onClick={onClose} />
-                  <DiscardButton onClick={onConfirm} name="Confirm" />
+                  <CloseButton />
+                  <UniversalButton
+                    icon={MdOutlineDelete}
+                    text="Confirm"
+                    onClick={onConfirm}
+                    buttonClassName="bg-red-500 hover:bg-red-700"
+                    iconClassName="bg-red-400 group-hover:bg-red-600"
+                  />
                 </div>
               )}
             </div>

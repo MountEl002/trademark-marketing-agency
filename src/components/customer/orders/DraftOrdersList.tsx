@@ -13,6 +13,7 @@ import { deleteAllOrderFiles } from "@/utils/delete-all-order-files";
 import { MdOutlineDelete } from "react-icons/md";
 import { FaEllipsisVertical } from "react-icons/fa6";
 import CountdownDisplayer from "./draftOrder/CountdownDisplayer";
+import UniversalButton from "@/components/common/UniversalButton";
 
 interface DraftOrder {
   id: string;
@@ -159,7 +160,7 @@ export default function DraftOrdersList() {
               router.push(`/customer/orders/drafts/${draft.orderNumber}`)
             }
           >
-            <div className="relative flex md:flex-row flex-col items-start md:items-center justify-start md:justify-between w-full gap-2 rounded-lg bg-gray-100 hover:bg-gray-50 py-2 px-4 my-2">
+            <div className="order-details-container">
               <div className="vertical-start w-full">
                 <div className="text-gray-800 truncate overflow-hidden">
                   {draft.topic ? draft.topic : "(No topic)"}
@@ -196,19 +197,16 @@ export default function DraftOrdersList() {
                   <CountdownDisplayer targetDate={draft.deadline.date} />
                 )}
               </div>
-              <div className="absolute right-2 p-2 group vertical h-full top-0  text-gray-500 hover:text-blue-700 transtion-all duration-500">
+              <div className="absolute right-2 p-2 group vertical h-fit botton-1/2 text-gray-500 hover:text-blue-700 transtion-all duration-500">
                 <FaEllipsisVertical size={18} />
                 <div className="absolute hidden group-hover:block z-40 bg-transparent top-full -right-2">
-                  <button
-                    type="button"
+                  <UniversalButton
+                    icon={MdOutlineDelete}
+                    text="Discard"
                     onClick={(e) => handleDiscardDraft(draft, e)}
-                    className="horizontal-start group gap-3 pr-5 min-[550px]:pr-10 bg-red-500 hover:bg-red-700 text-sm min-[550px]:text-base text-white font-semibold rounded-md transition-all duration-500"
-                  >
-                    <div className="vertical p-1 min-[550px]:p-2 left-1 m-[2px] bg-red-400 group-hover:bg-red-600 h-[90%] rounded transition-all duration-500">
-                      <MdOutlineDelete size={20} />
-                    </div>
-                    <span>Discard</span>
-                  </button>
+                    buttonClassName="bg-red-500 hover:bg-red-700"
+                    iconClassName="bg-red-400 group-hover:bg-red-600"
+                  />
                 </div>
               </div>
             </div>

@@ -5,12 +5,15 @@ import { useRouter } from "next/navigation";
 // import { IoChevronDown } from "react-icons/io5";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import Link from "next/link";
 import LoadingScreen from "@/components/common/LoadingScreen";
 import CountdownDisplayer from "@/components/customer/orders/draftOrder/CountdownDisplayer";
 import { useBalance } from "@/hooks/useBalance";
 // import { Tooltip } from "react-tooltip";
 import OrdersNavbar from "@/components/customer/orders/OrdersNavbar";
+import UniversalButton from "@/components/common/UniversalButton";
+import { MdTipsAndUpdates } from "react-icons/md";
+import UniversalLink from "@/components/common/UniversalLink";
+import { MdOutlineArrowBackIos } from "react-icons/md";
 
 interface PageProps {
   params: Promise<{
@@ -194,10 +197,19 @@ function OrderPage({ params }: PageProps) {
             </h4>
           </div>
           <div className="flex sm:flex-row sm:items-center sm:justify-center flex-wrap gap-3">
-            <button className="button-red">Progress update</button>
-            <Link className="button-blue" href="/customer/orders/open">
-              All active orders
-            </Link>
+            <UniversalButton
+              icon={MdTipsAndUpdates}
+              text="Progress update"
+              buttonClassName="bg-green-500 hover:bg-green-700"
+              iconClassName="bg-green-400 group-hover:bg-green-600"
+            />
+            <UniversalLink
+              href="/customer/orders/open"
+              icon={MdOutlineArrowBackIos}
+              text="Active orders"
+              linkClassName="bg-blue-500 hover:bg-blue-700"
+              iconClassName="bg-blue-400 group-hover:bg-blue-600"
+            />
           </div>
         </div>
       </div>
