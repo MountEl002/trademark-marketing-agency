@@ -1,77 +1,80 @@
 // constants/rewritingPricing.ts
 
-import { PricingData, TimeFrame, AcademicLevel } from '@/types/pricing';
+import { PricingData, TimeFrame, AcademicLevel } from "@/types/pricing";
 
 export const PRICING_DATA: PricingData = {
-  'Middle School': {
-    '10+ days': 2.00,
-    '5 days': 2.20,
-    '3 days': 2.40,
-    '2 days': 2.60,
-    '24 hrs': 2.80,
-    '12 hrs': 3.00,
-    '6 hrs': 3.20,
-    '3 hrs': 3.40,
+  "Middle School": {
+    "10+ days": 2.0,
+    "5 days": 2.2,
+    "3 days": 2.4,
+    "2 days": 2.6,
+    "24 hrs": 2.8,
+    "12 hrs": 3.0,
+    "6 hrs": 3.2,
+    "3 hrs": 3.4,
   },
-  'High School': {
-    '10+ days': 2.30,
-    '5 days': 2.50,
-    '3 days': 2.70,
-    '2 days': 2.90,
-    '24 hrs': 3.10,
-    '12 hrs': 3.30,
-    '6 hrs': 3.50,
-    '3 hrs': 3.70,
+  "High School": {
+    "10+ days": 2.3,
+    "5 days": 2.5,
+    "3 days": 2.7,
+    "2 days": 2.9,
+    "24 hrs": 3.1,
+    "12 hrs": 3.3,
+    "6 hrs": 3.5,
+    "3 hrs": 3.7,
   },
-  'College': {
-    '10+ days': 2.90,
-    '5 days': 3.10,
-    '3 days': 3.30,
-    '2 days': 3.50,
-    '24 hrs': 3.70,
-    '12 hrs': 3.90,
-    '6 hrs': 4.10,
-    '3 hrs': 4.30,
+  College: {
+    "10+ days": 2.9,
+    "5 days": 3.1,
+    "3 days": 3.3,
+    "2 days": 3.5,
+    "24 hrs": 3.7,
+    "12 hrs": 3.9,
+    "6 hrs": 4.1,
+    "3 hrs": 4.3,
   },
-  'Bachelor\'s': {
-    '10+ days': 3.40,
-    '5 days': 3.60,
-    '3 days': 3.80,
-    '2 days': 4.00,
-    '24 hrs': 4.20,
-    '12 hrs': 4.40,
-    '6 hrs': 4.60,
-    '3 hrs': 4.80,
+  "Bachelor's": {
+    "10+ days": 3.4,
+    "5 days": 3.6,
+    "3 days": 3.8,
+    "2 days": 4.0,
+    "24 hrs": 4.2,
+    "12 hrs": 4.4,
+    "6 hrs": 4.6,
+    "3 hrs": 4.8,
   },
-  'Master\'s': {
-    '10+ days': 3.90,
-    '5 days': 4.10,
-    '3 days': 4.30,
-    '2 days': 4.50,
-    '24 hrs': 4.70,
-    '12 hrs': 4.90,
-    '6 hrs': 5.10,
-    '3 hrs': 5.30,
+  "Master's": {
+    "10+ days": 3.9,
+    "5 days": 4.1,
+    "3 days": 4.3,
+    "2 days": 4.5,
+    "24 hrs": 4.7,
+    "12 hrs": 4.9,
+    "6 hrs": 5.1,
+    "3 hrs": 5.3,
   },
-  'PhD': {
-    '10+ days': 4.40,
-    '5 days': 4.60,
-    '3 days': 4.80,
-    '2 days': 5.00,
-    '24 hrs': 5.20,
-    '12 hrs': 5.40,
-    '6 hrs': 5.60,
-    '3 hrs': 5.80,
+  PhD: {
+    "10+ days": 4.4,
+    "5 days": 4.6,
+    "3 days": 4.8,
+    "2 days": 5.0,
+    "24 hrs": 5.2,
+    "12 hrs": 5.4,
+    "6 hrs": 5.6,
+    "3 hrs": 5.8,
   },
 };
 
 // Helper functions with proper typing
-export const getPrice = (level: AcademicLevel, timeframe: TimeFrame): number => {
+export const getPrice = (
+  level: AcademicLevel,
+  timeframe: TimeFrame
+): number => {
   return PRICING_DATA[level][timeframe];
 };
 
 export const getAllTimeframes = (): TimeFrame[] => {
-  return Object.keys(PRICING_DATA['High School']) as TimeFrame[];
+  return Object.keys(PRICING_DATA["High School"]) as TimeFrame[];
 };
 
 export const getAllLevels = (): AcademicLevel[] => {
@@ -84,7 +87,7 @@ export const rewritingTotalPrice = (
   wordCount: number
 ): number => {
   const basePrice = getPrice(academicLevel, deadline);
-    const multiplier = Math.ceil(wordCount / 275);
-    const totalPrice = basePrice * multiplier;
-    return Number(totalPrice.toFixed(2));
+  const multiplier = wordCount / 275;
+  const totalPrice = basePrice * multiplier;
+  return Number(totalPrice.toFixed(2));
 };

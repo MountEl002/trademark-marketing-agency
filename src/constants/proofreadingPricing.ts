@@ -84,7 +84,7 @@ export const proofreadingTotalPrice = (
   wordCount: number
 ): number => {
   const basePrice = getPrice(academicLevel, deadline);
-    const multiplier = Math.ceil(wordCount / 275);
+    const multiplier = wordCount / 275;
     const totalPrice = basePrice * multiplier;
     return Number(totalPrice.toFixed(2));
 };
