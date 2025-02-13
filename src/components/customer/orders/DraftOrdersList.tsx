@@ -159,7 +159,7 @@ export default function DraftOrdersList() {
               router.push(`/customer/orders/drafts/${draft.orderNumber}`)
             }
           >
-            <div className="relative flex sm:flex-row flex-col items-start sm:items-center justify-start sm:justify-between w-full gap-2 rounded-lg bg-gray-100 hover:bg-gray-50 py-2 px-4 my-2">
+            <div className="relative flex md:flex-row flex-col items-start md:items-center justify-start md:justify-between w-full gap-2 rounded-lg bg-gray-100 hover:bg-gray-50 py-2 px-4 my-2">
               <div className="vertical-start w-full">
                 <div className="text-gray-800 truncate overflow-hidden">
                   {draft.topic ? draft.topic : "(No topic)"}
@@ -186,7 +186,7 @@ export default function DraftOrdersList() {
                   </p>
                 </div>
               </div>
-              <div className="flex flex-row sm:flex-col items-start justify-start gap-2 mr-7">
+              <div className="flex flex-row md:flex-col items-start justify-start gap-2 mr-7">
                 {draft.price > 0 && (
                   <div className="text-sm text-gray-800">
                     <span className="truncate">~ ${draft.price}</span>
