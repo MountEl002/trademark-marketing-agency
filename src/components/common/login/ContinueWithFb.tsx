@@ -1,11 +1,21 @@
-import React from "react";
+"use client";
+
+import React, { FC } from "react";
 import Image from "next/image";
 import FacebookLogo from "@/assests/facebookLogo.png";
 import { Tooltip } from "react-tooltip";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePathname } from "next/navigation";
 
-const ContinueWithFacebook = () => {
+interface ContinueWithFacebookProps {
+  className?: string;
+  text?: string;
+}
+
+const ContinueWithFacebook: FC<ContinueWithFacebookProps> = ({
+  className,
+  text,
+}) => {
   const { signInWithFacebook } = useAuth();
   const pathName = usePathname();
 
@@ -26,13 +36,14 @@ const ContinueWithFacebook = () => {
         data-tooltip-content={`Use your Facebook account to ${
           pathName === "/login" ? "Login" : "Sign Up!"
         }`}
-        className="continue-with-gaft"
+        className={className}
       >
         <Image
           src={FacebookLogo}
-          alt="Apple Logo"
+          alt="Facebook Logo"
           className="object-cover h-5 w-5"
         />
+        {text && <span className="ml-2 font-medium">{text}</span>}
       </div>
       <Tooltip id="div-tooltip" />
     </>

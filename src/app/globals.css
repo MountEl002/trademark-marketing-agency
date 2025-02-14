@@ -325,7 +325,7 @@ h6 {
   @apply block text-sm text-gray-600 mb-2 text-start;
 }
 
-.continue-with-gaft {
+.continue-with-gf {
   @apply horizontal w-full py-2 rounded-xl border-2 hover:bg-blue-100 hover:border-blue-400 transition-colors cursor-pointer;
 }
 

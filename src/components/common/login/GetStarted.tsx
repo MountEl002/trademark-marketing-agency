@@ -8,16 +8,18 @@ const GetStarted = () => {
   const { createNewOrder, isLoading } = useOrderCreation();
 
   return (
-    <>      {isLoading && <LoadingScreen />}
-
-    <button onClick={createNewOrder}
+    <>
+      {isLoading && <LoadingScreen />}
+      <button
+        onClick={createNewOrder}
         disabled={isLoading}
-       className="w-fit horizontal button-gradient">
+        className="w-fit horizontal button-gradient"
+      >
         Get Started{" "}
-        <span className="ml-3">
+        <span className="ml-2">
           <FaArrowRight color="white" className="inline" />
         </span>
-    </button>
+      </button>
     </>
   );
 };

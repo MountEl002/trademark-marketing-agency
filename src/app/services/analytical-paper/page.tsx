@@ -1,4 +1,5 @@
 import FAQ from "@/components/common/FAQ";
+import ServiceHeroSection from "@/components/services/ServiceHeroSection";
 import React from "react";
 
 interface FAQItem {
@@ -72,11 +73,18 @@ const AnalyticalPaper = () => {
     },
   ];
 
+  const serviceTitle = "Analytical essay writing service";
+  const openningStatement =
+    "Use our analytical essay writing service to get quick help. Help from our writers will save you from failing.";
+
   return (
     <>
-      <section>
-        <h1>Analytical Paper Writing Service</h1>
-      </section>
+      {/* Hero section */}
+      <ServiceHeroSection
+        serviceTitle={serviceTitle}
+        openningStatement={openningStatement}
+        getServiceButtonText="Get analytical essay writing help"
+      />
       <section>
         <div className="max-w-3xl mx-auto">
           <h2 className="text-center">

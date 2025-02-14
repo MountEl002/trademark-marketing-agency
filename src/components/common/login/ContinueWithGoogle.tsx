@@ -1,11 +1,21 @@
-import React from "react";
+"use client";
+
+import React, { FC } from "react";
 import Image from "next/image";
 import GoogleLogo from "@/assests/googleLogo.png";
 import { Tooltip } from "react-tooltip";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePathname } from "next/navigation";
 
-const ContinueWithGoogle = () => {
+interface ContinueWithGoogleProps {
+  className?: string;
+  text?: string;
+}
+
+const ContinueWithGoogle: FC<ContinueWithGoogleProps> = ({
+  className,
+  text,
+}) => {
   const { signInWithGoogle } = useAuth();
   const pathName = usePathname();
 
@@ -25,13 +35,14 @@ const ContinueWithGoogle = () => {
         data-tooltip-content={`Use your Google account to ${
           pathName === "/login" ? "Login" : "Sign Up!"
         }`}
-        className="continue-with-gaft"
+        className={className}
       >
         <Image
           src={GoogleLogo}
-          alt="Apple Logo"
+          alt="Google Logo"
           className="object-cover h-5 w-5"
         />
+        {text && <span className="ml-2 font-medium">{text}</span>}
       </div>
       <Tooltip id="div-tooltip" />
     </>

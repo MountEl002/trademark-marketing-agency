@@ -1,4 +1,3 @@
-import Priorities from "@/components/common/Priorities";
 import HeroSection from "@/assests/hero-section.jpg";
 import Image from "next/image";
 import OrderPaper from "@/components/common/order/OrderPaper";
@@ -10,38 +9,30 @@ import Bonus from "@/components/common/Bonus";
 import SelfProclamation from "@/components/common/SelfProclamation";
 import EffortlessLearning from "@/components/common/EffortlessLearning";
 import PrivacyHighlight from "@/components/common/PrivacyHighlight";
+import ServiceHeroSection from "@/components/services/ServiceHeroSection";
 
 export default function Home() {
+  const sercviceTitle =
+    "Best Essay Writing Services with Professional Writers at Affordable Prices";
+  const openningStatement =
+    "Get a high-quality essay writing service that guarantees you the best grades for only $2.5/page. Our professional writers are ready to help you with your essay writing needs. Get started today!";
   return (
     <>
       {/* Hero section */}
-      <section className="max-w-6xl mt-28 text-center text-gray-600">
-        <div>
-          <div>
-            <h1 className="font-bold max-w-3xl">
-              Exemplary Essay Writing Services with Professional Writers at
-              Affordable Prices
-            </h1>
-            <h5 className="text-gray-500">
-              Get a professional essay for only
-              <span className="font-semibold">
-                <strong> $3.0/page </strong>
-              </span>
-              and get unique paper help
-            </h5>
-            <Priorities />
-          </div>
-        </div>
-      </section>
+      <ServiceHeroSection
+        serviceTitle={sercviceTitle}
+        openningStatement={openningStatement}
+        getServiceButtonText="Order a paper now"
+      />
       {/* Essay Writing services summary */}
       <section className="bg-blue-50">
         <div className="max-w-6xl text-center">
           <h2>Premium Essay Writing Services</h2>
-          <h6>
+          <p>
             Transform your academic journey with our professional essay writing
             service. Simply tell us &quot;Write my paper&quot; and let our
             experts handle the rest.
-          </h6>
+          </p>
           <div>
             <Image src={HeroSection} alt="Essay writing in progress" />
           </div>
