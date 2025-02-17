@@ -80,7 +80,7 @@ const ReviewsDisplayer: React.FC<ReviewDisplayerProps> = ({
             <div className="embla__container">
               {customerReviewsArray.map((item) => (
                 <div key={item.id} className="embla__slide">
-                  <div className="flex-col justify-start h-full gap-3 rounded-2xl bg-gray-200 border-2 border-gray-300 p-4 mx-2">
+                  <div className="flex-col justify-start h-full gap-3 rounded-2xl bg-gray-200 border border-gray-300 hover:border-blue-500 hover:shadow-lg p-4 mx-2 transition-all duration-500">
                     <div className="flex justify-between">
                       <div className="horizontal gap-1">
                         <FaStar size={20} className="text-yellow-500" />
@@ -119,7 +119,7 @@ const ReviewsDisplayer: React.FC<ReviewDisplayerProps> = ({
           <button
             key={index}
             onClick={() => scrollTo(index)}
-            className={`w-3 h-3 rounded-full transition-colors duration-500 ${
+            className={`w-2 h-2 flex-shrink-0 rounded-[50%] transition-colors duration-500 ${
               index === selectedIndex
                 ? "bg-blue-600"
                 : "bg-gray-300 hover:bg-gray-400"

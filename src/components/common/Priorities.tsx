@@ -42,7 +42,7 @@ const Priorities = () => {
   ];
   return (
     <div className="horizontal">
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 my-4">
+      <div className="grid grid-cols-1 min-[460px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 my-4">
         {customerPrioties.map((item) => (
           <div
             key={item.id}
