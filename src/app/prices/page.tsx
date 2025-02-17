@@ -1,13 +1,189 @@
 import OrderPaper from "@/components/common/order/OrderPaper";
-import TryNow from "@/components/common/order/TryNow";
-import CustomerReviews from "@/components/CustomerReviews";
 import Buttons from "@/components/prices/Buttons";
 import Menu from "@/components/prices/Menu";
 import React from "react";
 import Image from "next/image";
 import HappyStudent from "@/assests/happy-student.jpg";
+import ServiceReviewsSection from "@/components/services/ServiceReviewsSection";
+
+interface ClientReview {
+  id: number;
+  clientDetails: string;
+  statement: string;
+  daysAgo: string;
+  numOfStars: string;
+}
 
 const Prices = () => {
+  const reviewsSectionTitle =
+    "At High-Quality Essay, every order has an encouraging story";
+  const reviewsSectionDescription = (
+    <span>
+      Join 23K+ successful students who trust High-
+      <span className="text-blue-700">Quality</span> Essay for their academic
+      needs. With 392 qualified writers, We build lasting partnerships with our
+      clients through exceptional service and affordable rates, making academic
+      excellence accessible to all.
+    </span>
+  );
+
+  const clientReviews: ClientReview[] = [
+    {
+      id: 0,
+      daysAgo: "2024-12-28",
+      numOfStars: "9/10",
+      clientDetails: "CLIENT #19844",
+      statement:
+        "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed. Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
+    },
+    {
+      id: 1,
+      daysAgo: "2024-12-06",
+      numOfStars: "10/10",
+      clientDetails: "CLIENT #2438",
+      statement:
+        "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
+    },
+    {
+      id: 2,
+      daysAgo: "2024-12-04",
+      numOfStars: "10/10",
+      clientDetails: "CLIENT #719844",
+      statement:
+        "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
+    },
+    {
+      id: 3,
+      daysAgo: "2024-12-02",
+      numOfStars: "10/10",
+      clientDetails: "CLIENT #5674",
+      statement:
+        "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
+    },
+    {
+      id: 4,
+      daysAgo: "2024-12-05",
+      numOfStars: "10/10",
+      clientDetails: "CLIENT #39807",
+      statement:
+        "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
+    },
+    {
+      id: 5,
+      daysAgo: "2024-12-04",
+      numOfStars: "10/10",
+      clientDetails: "CLIENT #87645",
+      statement:
+        "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
+    },
+    {
+      id: 6,
+      daysAgo: "2024-12-02",
+      numOfStars: "10/10",
+      clientDetails: "CLIENT #210897",
+      statement:
+        "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
+    },
+    {
+      id: 7,
+      daysAgo: "2024-12-05",
+      numOfStars: "10/10",
+      clientDetails: "CLIENT #56729",
+      statement:
+        "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
+    },
+    {
+      id: 8,
+      daysAgo: "2024-11-03",
+      numOfStars: "9/10",
+      clientDetails: "CLIENT #67945",
+      statement:
+        "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
+    },
+    {
+      id: 9,
+      daysAgo: "2024-12-01",
+      numOfStars: "10/10",
+      clientDetails: "CLIENT #567453",
+      statement:
+        "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
+    },
+    {
+      id: 10,
+      daysAgo: "2024-12-05",
+      numOfStars: "9/10",
+      clientDetails: "CLIENT #67543",
+      statement:
+        "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
+    },
+    {
+      id: 11,
+      daysAgo: "2024-12-02",
+      numOfStars: "10/10",
+      clientDetails: "CLIENT #100547",
+      statement:
+        "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
+    },
+    {
+      id: 12,
+      daysAgo: "2024-12-05",
+      numOfStars: "10/10",
+      clientDetails: "CLIENT #29887",
+      statement:
+        "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
+    },
+    {
+      id: 13,
+      daysAgo: "2024-12-04",
+      numOfStars: "9/10",
+      clientDetails: "CLIENT #454647",
+      statement:
+        "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
+    },
+    {
+      id: 14,
+      daysAgo: "2024-12-02",
+      numOfStars: "10/10",
+      clientDetails: "CLIENT #77902",
+      statement:
+        "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
+    },
+    {
+      id: 15,
+      daysAgo: "2024-12-06",
+      numOfStars: "10/10",
+      clientDetails: "CLIENT #110089",
+      statement:
+        "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
+    },
+    {
+      id: 16,
+      daysAgo: "2024-12-01",
+      numOfStars: "9/10",
+      clientDetails: "CLIENT #562100",
+      statement:
+        "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
+    },
+    {
+      id: 17,
+      daysAgo: "2024-11-29",
+      numOfStars: "10/10",
+      clientDetails: "CLIENT #90889",
+      statement:
+        "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
+    },
+    {
+      id: 18,
+      daysAgo: "2024-11-30",
+      numOfStars: "9/10",
+      clientDetails: "CLIENT #40982",
+      statement:
+        "Really Quick job! My order was an essay for college. I got a high mark, so I'm very happy! +1 point from me for speed.",
+    },
+  ];
+
+  const serviceToTry = "Essay Writing Service";
+
   return (
     <>
       <section className="max-w-6xl mt-28 text-lg">
@@ -22,7 +198,7 @@ const Prices = () => {
           <Buttons />
         </div>
       </section>
-      <section className="horizontal-start bg-gray-100 border-t border-gray-400">
+      <section className="horizontal-start bg-blue-100 border-t border-gray-400">
         <div className="max-w-6xl w-full mx-auto">
           <div>
             <p className="text-sm sm:text-base my-6">
@@ -35,21 +211,14 @@ const Prices = () => {
           </div>
         </div>
       </section>
-      <section className="bg-blue-100">
-        <h3 className="py-10 text-center">
-          At High-<span className="text-blue-700">Quality</span> Essay, every
-          order has an encouraging story
-        </h3>
-        <div className="max-w-6xl w-full px-4 overflow-hidden">
-          <CustomerReviews />
-          <div className="horizontal mt-8">
-            <a href="#" className="buttonBlue">
-              See More Reviews
-            </a>
-          </div>
-          <TryNow />
-        </div>
-      </section>
+      {/* Customer Reviws Section */}
+      <ServiceReviewsSection
+        reviewsSectionTitle={reviewsSectionTitle}
+        reviewsSectionDescription={reviewsSectionDescription}
+        clientReviews={clientReviews}
+        serviceToTry={serviceToTry}
+      />
+
       <section className="!py-12 bg-blue-200 border-t border-blue-500">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-10 max-w-6xl mx-auto">
           <div className="flex justify-center">

@@ -1,4 +1,5 @@
 import FAQ from "@/components/common/FAQ";
+import OtherServicesSection from "@/components/services/OtherServicesSection";
 import ServiceHeroSection from "@/components/services/ServiceHeroSection";
 import React from "react";
 
@@ -77,6 +78,10 @@ const AnalyticalPaper = () => {
   const openningStatement =
     "Use our analytical essay writing service to get quick help. Help from our writers will save you from failing.";
 
+  // Other Services Section
+  const currentServicePage = "Analytical essay writing";
+  const servicesToExclude = ["Analytical Essay Writing"];
+
   return (
     <>
       {/* Hero section */}
@@ -94,6 +99,10 @@ const AnalyticalPaper = () => {
           <FAQ faqArray={faqData} />
         </div>
       </section>
+      <OtherServicesSection
+        servicesToExclude={servicesToExclude}
+        currentServicePage={currentServicePage}
+      />
     </>
   );
 };

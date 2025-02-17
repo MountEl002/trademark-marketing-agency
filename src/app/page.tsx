@@ -14,11 +14,12 @@ import ServiceBenefits from "@/components/services/ServiceBenefits";
 import ServiceBonuses from "@/components/services/ServiceBonuses";
 import ServiceReviewsSection from "@/components/services/ServiceReviewsSection";
 import AssuranceSection from "@/components/services/AssuranceSection";
+import OrderingSteps from "@/components/services/OrderingSteps";
 
 // Benefits Section Details
-const benefitsSectionTitle = "Premium Essay Writing Services";
+const benefitsSectionTitle = "Why choose High-Quality Essay";
 const benefitsDescription =
-  'Transform your academic journey with our professional essay writing service. Simply tell us "Write my paper" and let our experts handle the rest.';
+  'High-Quality Essay is all about Premium Essay Writing Services.Transform your academic journey with our professional essay writing service. Simply tell us "Write my paper" and let our experts handle the rest.';
 const serviceRepImage = {
   src: HeroSection,
   alt: "Essay writing in progress",
@@ -272,7 +273,7 @@ const assuranceSectionTitle = "Need extra peace of mind? We’ve got you covered
 const assuranceItmes: AssuranceItem[] = [
   {
     id: 1,
-    question: "Can you write my research paper with high quality?",
+    question: "Can you write my essay with high quality?",
     description:
       "Our writers are carefully chosen for their expertise and education in specific fields. They handle everything - research, formatting, and following your instructions carefully and strictly. We’re all about quality, so you can feel confident in the work you receive.",
   },
@@ -301,6 +302,17 @@ const assuranceItmes: AssuranceItem[] = [
   },
 ];
 
+// Ordering steps Details
+const orderingStepsTitle = "Work with the best essay writers online";
+const orderingStepsDescription =
+  "At High-Quality Essay, we don't give you the burden of choosing a writer wondering wether they will deliver high quality work. All you need to do is submit the details or your orders and sit back knowing the best and most qualified writer is working on the order.";
+const stepOneTitle = "Give us your essay writing instructions";
+const stepOneDescription =
+  "To complete your write my essay request, our team needs a few details concerning your order. Fill out a short form to specify what kind of essay writing help you need and place your order";
+const stepThreeTitle = "Get your paper writing done";
+const stepThreeDescription =
+  "Once your order is ready, download the paper to check if it meets your needs. Then, pay for essay using your personal account at EssayPro.";
+
 export default function Home() {
   const sercviceTitle =
     "Best Essay Writing Services with Professional Writers at Affordable Prices";
@@ -314,6 +326,17 @@ export default function Home() {
         openningStatement={openningStatement}
         getServiceButtonText="Order a paper now"
       />
+
+      {/* Creating an order Steps */}
+      <OrderingSteps
+        orderingStepsTitle={orderingStepsTitle}
+        orderingStepsDescription={orderingStepsDescription}
+        stepOneTitle={stepOneTitle}
+        stepOneDescription={stepOneDescription}
+        stepThreeTitle={stepThreeTitle}
+        stepThreeDescription={stepThreeDescription}
+      />
+
       {/* Essay Writing services summary */}
       <ServiceBenefits
         benefitsSectionTitle={benefitsSectionTitle}

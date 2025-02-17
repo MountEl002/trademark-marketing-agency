@@ -30,7 +30,7 @@ const ServiceBenefits: FC<ServiceBenefitsProps> = ({
   benefitItems,
 }: ServiceBenefitsProps) => {
   return (
-    <section className="bg-blue-50">
+    <section className="bg-gray-50">
       <div className="max-w-6xl text-center w-full">
         <h2>{benefitsSectionTitle}</h2>
         <p>{benefitsDescription}</p>

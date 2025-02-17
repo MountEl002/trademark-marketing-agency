@@ -22,7 +22,7 @@ interface AssuranceItem {
 
 interface AssuranceSectionProps {
   assuranceSectionTitle: string;
-  assuranceItems: AssuranceItem[]; // Fixed typo
+  assuranceItems: AssuranceItem[];
 }
 
 const assuranceItemImages: AssuranceItemImage[] = [
