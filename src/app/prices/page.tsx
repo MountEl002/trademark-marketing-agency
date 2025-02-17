@@ -198,7 +198,7 @@ const Prices = () => {
           <Buttons />
         </div>
       </section>
-      <section className="horizontal-start bg-blue-100 border-t border-gray-400">
+      <section className="horizontal-start bg-blue-100 border-t border-b border-gray-400">
         <div className="max-w-6xl w-full mx-auto">
           <div>
             <p className="text-sm sm:text-base my-6">
