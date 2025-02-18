@@ -366,14 +366,8 @@ export default function Home() {
         serviceToTry={serviceToTry}
       />
       {/* Frequently Asked Questions Section */}
-      <section id="faq">
-        <div className="max-w-3xl mx-auto">
-          <h2 className="text-center">
-            Frequently Asked Questions about our services
-          </h2>
-          <HomepageFqa />
-        </div>
-      </section>
+      <HomepageFqa />
+
       {/* Self-Procalamation Section */}
       <section className="bg-blue-50">
         <SelfProclamation />

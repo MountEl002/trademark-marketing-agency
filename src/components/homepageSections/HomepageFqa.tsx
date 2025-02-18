@@ -1,10 +1,5 @@
 import FAQ from "@/components/common/FAQ";
-
-interface FAQItem {
-  id: number;
-  question: string;
-  answer: string;
-}
+import { FAQItem } from "@/types/servicesPages";
 
 const faqData: FAQItem[] = [
   {
@@ -71,7 +66,7 @@ const faqData: FAQItem[] = [
 ];
 
 const HomepageFqa = () => {
-  return <FAQ faqArray={faqData} />;
+  return <FAQ faqArray={faqData} serviceTitle="essay writing services" />;
 };
 
 export default HomepageFqa;
