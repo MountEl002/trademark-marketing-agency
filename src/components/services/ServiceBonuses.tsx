@@ -1,13 +1,6 @@
-import React, { FC } from "react";
 import { SiTicktick } from "react-icons/si";
 import OrderPaper from "../common/order/OrderPaper";
-
-interface BonusItem {
-  id: number;
-  name: string;
-  initialPrice: string;
-  currentPrice: string;
-}
+import { BonusItem } from "@/types/servicesPages";
 
 const bonusItems: BonusItem[] = [
   {
@@ -60,7 +53,7 @@ interface ServiceBonusesProps {
   bonusSectionDescription2?: string;
 }
 
-const ServiceBonuses: FC<ServiceBonusesProps> = ({
+const ServiceBonuses = ({
   bonusSectionTitle,
   bonusSectionDescription,
   bonusSectionDescription2,

@@ -1,13 +1,12 @@
-import React from "react";
-
 interface ServiceDescriptionContainerProps {
   serviceDescriptionTitle: string;
   children: React.ReactNode;
 }
 
-const ServiceDescriptionContainer: React.FC<
-  ServiceDescriptionContainerProps
-> = ({ serviceDescriptionTitle, children }) => {
+const ServiceDescriptionContainer = ({
+  serviceDescriptionTitle,
+  children,
+}: ServiceDescriptionContainerProps) => {
   return (
     <section className="bg-blue-100">
       <div className="grid grid-cols-1 gap-3 max-w-6xl mx-auto py-12">

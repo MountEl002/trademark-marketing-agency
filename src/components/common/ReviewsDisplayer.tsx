@@ -6,22 +6,13 @@ import Autoplay from "embla-carousel-autoplay";
 import DateDifference from "../DateDifference";
 import { FaUser, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { FaStar } from "react-icons/fa6";
-
-type CustomerReviewsArray = {
-  id: number;
-  clientDetails: string;
-  statement: string;
-  daysAgo: string;
-  numOfStars: string;
-};
+import { ClientReview } from "@/types/servicesPages";
 
 type ReviewDisplayerProps = {
-  customerReviewsArray: CustomerReviewsArray[];
+  customerReviewsArray: ClientReview[];
 };
 
-const ReviewsDisplayer: React.FC<ReviewDisplayerProps> = ({
-  customerReviewsArray,
-}) => {
+const ReviewsDisplayer = ({ customerReviewsArray }: ReviewDisplayerProps) => {
   const [emblaRef, emblaApi] = useEmblaCarousel(
     {
       loop: true,

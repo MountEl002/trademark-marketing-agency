@@ -1,5 +1,3 @@
-import { StaticImageData } from "next/image";
-import React from "react";
 import Image from "next/image";
 import DoubtfulCustomer1 from "@/assests/DoubtfulCustomer1.png";
 import DoubtfulCustomer2 from "@/assests/DoubtfulCustomer2.jpg";
@@ -7,18 +5,7 @@ import DoubtfulCustomer3 from "@/assests/DoubtfulCustomer3.png";
 import DoubtfulCustomer4 from "@/assests/DoubtfulCustomer4.png";
 import { FaQuoteRight } from "react-icons/fa";
 import GetServiceButton from "./GetServiceButton";
-
-interface AssuranceItemImage {
-  src: StaticImageData | string;
-  alt: string;
-}
-
-interface AssuranceItem {
-  id: number;
-  question: string;
-  description: string;
-  bulletPoints?: string[];
-}
+import { AssuranceItem, AssuranceItemImage } from "@/types/servicesPages";
 
 interface AssuranceSectionProps {
   assuranceSectionTitle: string;

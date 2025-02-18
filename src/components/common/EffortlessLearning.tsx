@@ -10,40 +10,42 @@ import ServiceDescriptionContainer from "../services/detailedServiceDescription/
 import UnorderedList from "../services/detailedServiceDescription/UnorderedList";
 import HeadingFourTitle from "../services/detailedServiceDescription/HeadingFourTitle";
 import ServiceDescriptionTable from "../services/detailedServiceDescription/ServiceDescriptiontable";
+import { TableRow } from "@/types/servicesPages";
+
+const tableData: TableRow[] = [
+  {
+    icon: <RiTrophyFill size={20} color="#ca8a04" className="inline" />,
+    primaryText: "Elite experts",
+    secondaryText: "Superior writers",
+  },
+  {
+    icon: <MdVerified size={20} color="green" className="inline" />,
+    primaryText: "High originality guaranteed",
+    secondaryText: "Papers from scratch",
+  },
+  {
+    icon: <FaSackDollar size={20} color="#ca8a04" className="inline" />,
+    primaryText: "Fair pricing",
+    secondaryText: "Satisfaction guarantee",
+  },
+  {
+    icon: <SiBookstack size={20} color="green" className="inline" />,
+    primaryText: "Wide-ranging topics",
+    secondaryText: "Diverse essay selection",
+  },
+  {
+    icon: <IoAlarm size={20} color="#14532d" className="inline" />,
+    primaryText: "Prompt turnaround",
+    secondaryText: "Deadline dedication",
+  },
+  {
+    icon: <MdDashboardCustomize size={20} color="green" className="inline" />,
+    primaryText: "Customized assistance",
+    secondaryText: "Personalized guidance",
+  },
+];
 
 const EffortlessLearning = () => {
-  const tableData = [
-    {
-      icon: <RiTrophyFill size={20} color="#ca8a04" className="inline" />,
-      primaryText: "Elite experts",
-      secondaryText: "Superior writers",
-    },
-    {
-      icon: <MdVerified size={20} color="green" className="inline" />,
-      primaryText: "High originality guaranteed",
-      secondaryText: "Papers from scratch",
-    },
-    {
-      icon: <FaSackDollar size={20} color="#ca8a04" className="inline" />,
-      primaryText: "Fair pricing",
-      secondaryText: "Satisfaction guarantee",
-    },
-    {
-      icon: <SiBookstack size={20} color="green" className="inline" />,
-      primaryText: "Wide-ranging topics",
-      secondaryText: "Diverse essay selection",
-    },
-    {
-      icon: <IoAlarm size={20} color="#14532d" className="inline" />,
-      primaryText: "Prompt turnaround",
-      secondaryText: "Deadline dedication",
-    },
-    {
-      icon: <MdDashboardCustomize size={20} color="green" className="inline" />,
-      primaryText: "Customized assistance",
-      secondaryText: "Personalized guidance",
-    },
-  ];
   return (
     <>
       <ServiceDescriptionContainer serviceDescriptionTitle="Make your studies effortless with our essay service">

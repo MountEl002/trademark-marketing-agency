@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import ContinueWithGoogle from "../common/login/ContinueWithGoogle";
 import ContinueWithFacebook from "../common/login/ContinueWithFb";
 import { useAuth } from "@/contexts/AuthContext";

@@ -1,4 +1,3 @@
-import React from "react";
 import { HiOutlineAcademicCap } from "react-icons/hi2";
 
 interface HeadingThreeTitleProps {

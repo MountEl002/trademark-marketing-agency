@@ -1,6 +1,5 @@
 "use client";
 
-import React, { FC } from "react";
 import UniversalLink from "../common/UniversalLink";
 import { FaArrowRight } from "react-icons/fa";
 import { useAuth } from "@/contexts/AuthContext";
@@ -9,7 +8,7 @@ interface GetServiceButtonProps {
   text: string;
 }
 
-const GetServiceButton: FC<GetServiceButtonProps> = ({ text }) => {
+const GetServiceButton = ({ text }: GetServiceButtonProps) => {
   const { user } = useAuth();
 
   const correctPath = user ? "/customer/orders/drafts/new" : "/signup";

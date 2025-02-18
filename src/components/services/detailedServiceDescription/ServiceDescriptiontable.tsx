@@ -1,11 +1,4 @@
-import React, { ReactNode } from "react";
-
-// Define the structure for each table row
-interface TableRow {
-  icon: ReactNode;
-  primaryText: string;
-  secondaryText: string;
-}
+import { TableRow } from "@/types/servicesPages";
 
 // Component props
 interface ServiceDescriptionTableProps {

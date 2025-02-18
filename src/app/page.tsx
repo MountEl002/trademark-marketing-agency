@@ -9,12 +9,12 @@ import { MdAttachMoney } from "react-icons/md";
 import { IoIosUnlock } from "react-icons/io";
 import { TbTargetArrow } from "react-icons/tb";
 import { FaPhoneVolume } from "react-icons/fa";
-import { IconType } from "react-icons";
 import ServiceBenefits from "@/components/services/ServiceBenefits";
 import ServiceBonuses from "@/components/services/ServiceBonuses";
 import ServiceReviewsSection from "@/components/services/ServiceReviewsSection";
 import AssuranceSection from "@/components/services/AssuranceSection";
 import OrderingSteps from "@/components/services/OrderingSteps";
+import { Benefit, ClientReview, AssuranceItem } from "@/types/servicesPages";
 
 // Benefits Section Details
 const benefitsSectionTitle = "Why choose High-Quality Essay";
@@ -24,12 +24,6 @@ const serviceRepImage = {
   src: HeroSection,
   alt: "Essay writing in progress",
 };
-interface Benefit {
-  id: number;
-  repIcon: IconType;
-  name: string;
-  description: string;
-}
 
 const BenefitItems: Benefit[] = [
   {
@@ -94,14 +88,6 @@ const reviewsSectionDescription = (
     excellence accessible to all.
   </span>
 );
-
-interface ClientReview {
-  id: number;
-  clientDetails: string;
-  statement: string;
-  daysAgo: string;
-  numOfStars: string;
-}
 
 const clientReviews: ClientReview[] = [
   {
@@ -261,13 +247,6 @@ const clientReviews: ClientReview[] = [
 const serviceToTry = "Essay Writing Service";
 
 // Assurance Section Details
-interface AssuranceItem {
-  id: number;
-  question: string;
-  description: string;
-  bulletPoints?: string[];
-}
-
 const assuranceSectionTitle = "Need extra peace of mind? We’ve got you covered";
 
 const assuranceItmes: AssuranceItem[] = [
@@ -313,16 +292,18 @@ const stepThreeTitle = "Get your paper writing done";
 const stepThreeDescription =
   "Once your order is ready, download the paper to check if it meets your needs. Then, pay for essay using your personal account at EssayPro.";
 
+// Hero Section details
+const serviceTitle =
+  "Best Essay Writing Services with Professional Writers at Affordable Prices";
+const openningStatement =
+  "Get a high-quality essay writing service that guarantees you the best grades for only $2.5/page. Our professional writers are ready to help you with your essay writing needs. Get started today!";
+
 export default function Home() {
-  const sercviceTitle =
-    "Best Essay Writing Services with Professional Writers at Affordable Prices";
-  const openningStatement =
-    "Get a high-quality essay writing service that guarantees you the best grades for only $2.5/page. Our professional writers are ready to help you with your essay writing needs. Get started today!";
   return (
     <>
       {/* Hero section */}
       <ServiceHeroSection
-        serviceTitle={sercviceTitle}
+        serviceTitle={serviceTitle}
         openningStatement={openningStatement}
         getServiceButtonText="Order a paper now"
       />

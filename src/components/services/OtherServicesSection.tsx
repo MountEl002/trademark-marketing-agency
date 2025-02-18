@@ -1,12 +1,6 @@
 import Link from "next/link";
 import { FaRegCheckCircle } from "react-icons/fa";
-import React from "react";
-
-interface AllServices {
-  id: number;
-  name: string;
-  LinkTo: string;
-}
+import { AllServices } from "@/types/servicesPages";
 
 interface OtherServicesSectionProps {
   servicesToExclude: string[];

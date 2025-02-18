@@ -1,24 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
-import { StaticImageData } from "next/image";
 import OrderingStep1 from "@/assests/OrderingStep1.png";
 import OrderingStep2 from "@/assests/OrderingStep2.png";
 import OrderingStep3 from "@/assests/OrderingStep3.png";
 import GetServiceButton from "./GetServiceButton";
-
-interface OrderingStepImage {
-  id: number;
-  src: StaticImageData | string;
-  alt: string;
-}
-
-interface CreateAnOrderStep {
-  id: number;
-  step: string;
-  stepDescription: string;
-}
+import { CreateAnOrderStep, OrderingStepImage } from "@/types/servicesPages";
 
 interface OrderingStepsProps {
   orderingStepsTitle: string;

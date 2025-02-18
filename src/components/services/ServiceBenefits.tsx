@@ -1,29 +1,15 @@
 import Image from "next/image";
-import React, { FC } from "react";
-import { IconType } from "react-icons";
-import { StaticImageData } from "next/image";
 import OrderAnEssay from "../common/order/OrderAnEssay";
-
-interface Image {
-  src: StaticImageData | string;
-  alt: string;
-}
-
-interface benefitItem {
-  id: number;
-  repIcon: IconType;
-  name: string;
-  description: string;
-}
+import { ServiceRepImage, BenefitItem } from "@/types/servicesPages";
 
 interface ServiceBenefitsProps {
   benefitsSectionTitle: string;
   benefitsDescription: string;
-  serviceRepImage: Image;
-  benefitItems: benefitItem[];
+  serviceRepImage: ServiceRepImage;
+  benefitItems: BenefitItem[];
 }
 
-const ServiceBenefits: FC<ServiceBenefitsProps> = ({
+const ServiceBenefits = ({
   benefitsSectionTitle,
   benefitsDescription,
   serviceRepImage,

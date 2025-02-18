@@ -1,16 +1,8 @@
-import React, { FC } from "react";
 import ReviewsDisplayer from "../common/ReviewsDisplayer";
 import UniversalLink from "../common/UniversalLink";
 import { FaArrowRight } from "react-icons/fa";
 import GetServiceButton from "./GetServiceButton";
-
-interface ClientReview {
-  id: number;
-  clientDetails: string;
-  statement: string;
-  daysAgo: string;
-  numOfStars: string;
-}
+import { ClientReview } from "@/types/servicesPages";
 
 interface ServiceReviewsSectionProps {
   reviewsSectionTitle: string;
@@ -19,7 +11,7 @@ interface ServiceReviewsSectionProps {
   serviceToTry: string;
 }
 
-const ServiceReviewsSection: FC<ServiceReviewsSectionProps> = ({
+const ServiceReviewsSection = ({
   reviewsSectionTitle,
   reviewsSectionDescription,
   clientReviews,

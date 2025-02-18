@@ -1,4 +1,3 @@
-import React, { FC } from "react";
 import Priorities from "../common/Priorities";
 import ContinueWithSV from "./ContinueWithSV";
 import GetServiceButton from "./GetServiceButton";
@@ -9,11 +8,11 @@ interface ServiceHeroSectionProps {
   getServiceButtonText: string;
 }
 
-const ServiceHeroSection: FC<ServiceHeroSectionProps> = ({
+const ServiceHeroSection = ({
   serviceTitle,
   openningStatement,
   getServiceButtonText,
-}) => {
+}: ServiceHeroSectionProps) => {
   return (
     <>
       <section className="max-w-6xl mt-28 vertical text-center text-gray-600">
