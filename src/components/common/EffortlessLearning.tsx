@@ -54,9 +54,9 @@ const EffortlessLearning = () => {
             <HeadingThreeTitle text="Your essay writing service with tons of experience" />
             <p>
               High-Quality Essay has been providing top-quality essay writing
-              services for several years. This means managing our
-              customers&apos; assignments and helping them succeed. So, why do
-              clients keep choosing our services?
+              services for several years. This means managing our customers’
+              assignments and helping them succeed. So, why do clients keep
+              choosing our services?
             </p>
             <p>
               We carefully handpick all our paper writers to ensure that each of
@@ -73,9 +73,9 @@ const EffortlessLearning = () => {
             </p>
             <p>
               Thanks to our vast experience, we create papers tailored to every
-              customer&apos;s unique needs. And we&apos;re ready to handle any
-              learning challenges you are facing. When you turn to us for help,
-              you will receive the best quality of service within your specified
+              customer’s unique needs. And we’re ready to handle any learning
+              challenges you are facing. When you turn to us for help, you will
+              receive the best quality of service within your specified
               timeframe!
             </p>
           </div>
@@ -85,35 +85,35 @@ const EffortlessLearning = () => {
               Student life can be tough. Juggling schoolwork, social life,
               extracurriculars, and sometimes a side hustle is overwhelming. It
               can even get you thinking, &ldquo;Can someone else write my essays
-              for me?&rdquo; That&apos;s where High-Quality Essay comes in. We
+              for me?&rdquo; That’s where High-Quality Essay comes in. We
               connect you with skilled writers who can handle your tedious
               assignments.
             </p>
             <p>
-              Still unsure? Here&apos;s how our essay writer help can make a
+              Still unsure? Here’s how our essay writer help can make a
               difference in your life:
             </p>
             <UnorderedList>
               <li>
-                <span>More free time:</span> Can&apos;t remember when you had an
-                hour just to yourself? Ask us to &ldquo;write my paper&rdquo;
-                and we&apos;ll help you cross at least one thing off your to-do
-                list. In the meantime, focus on whatever you wish.
+                <span>More free time:</span> Can’t remember when you had an hour
+                just to yourself? Ask us to &ldquo;write my paper&rdquo; and
+                we’ll help you cross at least one thing off your to-do list. In
+                the meantime, focus on whatever you wish.
               </li>
               <li>
                 <span>Less stress:</span> Many students crumble under academic
                 pressure. We get it. Endless homework, strict teachers, and
                 looming deadlines can make anyone anxious. Our helpers are here
-                to ease your burden. They&apos;ll take care of anything
+                to ease your burden. They’ll take care of anything
                 assignment-related, leaving you the energy and time to restore
                 your mental health.
               </li>
               <li>
                 <span>Meeting tight deadlines:</span> When you have a packed
                 schedule, turning in all your papers on time becomes impossible.
-                Procrastinating for hours is completely normal, too. That&apos;s
-                why we work around the clock and deliver small orders in just
-                two hours.
+                Procrastinating for hours is completely normal, too. That’s why
+                we work around the clock and deliver small orders in just two
+                hours.
               </li>
             </UnorderedList>
 
@@ -125,20 +125,19 @@ const EffortlessLearning = () => {
           <div>
             <HeadingThreeTitle text="The fastest way to write my essay for me" />
             <p>
-              Our paper writing service team knows that a learner&apos;s life
-              often involves juggling lots of responsibilities and pursuing
-              several important goals at once. But what if you&apos;re
-              constantly drained? You might feel like it&apos;s impossible to
-              keep up with your seemingly successful peers despite your best
-              efforts.
+              Our paper writing service team knows that a learner’s life often
+              involves juggling lots of responsibilities and pursuing several
+              important goals at once. But what if you’re constantly drained?
+              You might feel like it’s impossible to keep up with your seemingly
+              successful peers despite your best efforts.
             </p>
             <p>
-              We&apos;ve been there - it&apos;s not your fault. The thing is,
-              there&apos;s almost always too little time to handle all your
-              assignments properly. This can put too much pressure on you,
-              causing you to be too hard on yourself just to tick all the boxes
-              on your list. Pushing yourself to achieve unrealistic goals brings
-              even more problems, including burnout and even depression.
+              We’ve been there - it’s not your fault. The thing is, there’s
+              almost always too little time to handle all your assignments
+              properly. This can put too much pressure on you, causing you to be
+              too hard on yourself just to tick all the boxes on your list.
+              Pushing yourself to achieve unrealistic goals brings even more
+              problems, including burnout and even depression.
             </p>
             <p>
               Our &ldquo;write my paper for me&rdquo; service was created to
@@ -147,13 +146,13 @@ const EffortlessLearning = () => {
               right on time and at the highest level possible. At a constant
               price of <span className="font-bold">$3</span> per page, we give
               you an opportunity to save your energy for things that matter
-              without harming your performance. And even that&apos;s not all!
+              without harming your performance. And even that’s not all!
             </p>
             <p>
               We realize that you can be in a tight spot when there is no time
               to complete a paper due in just a few days. The good news is that
               you can hire an essay writer to overcome this challenge. Even if
-              you&apos;re in a rush, we can deliver your paper ASAP without
+              you’re in a rush, we can deliver your paper ASAP without
               compromising the quality!
             </p>
           </div>
@@ -161,16 +160,16 @@ const EffortlessLearning = () => {
             <HeadingThreeTitle text="Say “write my paper” and get help from top-rated writers" />
             <p>
               Whether you have a last-minute essay or some extensive research
-              work that you are dealing with, you shouldn&apos;t worry about it
-              when there&apos;s High-Quality Essay by your side. Our essay
-              writing service is always here to give you a helping hand, with
-              top-level professionalism guaranteed.
+              work that you are dealing with, you shouldn’t worry about it when
+              there’s High-Quality Essay by your side. Our essay writing service
+              is always here to give you a helping hand, with top-level
+              professionalism guaranteed.
             </p>
             <p>
               Our service collaborates with the best paper writers. Our experts
-              hold Bachelor&apos;s, Master&apos;s, and even Ph.D. degrees, and
-              each of them has vast experience crafting papers in their
-              respective fields.
+              hold Bachelor’s, Master’s, and even Ph.D. degrees, and each of
+              them has vast experience crafting papers in their respective
+              fields.
             </p>
             <p>
               Before we let a new partner work on your &ldquo;write essay for
@@ -202,12 +201,12 @@ const EffortlessLearning = () => {
             </p>
             <p>
               Lastly, we give every client upto{" "}
-              <span className="font-bold">60 days</span> after an order&apos;s
+              <span className="font-bold">60 days</span> after an order’s
               completion to request amendments for free.
             </p>
             <p>
               All these factors make us one of the best writing service
-              providers for you. So, don&apos;t waste any time and get your
+              providers for you. So, don’t waste any time and get your
               professional assistance now!
             </p>
           </div>
@@ -230,16 +229,15 @@ const EffortlessLearning = () => {
             <p>And we make all of it affordable for every learner!</p>
             <p>
               The price for our &ldquo;write paper for me&rdquo; services starts
-              from as low as $3 per page. What&apos;s more, we always provide
+              from as low as $3 per page. What’s more, we always provide
               generous discounts to help you save even more money while also
               saving your precious time.
             </p>
             <p>
               High-Quality Essay is the perfect balance of accessibility and
               professionalism. With us, everyone can afford to hire an expert
-              essay writer. It&apos;s an investment in the future that results
-              in better performance with less stress. So, don&apos;t miss this
-              chance!
+              essay writer. It’s an investment in the future that results in
+              better performance with less stress. So, don’t miss this chance!
             </p>
           </div>
         </div>
@@ -275,23 +273,23 @@ const EffortlessLearning = () => {
               Although dissatisfaction is nearly impossible with our
               professional essay writers, as we always strive for excellence,
               there may be additional adjustments that you want to make in your
-              paper. And that&apos;s okay!
+              paper. And that’s okay!
             </p>
             <p>
               Sometimes, especially when your &ldquo;write my paper&rdquo; order
               is complex and comes with a broad set of requirements, you may
               have the need for extra edits. Our team is always open to this.
-              After your order&apos;s delivery, you can request unlimited
-              amendments free of charge. So, if it turns out that the final
-              draft of your paper doesn&apos;t match your expectations
-              completely, don&apos;t hesitate to ask for corrections.
+              After your order’s delivery, you can request unlimited amendments
+              free of charge. So, if it turns out that the final draft of your
+              paper doesn’t match your expectations completely, don’t hesitate
+              to ask for corrections.
             </p>
             <p>
               To request edits, you only need to complete the Corrections Form
               and the author who completed your paper will propompty address
               your concerns. Together with our expert QA team, the author will
-              make all the necessary edits to ensure you&apos;re 100% happy with
-              the paper you ordered from our essay writing service online.
+              make all the necessary edits to ensure you’re 100% happy with the
+              paper you ordered from our essay writing service online.
             </p>
             <p>
               If it turns out that you are completely dissatisfied with the
@@ -334,8 +332,7 @@ const EffortlessLearning = () => {
               <li>Meeting the client halfway</li>
               <li>Keeping customer requirements and comments in mind</li>
               <li>
-                Coping with any paper&apos;s topic within their area of
-                proficiency
+                Coping with any paper’s topic within their area of proficiency
               </li>
             </UnorderedList>
           </div>
@@ -345,7 +342,7 @@ const EffortlessLearning = () => {
               Want to request professional essay writer help and get it right
               this moment? We have you covered! Just reach out to us and say,
               &ldquo;write my paper,&rdquo; and we will do it for you,
-              regardless of whether it&apos;s due in a week, a day, or an hour.
+              regardless of whether it’s due in a week, a day, or an hour.
             </p>
             <p>
               Here is how you can make the most of our essay writing service.
@@ -385,19 +382,19 @@ const EffortlessLearning = () => {
               anything that needs to be fixed or changed, feel free to ask for
               amendments.
             </p>
-            <p>That&apos;s how easily you can get help from us!</p>
+            <p>That’s how easily you can get help from us!</p>
           </div>
           <div>
             <HeadingThreeTitle text="Get more done with an expert essay writer by your side" />
             <p>
               Are you completely overwhelmed with work? Struggling to handle
-              completing daily work and other responsibilities? You&apos;ve come
-              to the right place as we&apos;re set up to alleviate your worries.
-              Make a &ldquo;write my paper&rdquo; request and we will make
-              hundreds of qualified and experienced writers available to you.
-              Send us your requirements and use the opportunity to catch up with
-              your work or other duties, safe in the knowledge that you are
-              getting a guaranteed high-quality paper before your due date.
+              completing daily work and other responsibilities? You’ve come to
+              the right place as we’re set up to alleviate your worries. Make a
+              &ldquo;write my paper&rdquo; request and we will make hundreds of
+              qualified and experienced writers available to you. Send us your
+              requirements and use the opportunity to catch up with your work or
+              other duties, safe in the knowledge that you are getting a
+              guaranteed high-quality paper before your due date.
             </p>
             <p>
               When you leave us your &ldquo;do my essay&rdquo; request, you are
@@ -411,10 +408,9 @@ const EffortlessLearning = () => {
               The choice is simple. Get an expert to do your paper writing and
               give yourself room to breathe. Rest assured, your comfort and
               confidence in our services remain our top priority. So if you want
-              to &ldquo;pay someone to write my essay,&rdquo; you&apos;ve come
-              to the best place. The final result is a great piece of writing
-              that is affordable and will help you reach your career and life
-              goals!
+              to &ldquo;pay someone to write my essay,&rdquo; you’ve come to the
+              best place. The final result is a great piece of writing that is
+              affordable and will help you reach your career and life goals!
             </p>
           </div>
         </div>

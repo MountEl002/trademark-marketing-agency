@@ -19,7 +19,7 @@ const UniversalLink: React.FC<UniversalLinkProps> = ({
   return (
     <Link
       href={href}
-      className={`horizontal-start group gap-3 pr-5 min-[550px]:pr-10 text-sm min-[550px]:text-base text-white font-semibold rounded-md transition-all duration-500 ${linkClassName}`}
+      className={`horizontal-start w-fit group gap-3 pr-5 min-[550px]:pr-10 text-sm min-[550px]:text-base text-white font-semibold rounded-md transition-all duration-500 ${linkClassName}`}
     >
       <div
         className={`vertical p-1 min-[550px]:p-2 left-1 m-[2px] h-[90%] rounded transition-all duration-500 ${iconClassName}`}

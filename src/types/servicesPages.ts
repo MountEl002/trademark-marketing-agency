@@ -9,7 +9,7 @@ export interface FAQItem {
   styledAnswer?: ReactNode;
 }
 
-export interface Benefit {
+export interface BenefitItem {
   id: number;
   repIcon: IconType;
   name: string;
@@ -63,13 +63,6 @@ export interface AllServices {
 export interface ServiceRepImage {
   src: StaticImageData | string;
   alt: string;
-}
-
-export interface BenefitItem {
-  id: number;
-  repIcon: IconType;
-  name: string;
-  description: string;
 }
 
 export interface BonusItem {

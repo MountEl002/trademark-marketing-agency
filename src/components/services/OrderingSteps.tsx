@@ -54,10 +54,13 @@ const OrderingSteps = ({
 
   return (
     <section className="bg-blue-50">
-      <div className="max-w-6xl mx-auto">
-        <div className="max-w-3xl mx-auto mb-12 text-center">
+      <div className="max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-6 mx-auto">
+        <div className="mx-auto text-start">
           <h2>{orderingStepsTitle}</h2>
-          <p>{orderingStepsDescription}</p>
+          <p className="mb-0 md:mb-12">{orderingStepsDescription}</p>
+          <div className="hidden md:block">
+            <GetServiceButton text="Create an order" />
+          </div>
         </div>
         <div className="space-y-3">
           {createAnOrderSteps.map((step, index) => {
@@ -70,7 +73,7 @@ const OrderingSteps = ({
                 }`}
                 onClick={() => setActiveStep(step.id)}
               >
-                <div className="horizontal-start gap-4 p-6">
+                <div className="horizontal-start gap-4 px-6 py-3">
                   <div
                     className={`vertical font-bold text-xl w-10 h-10 rounded-[50%] flex-shrink-0 transition-all duration-500 ${
                       activeStep === step.id
@@ -104,7 +107,7 @@ const OrderingSteps = ({
             );
           })}
         </div>
-        <div className="mt-8 w-fit mx-auto">
+        <div className="mt-8 mx-auto md:hidden block">
           <GetServiceButton text="Create an order" />
         </div>
       </div>

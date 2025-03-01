@@ -50,13 +50,11 @@ const bonusItems: BonusItem[] = [
 interface ServiceBonusesProps {
   bonusSectionTitle: string;
   bonusSectionDescription: string;
-  bonusSectionDescription2?: string;
 }
 
 const ServiceBonuses = ({
   bonusSectionTitle,
   bonusSectionDescription,
-  bonusSectionDescription2,
 }: ServiceBonusesProps) => {
   return (
     <section className="bg-blue-100 py-14">
@@ -64,7 +62,6 @@ const ServiceBonuses = ({
         <h2>{bonusSectionTitle}</h2>
         <div className="vertical gap-4 mb-8">
           <p>{bonusSectionDescription}</p>
-          <p>{bonusSectionDescription2}</p>
         </div>
         <div className="grid grid-cols-1 min-[645px]:grid-cols-2 min-[975px]:grid-cols-3 gap-6">
           {bonusItems.map((item) => (
