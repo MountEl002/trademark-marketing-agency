@@ -18,14 +18,18 @@ const ServiceBenefits = ({
   return (
     <section className="bg-gray-50">
       <div className="max-w-6xl text-center w-full">
-        <h2>{benefitsSectionTitle}</h2>
-        <p>{benefitsDescription}</p>
-        <div className="max-w-4xl mx-auto w-full">
-          <Image
-            src={serviceRepImage.src}
-            alt={serviceRepImage.alt}
-            className="rounded-2xl my-8"
-          />
+        <div className="grid grid-cols-1 sm:grid-cols-2 sm:gap-10 my-8">
+          <div className="text-start">
+            <h2 className="w-full">{benefitsSectionTitle}</h2>
+            <p>{benefitsDescription}</p>
+          </div>
+          <div className="mx-auto w-full">
+            <Image
+              src={serviceRepImage.src}
+              alt={serviceRepImage.alt}
+              className="rounded-2xl"
+            />
+          </div>
         </div>
         <div className="grid grid-cols-1 min-[900px]:grid-cols-2 gap-8 p-4">
           {benefitItems.map((item) => (

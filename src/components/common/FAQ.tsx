@@ -19,15 +19,15 @@ const FAQ = ({ faqArray, serviceTitle }: FAQProps) => {
           {faqArray.map((item) => (
             <div
               key={item.id}
-              className="border border-blue-300 hover:border-white rounded-lg shadow-sm transition-all duration-500"
+              className="border border-blue-300 hover:bg-blue-50 rounded-lg shadow-sm transition-all duration-500"
             >
               <button
                 onClick={() =>
                   setActiveId(activeId === item.id ? null : item.id)
                 }
-                className={`w-full flex items-center justify-between p-4 text-left transition-colors duration-200 ${
+                className={`w-[96%] mx-auto flex items-center justify-between py-4 text-left transition-colors duration-200 ${
                   activeId === item.id
-                    ? "text-blue-700"
+                    ? "text-blue-700 border-blue-300 border-b"
                     : "text-gray-700 hover:text-blue-600"
                 }`}
               >
@@ -45,8 +45,8 @@ const FAQ = ({ faqArray, serviceTitle }: FAQProps) => {
                   activeId === item.id ? "max-h-96" : "max-h-0"
                 }`}
               >
-                <div className="p-4 text-gray-600">
-                  <p>{item.answer}</p>
+                <div className="p-4 text-gray-600 text-base">
+                  {item.answer ? item.answer : item.styledAnswer}
                 </div>
               </div>
             </div>

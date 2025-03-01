@@ -17,9 +17,6 @@ import OrderingSteps from "@/components/services/OrderingSteps";
 import { Benefit, ClientReview, AssuranceItem } from "@/types/servicesPages";
 
 // Benefits Section Details
-const benefitsSectionTitle = "Why choose High-Quality Essay";
-const benefitsDescription =
-  'High-Quality Essay is all about Premium Essay Writing Services.Transform your academic journey with our professional essay writing service. Simply tell us "Write my paper" and let our experts handle the rest.';
 const serviceRepImage = {
   src: HeroSection,
   alt: "Essay writing in progress",
@@ -70,24 +67,7 @@ const BenefitItems: Benefit[] = [
   },
 ];
 
-// Bonuses Section Details
-const bonusSectionTitle = "Smart students choose smarter writing solutions!";
-const bonusSectionDescription =
-  "Smart students choose smarter writing solutions! Turn ‘I need help writing my essay’ into ‘I got everything I needed—and more!’ ";
-const bonusSectionDescription2 =
-  "Experience top-tier academic writing with our signature collection of free additional benefits:";
-
 // Reviews section details
-const reviewsSectionTitle = "What our Clients Say About Us";
-const reviewsSectionDescription = (
-  <span>
-    Join 23K+ successful students who trust High-
-    <span className="text-blue-700">Quality</span> Essay for their academic
-    needs. With 392 qualified writers, We build lasting partnerships with our
-    clients through exceptional service and affordable rates, making academic
-    excellence accessible to all.
-  </span>
-);
 
 const clientReviews: ClientReview[] = [
   {
@@ -244,11 +224,7 @@ const clientReviews: ClientReview[] = [
   },
 ];
 
-const serviceToTry = "Essay Writing Service";
-
 // Assurance Section Details
-const assuranceSectionTitle = "Need extra peace of mind? We’ve got you covered";
-
 const assuranceItmes: AssuranceItem[] = [
   {
     id: 1,
@@ -281,70 +257,61 @@ const assuranceItmes: AssuranceItem[] = [
   },
 ];
 
-// Ordering steps Details
-const orderingStepsTitle = "Work with the best essay writers online";
-const orderingStepsDescription =
-  "At High-Quality Essay, we don't give you the burden of choosing a writer wondering wether they will deliver high quality work. All you need to do is submit the details or your orders and sit back knowing the best and most qualified writer is working on the order.";
-const stepOneTitle = "Give us your essay writing instructions";
-const stepOneDescription =
-  "To complete your write my essay request, our team needs a few details concerning your order. Fill out a short form to specify what kind of essay writing help you need and place your order";
-const stepThreeTitle = "Get your paper writing done";
-const stepThreeDescription =
-  "Once your order is ready, download the paper to check if it meets your needs. Then, pay for essay using your personal account at EssayPro.";
-
-// Hero Section details
-const serviceTitle =
-  "Best Essay Writing Services with Professional Writers at Affordable Prices";
-const openningStatement =
-  "Get a high-quality essay writing service that guarantees you the best grades for only $2.5/page. Our professional writers are ready to help you with your essay writing needs. Get started today!";
-
 export default function Home() {
   return (
     <>
       {/* Hero section */}
       <ServiceHeroSection
-        serviceTitle={serviceTitle}
-        openningStatement={openningStatement}
+        serviceTitle="Best Essay Writing Services with Professional Writers at Affordable Prices"
+        openningStatement="Get a high-quality essay writing service that guarantees you the best grades for only $2.5/page. Our professional writers are ready to help you with your essay writing needs. Get started today!"
         getServiceButtonText="Order a paper now"
       />
 
       {/* Creating an order Steps */}
       <OrderingSteps
-        orderingStepsTitle={orderingStepsTitle}
-        orderingStepsDescription={orderingStepsDescription}
-        stepOneTitle={stepOneTitle}
-        stepOneDescription={stepOneDescription}
-        stepThreeTitle={stepThreeTitle}
-        stepThreeDescription={stepThreeDescription}
+        orderingStepsTitle="Work with the best essay writers online"
+        orderingStepsDescription="At High-Quality Essay, we don't give you the burden of choosing a writer wondering wether they will deliver high quality work. All you need to do is submit the details or your orders and sit back knowing the best and most qualified writer is working on the order."
+        stepOneTitle="Give us your essay writing instructions"
+        stepOneDescription="To complete your write my essay request, our team needs a few details concerning your order. Fill out a short form to specify what kind of essay writing help you need and place your order"
+        stepThreeTitle="Get your paper writing done"
+        stepThreeDescription="Once your order is ready, download the paper to check if it meets your needs. Then, pay for essay using your personal account at EssayPro."
       />
 
       {/* Essay Writing services summary */}
       <ServiceBenefits
-        benefitsSectionTitle={benefitsSectionTitle}
-        benefitsDescription={benefitsDescription}
+        benefitsSectionTitle="Why choose High-Quality Essay"
+        benefitsDescription='High-Quality Essay is all about Premium Essay Writing Services.Transform your academic journey with our professional essay writing service. Simply tell us "Write my paper" and let our experts handle the rest.'
         serviceRepImage={serviceRepImage}
         benefitItems={BenefitItems}
       />
 
       {/* Bonuses Section */}
       <ServiceBonuses
-        bonusSectionTitle={bonusSectionTitle}
-        bonusSectionDescription={bonusSectionDescription}
-        bonusSectionDescription2={bonusSectionDescription2}
+        bonusSectionTitle="Smart students choose smarter writing solutions!"
+        bonusSectionDescription="Smart students choose smarter writing solutions! Turn ‘I need help writing my essay’ into ‘I got everything I needed—and more!’"
+        bonusSectionDescription2="Experience top-tier academic writing with our signature collection of free additional benefits:"
       />
 
       {/* Assurance Section */}
       <AssuranceSection
-        assuranceSectionTitle={assuranceSectionTitle}
+        assuranceSectionTitle="Need extra peace of mind? We’ve got you covered"
         assuranceItems={assuranceItmes}
       />
 
       {/* Customer Reviws Section */}
       <ServiceReviewsSection
-        reviewsSectionTitle={reviewsSectionTitle}
-        reviewsSectionDescription={reviewsSectionDescription}
+        reviewsSectionTitle="What our Clients Say About Us"
+        reviewsSectionDescription={
+          <span>
+            Join 23K+ successful students who trust High-
+            <span className="text-blue-700">Quality</span> Essay for their
+            academic needs. With 392 qualified writers, We build lasting
+            partnerships with our clients through exceptional service and
+            affordable rates, making academic excellence accessible to all.
+          </span>
+        }
         clientReviews={clientReviews}
-        serviceToTry={serviceToTry}
+        serviceToTry="Essay Writing Service"
       />
       {/* Frequently Asked Questions Section */}
       <HomepageFqa />

@@ -2,106 +2,129 @@ import FAQ from "@/components/common/FAQ";
 import OtherServicesSection from "@/components/services/OtherServicesSection";
 import ServiceHeroSection from "@/components/services/ServiceHeroSection";
 import React from "react";
+import { FAQItem } from "@/types/servicesPages";
 
-interface FAQItem {
-  id: number;
-  question: string;
-  answer: string;
-}
+const faqData: FAQItem[] = [
+  {
+    id: 1,
+    question: "How will I know that my analytical essay is original?",
+    styledAnswer: (
+      <>
+        <p className="mb-2">
+          When you pay for analytical essay for the first time, getting a
+          plagiarized piece is probably your key concern. High-Quality Essay
+          does not tolerate copying someone else&apos;s ideas. We write all
+          papers directly under your requirements and carefully check them for
+          uniqueness before sending them to you.
+        </p>
+        <p>
+          But that&apos;s not all.We also offer a free originality report with
+          every &ldquo;write essay for me&rdquo; order. You can request your
+          detailed report to ensure your paper has a 96-98% originality score.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: 2,
+    question: "How can I change something once my analytical essay is done?",
+    styledAnswer: (
+      <>
+        <p className="mb-2">
+          Our High-Quality Essay staff makes every effort to guarantee that each
+          assignment is written to fit your demands and in compliance with all
+          of your requirements.
+        </p>
+        <p>
+          However, if it happens that you need your finished analytical essay
+          edited, we have you covered. Each order you place with our service
+          will be met with our utmost care and attention. Therefore, within 60
+          days of the completion of your order, you can request as many
+          unlimited and free revisions as you like.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: 3,
+    question: "How much time will it take?",
+    styledAnswer: (
+      <>
+        <p className="mb-2">
+          You choose the time when your order will be completed when you place
+          an order on our service. The quickest delivery option is three hours.
+          Of course, our writers will make every effort to finish your
+          assignment even more quickly.
+        </p>
+        <p>
+          Remember that the deadline is influenced by a variety of factors, such
+          as the paper&apos;s complexity and length. The longer the deadline,
+          the lower the price. Therefore, we advise you to chat with our support
+          reps and ask how much time it&apos;ll take to complete your paper and
+          what will be the final price.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: 4,
+    question: "How can I pay for analytical essay?",
+    styledAnswer: (
+      <>
+        <p className="mb-2">
+          Visa, Mastercard, American Express, Discover, Maestro, JCB, and Diners
+          Club International all recognize our accreditation.
+        </p>
+        <p>
+          Additionally, we handle everything through secure gateways when you
+          place an order with us, which protects the privacy of your data. It
+          means that you don&apos;t have to worry about anything when you use
+          High-Quality Essay!
+        </p>
+      </>
+    ),
+  },
+  {
+    id: 5,
+    question: "Will anyone know that I contact to your services?",
+    styledAnswer: (
+      <>
+        <p className="mb-2">
+          Our team&apos;s main goal is to make sure that every student will
+          receive high-quality assistance whenever they need it. And we always
+          make your privacy our top priority.
+        </p>
+        <p>
+          As a result, you can be sure that High-Quality Essay treats your
+          personal data with care and precision. Your email information will
+          only be used by us to communicate with you regarding your order,
+          including to send you drafts and final versions of your analytical
+          essay. We store all your data securely, including your payment
+          information. You don&apos;t have to worry about your safety or privacy
+          when you place an order with High-Quality Essay since we abide by a
+          rigorous Privacy Policy and use industry-level encryption.
+        </p>
+      </>
+    ),
+  },
+];
 
 const AnalyticalPaper = () => {
-  const faqData: FAQItem[] = [
-    {
-      id: 1,
-      question: "Who writes my essays?",
-      answer:
-        "At High-Quality Essay, we believe in matching you with the absolute best writer for your specific assignment. Unlike services where you choose from multiple writers, our expert team carefully selects the most qualified professional based on your subject matter and academic requirements. All our writers hold advanced degrees and undergo rigorous vetting to ensure exceptional quality. You can communicate directly with your assigned writer throughout the process at no additional cost.",
-    },
-    {
-      id: 2,
-      question: "How quickly can you complete my essay?",
-      answer:
-        "We pride ourselves on delivering high-quality work within your specified timeframe. When placing your order, simply indicate your desired deadline in the order form. We recommend allowing extra time for potential revisions to ensure complete satisfaction with the final product. Our experienced writers excel at meeting tight deadlines while maintaining superior quality. For urgent needs, we can complete single-page assignments in as little as 2 hours.",
-    },
-    {
-      id: 3,
-      question: "Do you provide original essays?",
-      answer:
-        "Absolutely. Our commitment to quality means every essay is written completely from scratch. Our experienced writers take pride in creating 100% original content tailored to your specific requirements. To ensure your complete confidence, we provide access to plagiarism detection software so you can verify the uniqueness of your essay. We stand firmly behind the originality of our work.",
-    },
-    {
-      id: 4,
-      question: "What is your pricing structure?",
-      answer:
-        "We believe in transparent, straightforward pricing. Our service charges a flat rate of $3 per page, making quality academic writing accessible to all students. This competitive rate covers all aspects of our service - there are no hidden fees or surcharges. We've simplified pricing to focus on what matters most: delivering exceptional quality at an affordable price.",
-    },
-    {
-      id: 5,
-      question: "Why should I trust your essay writing service?",
-      answer:
-        "High-Quality Essay has built its reputation on delivering superior academic writing at affordable prices. We offer several guarantees to ensure your confidence: free revisions until you're completely satisfied, a secure payment system, and 24/7 customer support. Rather than using a bidding system, we carefully match you with the most qualified writer for your subject matter. Our focus is on quality and reliability, providing you with the best possible academic support.",
-    },
-    {
-      id: 6,
-      question: "Can I remain anonymous while using your service?",
-      answer:
-        "We take your privacy seriously. Our strict confidentiality policy ensures your information remains completely protected. When creating an account, you'll be assigned a unique identifier - there's no need to provide your real name. We advise against sharing personal details or institutional information with anyone. Your use of our service remains completely confidential.",
-    },
-    {
-      id: 7,
-      question: "What types of papers do you offer?",
-      answer:
-        "Our service covers all academic writing needs, including, essays (argumentative, descriptive, narrative, application), reviews (book, movie, article), complex academic projects (coursework, term papers), and thesis and dissertation chapters among other academic services you might need. Each assignment is handled by a writer specifically qualified in your subject area, ensuring expert-level work that meets academic standards.",
-    },
-    {
-      id: 8,
-      question: "How do you select your writers?",
-      answer:
-        "Our rigorous selection process ensures only top-tier academic writers join our team. Each candidate must provide proof of advanced degrees, pass comprehensive English proficiency tests, and successfully complete a trial period. Our quality control team continuously monitors performance, maintaining our high standards. Writers who don't consistently meet our quality benchmarks are immediately removed from our team.",
-    },
-    {
-      id: 9,
-      question: "Is your service legitimate?",
-      answer:
-        "Yes. We operate as a legitimate academic assistance service, providing reference materials and guidance to help students improve their writing skills. Our work serves as a learning tool to enhance your academic capabilities.",
-    },
-    {
-      id: 10,
-      question:
-        "How can a money-back guarantee help me use your service effectively?",
-      answer:
-        "According to our money-back guarantee, you can get a full or partial refund when using our online essay writing service. For instance, when you decide to cancel your order, you can get a 100% refund if your writer has not started working on your assignment. Otherwise, the refund amount will depend on the expert’s progress. On top of that, you can count on getting your money back if your order is delivered late and we are at fault. Even though our writers do everything they can to meet the most challenging deadlines, it's impossible to guarantee on-time delivery in 100% of cases. As you can see, getting custom essay help here is risk-free because you can rely on multiple guarantees. We aim to meet our clients' expectations no matter what.",
-    },
-  ];
-
-  const serviceTitle = "Analytical essay writing service";
-  const openningStatement =
-    "Use our analytical essay writing service to get quick help. Help from our writers will save you from failing.";
-
-  // Other Services Section
-  const currentServicePage = "Analytical essay writing";
-  const servicesToExclude = ["Analytical Essay Writing"];
-
   return (
     <>
       {/* Hero section */}
       <ServiceHeroSection
-        serviceTitle={serviceTitle}
-        openningStatement={openningStatement}
+        serviceTitle="Analytical essay writing service"
+        openningStatement="Use our analytical essay writing service to get quick help. Help from our writers will save you from failing."
         getServiceButtonText="Get analytical essay writing help"
       />
-      <section>
-        <div className="max-w-3xl mx-auto">
-          <h2 className="text-center">
-            Frequently Asked Questions about our analytical paper writing
-            service
-          </h2>
-          <FAQ faqArray={faqData} />
-        </div>
-      </section>
       <OtherServicesSection
-        servicesToExclude={servicesToExclude}
-        currentServicePage={currentServicePage}
+        servicesToExclude={["Analytical Essay Writing"]}
+        currentServicePage="Analytical essay writing"
+      />
+      <FAQ
+        faqArray={faqData}
+        serviceTitle="analytical essay writing services"
       />
     </>
   );

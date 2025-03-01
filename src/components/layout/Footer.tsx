@@ -285,7 +285,7 @@ const Footer = () => {
           {ourServices.map((service) => (
             <ul key={service.id} className="">
               <li
-                className={`mb-2 cursor-pointer ${
+                className={`mb-2 cursor-pointer w-fit px-4 ${
                   pathname === service.LinkTo
                     ? "font-semibold text-blue-500 hover:text-blue-700"
                     : "hover:text-blue-600"
@@ -303,7 +303,7 @@ const Footer = () => {
           {resources.map((item) => (
             <ul key={item.id}>
               <li
-                className={`mb-2 cursor-pointer ${
+                className={`mb-2 cursor-pointer w-fit px-4 ${
                   pathname === item.LinkTo
                     ? "font-semibold text-blue-500 hover:text-blue-700"
                     : "hover:text-blue-600"
@@ -321,7 +321,7 @@ const Footer = () => {
           {policies.map((item) => (
             <ul key={item.id}>
               <li
-                className={`mb-2 cursor-pointer ${
+                className={`mb-2 cursor-pointer w-fit px-4 ${
                   pathname === item.LinkTo
                     ? "font-semibold text-blue-500 hover:text-blue-700"
                     : "hover:text-blue-600"
@@ -339,7 +339,7 @@ const Footer = () => {
           {companyDeatails.map((item) => (
             <ul key={item.id}>
               <li
-                className={`mb-2 cursor-pointer ${
+                className={`mb-2 cursor-pointer w-fit px-4 ${
                   pathname === item.LinkTo
                     ? "font-semibold text-blue-500 hover:text-blue-700"
                     : "hover:text-blue-600"
@@ -359,7 +359,7 @@ const Footer = () => {
             {allServices.map((service) => (
               <ul key={service.id} className="">
                 <li
-                  className={`mb-2 cursor-pointer ${
+                  className={`mb-2 cursor-pointer w-fit px-4 ${
                     pathname === service.LinkTo
                       ? "font-semibold text-blue-500 hover:text-blue-700"
                       : "hover:text-blue-600"
