@@ -63,7 +63,7 @@ export default function Home() {
       {/* Creating an order Steps */}
       <OrderingSteps
         orderingStepsTitle="Work with the best essay writers online"
-        orderingStepsDescription="At High-Quality Essay, we don't give you the burden of choosing a writer wondering wether they will deliver high quality work. All you need to do is submit the details or your orders and sit back knowing the best and most qualified writer is working on the order."
+        orderingStepsDescription="At High-Quality Essay, we don't give you the burden of choosing a writer wondering wether they will deliver high quality work. All you need to do is submit the details of your orders and sit back knowing the best and most qualified writer is working on the order."
         stepOneTitle="Give us your essay writing instructions"
         stepOneDescription='To complete your "write my essay" request, our team needs a few details concerning your order. Fill out a short form to specify what kind of essay writing help you need and place your order'
         stepThreeTitle="Get your paper writing done"

@@ -4,7 +4,9 @@ interface OrderedListProps {
 
 const OrderedList = ({ children }: OrderedListProps) => {
   return (
-    <ol className="text-sm list-decimal space-y-2 pl-4 mb-6">{children}</ol>
+    <ol className="text-sm list-decimal space-y-2 pl-4 mb-6 ml-2">
+      {children}
+    </ol>
   );
 };
 

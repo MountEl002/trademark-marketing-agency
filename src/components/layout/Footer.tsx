@@ -33,6 +33,12 @@ interface AllServices {
   LinkTo: string;
 }
 
+function getCurrentYear(): number {
+  return new Date().getFullYear();
+}
+
+const year = getCurrentYear();
+
 const Footer = () => {
   const resources: Resource[] = [
     { id: 1, name: "Blog", LinkTo: "/resources/blog" },
@@ -390,7 +396,7 @@ const Footer = () => {
       </div>
       {/* Row 5 Copyright */}
       <div className="text-center mt-8 py-5">
-        © | 2024 Copyright <strong>High-Quality Essay</strong>. All Rights
+        © | {year} Copyright <strong>High-Quality Essay</strong>. All Rights
         Reserved
       </div>
     </div>

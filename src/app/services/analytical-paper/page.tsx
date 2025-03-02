@@ -168,7 +168,7 @@ const AnalyticalPaper = () => {
       {/* Essay Writing service Benefits summary */}
       <ServiceBenefits
         benefitsSectionTitle="Why you should you get analytical essay help from us"
-        benefitsDescription="Our professional analytical essay writing service will do work entirely from scratch to ensure the analytical essay is 100% original. Additionally, we have a flexible priving system, our services are budget friendly, and we always deliver on time."
+        benefitsDescription="Our professional analytical essay writing service will do work entirely from scratch to ensure the analytical essay is 100% original. Additionally, we have a flexible pricing system, our services are budget friendly, and we always deliver on time."
         serviceRepImage={serviceRepImage}
         serviceButtonText={"Write my analytical essay"}
       />
@@ -191,7 +191,7 @@ const AnalyticalPaper = () => {
       {/* Creating an order Steps */}
       <OrderingSteps
         orderingStepsTitle="How our analytical essay writing service works"
-        orderingStepsDescription="At High-Quality Essay, we don't give you the burden of choosing a writer wondering wether they will deliver high quality work. All you need to do is submit the details or your orders and sit back knowing the best and most qualified writer is working on the order."
+        orderingStepsDescription="At High-Quality Essay, we don't give you the burden of choosing a writer wondering wether they will deliver high quality work. All you need to do is submit the details of your orders and sit back knowing the best and most qualified writer is working on the order."
         stepOneTitle="Give us your analytical essay instructions"
         stepOneDescription="No matter the complexity of your project, it only takes a few simple steps to get help from our experts. To begin, provide us with detailed information about your assignment. Give us the topic, academic level, and scope of your work. Provide any specific requirements or instructions and include a deadline."
         stepThreeTitle="Check your paper and pay"
@@ -200,7 +200,7 @@ const AnalyticalPaper = () => {
       <FAQ faqArray={faqData} serviceTitle="analytical essay writing service" />
       <OtherServicesSection
         servicesToExclude={["Analytical Essay Writing"]}
-        currentServicePage="Analytical essay writing"
+        currentServicePage="analytical essay writing"
       />
       <ServiceDescriptionContainer serviceDescriptionTitle="More about our analytical essay writing service">
         <div className="pr-4">
