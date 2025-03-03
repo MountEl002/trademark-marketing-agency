@@ -1,4 +1,3 @@
-import React from "react";
 import { usePathname } from "next/navigation";
 import SocialMedia from "../common/SocialMedia";
 import DarkLogo from "../common/DarkLogo";

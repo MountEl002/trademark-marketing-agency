@@ -55,7 +55,7 @@ const faqData: FAQItem[] = [
     question: "Why should I choose your capstone paper writing service?",
     styledAnswer: (
       <>
-        <p>
+        <p className="mb-2">
           Choosing the right service for capstone project help means finding one
           that offers not only quality but also the convenience you need during
           busy semesters.
@@ -76,7 +76,7 @@ const faqData: FAQItem[] = [
     question: "How do I ensure my papers are without plagiarism?",
     styledAnswer: (
       <>
-        <p>
+        <p className="mb-2">
           When you request our capstone project writing services, paper
           originality shouldn’t be among your concerns. We ensure that all our
           papers are highly unique, with originality scores of 96% or higher.
@@ -99,7 +99,9 @@ const faqData: FAQItem[] = [
       "What guarantees do you provide when you write my capstone project?",
     styledAnswer: (
       <>
-        <p>Here are the key guarantees we know matter most to our customers:</p>
+        <p className="mb-2">
+          Here are the key guarantees we know matter most to our customers:
+        </p>
         <UnorderedList>
           <li>
             <span className="font-bold">On-time delivery: </span>We understand
@@ -138,7 +140,7 @@ const faqData: FAQItem[] = [
     question: "What qualifications will my capstone project writer have?",
     styledAnswer: (
       <>
-        <p>
+        <p className="mb-2">
           Our partner writers are carefully selected to ensure they have the
           expertise needed to handle your capstone project. Here’s what you can
           expect with High-Quality Essay:
@@ -174,7 +176,7 @@ const faqData: FAQItem[] = [
     question: "What is the minimum deadline for my order?",
     styledAnswer: (
       <>
-        <p>
+        <p className="mb-2">
           When you buy capstone project, you’re in control of the deadline. Our
           writing team works hard to complete your order as quickly as possible.
           While the fastest turnaround time is just 3 hours, the exact delivery
@@ -195,7 +197,7 @@ const faqData: FAQItem[] = [
     question: "Do I get any free services with my order?",
     styledAnswer: (
       <>
-        <p>
+        <p className="mb-2">
           Along with your capstone project, here’s what we include for free:
         </p>
         <UnorderedList>
@@ -271,7 +273,7 @@ const CapstoneProject = () => {
       />
       <FAQ
         faqArray={faqData}
-        serviceTitle="Everything you need to know about case study writing service"
+        serviceTitle="Everything you need to know about your capstone project writing service"
       />
       <OtherServicesSection
         servicesToExclude={["Capstone Project Writing"]}
