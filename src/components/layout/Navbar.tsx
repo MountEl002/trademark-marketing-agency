@@ -32,8 +32,8 @@ const serviceItems = [
 
 const serviceItemscol2 = [
   {
-    href: "/services/college-essay",
-    label: "College Essay Writing",
+    href: "/services/capstone-project",
+    label: "Capstone Project Writing",
   },
   {
     href: "/services/personal-statement",
