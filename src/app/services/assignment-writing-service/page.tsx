@@ -173,7 +173,7 @@ const Assignment = () => {
       />
       <FAQ faqArray={faqData} serviceTitle="assigmnet writing service" />
       <OtherServicesSection
-        servicesToExclude={["Do My Assignment"]}
+        servicesToExclude={[8]}
         currentServicePage="assignment writing service"
       />
       <ServiceDescriptionContainer serviceDescriptionTitle="More details about our assignment writing service">

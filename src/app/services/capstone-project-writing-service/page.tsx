@@ -273,7 +273,7 @@ const CapstoneProject = () => {
       />
       <FAQ faqArray={faqData} serviceTitle="capstone project writing service" />
       <OtherServicesSection
-        servicesToExclude={["Capstone Project Writing"]}
+        servicesToExclude={[6]}
         currentServicePage="capstone project writing"
       />
       <ServiceDescriptionContainer serviceDescriptionTitle="More details about our custom case study writing services">

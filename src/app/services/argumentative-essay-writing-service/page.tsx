@@ -219,7 +219,7 @@ const ArgumentativeEssay = () => {
         serviceTitle="argumentaive essay writing service"
       />
       <OtherServicesSection
-        servicesToExclude={["Argumentative Essay Writing"]}
+        servicesToExclude={[4]}
         currentServicePage="argumentative essay writing"
       />
       <ServiceDescriptionContainer serviceDescriptionTitle="More details about our custom annotated bibliography writing services">

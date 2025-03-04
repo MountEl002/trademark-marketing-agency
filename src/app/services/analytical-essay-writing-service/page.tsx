@@ -199,7 +199,7 @@ const AnalyticalPaper = () => {
       />
       <FAQ faqArray={faqData} serviceTitle="analytical essay writing service" />
       <OtherServicesSection
-        servicesToExclude={["Analytical Essay Writing"]}
+        servicesToExclude={[1]}
         currentServicePage="analytical essay writing"
       />
       <ServiceDescriptionContainer serviceDescriptionTitle="More about our analytical essay writing service">

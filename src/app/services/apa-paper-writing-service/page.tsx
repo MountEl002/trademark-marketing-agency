@@ -133,7 +133,7 @@ const APAPaper = () => {
         serviceTitle="annotated bibliography writing service"
       />
       <OtherServicesSection
-        servicesToExclude={["APA Paper Writing"]}
+        servicesToExclude={[3]}
         currentServicePage="APA paper writing"
       />
       <ServiceDescriptionContainer serviceDescriptionTitle="Buy APA papers to alleviate your stress">

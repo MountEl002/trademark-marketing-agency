@@ -131,7 +131,7 @@ const CaseStudy = () => {
 
       <FAQ faqArray={faqData} serviceTitle="case study writing service" />
       <OtherServicesSection
-        servicesToExclude={["Case Study Paper Writing"]}
+        servicesToExclude={[5]}
         currentServicePage="case study Writing"
       />
       <ServiceDescriptionContainer serviceDescriptionTitle="More details about our custom case study writing services">

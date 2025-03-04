@@ -143,7 +143,7 @@ const ArticleReview = () => {
       />
       <FAQ faqArray={faqData} serviceTitle="article review writing service" />
       <OtherServicesSection
-        servicesToExclude={["Article Review Writing"]}
+        servicesToExclude={[7]}
         currentServicePage="article review writing"
       />
       <ServiceDescriptionContainer serviceDescriptionTitle="More details about our custom case study writing services">

@@ -162,7 +162,7 @@ const AnnotatedBibliography = () => {
         serviceTitle="annotated bibliography writing service"
       />
       <OtherServicesSection
-        servicesToExclude={["Annotated Bibliography"]}
+        servicesToExclude={[2]}
         currentServicePage="annotated bibliography writing"
       />
       <ServiceDescriptionContainer serviceDescriptionTitle="More details about our custom annotated bibliography writing services">
