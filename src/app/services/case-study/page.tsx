@@ -129,10 +129,7 @@ const CaseStudy = () => {
         stepThreeDescription="After the order is ready, you can download it, check it meets your requirements, and pay."
       />
 
-      <FAQ
-        faqArray={faqData}
-        serviceTitle="Everything you need to know about case study writing service"
-      />
+      <FAQ faqArray={faqData} serviceTitle="case study writing service" />
       <OtherServicesSection
         servicesToExclude={["Case Study Paper Writing"]}
         currentServicePage="case study Writing"

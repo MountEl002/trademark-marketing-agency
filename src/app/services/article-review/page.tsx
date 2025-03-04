@@ -107,7 +107,7 @@ const ArticleReview = () => {
     <>
       {/* Hero section */}
       <ServiceHeroSection
-        serviceTitle="Article review writing service: 100% human-written article reviews from verified pros"
+        serviceTitle="Article review writing service: 100% human-written article reviews from verified professionals"
         openningStatement="Make the most of your time with professional academic writing support."
         getServiceButtonText="Order a review"
       />
@@ -141,17 +141,13 @@ const ArticleReview = () => {
         stepThreeTitle="Receive the review"
         stepThreeDescription="Receive your completed task and make sure it meets your instructions. Make a payment and leave your feedback."
       />
-      <FAQ
-        faqArray={faqData}
-        serviceTitle="Everything you need to know about article review writing service"
-      />
+      <FAQ faqArray={faqData} serviceTitle="article review writing service" />
       <OtherServicesSection
         servicesToExclude={["Article Review Writing"]}
         currentServicePage="article review writing"
       />
       <ServiceDescriptionContainer serviceDescriptionTitle="More details about our custom case study writing services">
         <div className="pr-4">
-          {" "}
           <div>
             <HeadingThreeTitle text="Who can benefit from our article review services" />
             <p>

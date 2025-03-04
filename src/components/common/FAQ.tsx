@@ -42,7 +42,7 @@ const FAQ = ({ faqArray, serviceTitle }: FAQProps) => {
               </button>
               <div
                 className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                  activeId === item.id ? "max-h-96" : "max-h-0"
+                  activeId === item.id ? "max-h-[30rem]" : "max-h-0"
                 }`}
               >
                 <div className="p-4 text-gray-600 text-base">

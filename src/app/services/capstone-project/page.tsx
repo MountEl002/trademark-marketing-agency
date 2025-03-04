@@ -271,10 +271,7 @@ const CapstoneProject = () => {
         stepThreeTitle="Receive your order"
         stepThreeDescription="Once your capstone project is ready, you will get an email notification. Check the results, ask for edits if needed, and pay your writer."
       />
-      <FAQ
-        faqArray={faqData}
-        serviceTitle="Everything you need to know about your capstone project writing service"
-      />
+      <FAQ faqArray={faqData} serviceTitle="capstone project writing service" />
       <OtherServicesSection
         servicesToExclude={["Capstone Project Writing"]}
         currentServicePage="capstone project writing"
