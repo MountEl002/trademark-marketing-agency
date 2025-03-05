@@ -115,7 +115,7 @@ const Footer = () => {
       </div>
 
       {/* Row 2: Services, Resources, Policies, and Company Details*/}
-      <div className="footer-grids gap-y-6 mb-10">
+      <div className="footer-first-grid gap-y-6 mb-10">
         {/* Column 1 - Our Services */}
         <div>
           <h3 className="font-bold text-lg text-gray-100 mb-4">Our Services</h3>
@@ -192,7 +192,7 @@ const Footer = () => {
       {/* Row 3: AllServices */}
       <div className="bg-[#0B1221] py-8">
         <div className="max-w-6xl mx-auto">
-          <div className="footer-grids">
+          <div className="footer-second-grid">
             {allServices.map((service) => (
               <ul key={service.id} className="">
                 <li

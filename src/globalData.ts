@@ -119,7 +119,7 @@ export const allServices: AllServices[] = [
   {
     id: 24,
     name: "Speech writing service",
-    LinkTo: "/services/peech writing service",
+    LinkTo: "/services/speech-writing-service",
   },
   {
     id: 25,
