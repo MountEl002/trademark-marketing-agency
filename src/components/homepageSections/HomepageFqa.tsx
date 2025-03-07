@@ -66,7 +66,13 @@ const faqData: FAQItem[] = [
 ];
 
 const HomepageFqa = () => {
-  return <FAQ faqArray={faqData} serviceTitle="essay writing services" />;
+  return (
+    <>
+      <div id="homepage-faq">
+        <FAQ faqArray={faqData} serviceTitle="essay writing services" />
+      </div>
+    </>
+  );
 };
 
 export default HomepageFqa;

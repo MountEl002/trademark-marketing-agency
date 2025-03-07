@@ -4,6 +4,7 @@ import DarkLogo from "../common/DarkLogo";
 import PaymentMethods from "../common/PaymentMethods";
 import Link from "next/link";
 import { allServices } from "@/globalData";
+import { ScrollToElement } from "../common/ScrollToElement";
 
 interface Resource {
   id: number;
@@ -63,7 +64,7 @@ const Footer = () => {
     { id: 7, name: "Money Back Guarantee", LinkTo: "/money-back-guarantee" },
   ];
   const companyDeatails: CompanyDetail[] = [
-    { id: 1, name: "FAQ", LinkTo: "/#faq" },
+    { id: 1, name: "FAQ", LinkTo: "/#homepage-faq" },
     { id: 2, name: "About Us", LinkTo: "/about-us" },
     { id: 3, name: "High-Qulity Essay Reviews", LinkTo: "/reviews" },
     {
@@ -182,7 +183,13 @@ const Footer = () => {
                     : "hover:text-blue-600"
                 }`}
               >
-                <Link href={item.LinkTo}>{item.name}</Link>
+                {item.LinkTo === "/#homepage-faq" ? (
+                  <ScrollToElement href={item.LinkTo}>
+                    {item.name}
+                  </ScrollToElement>
+                ) : (
+                  <Link href={item.LinkTo}>{item.name}</Link>
+                )}
               </li>
             </ul>
           ))}
