@@ -1,7 +1,6 @@
 import OrderPaper from "@/components/common/order/OrderPaper";
 import Buttons from "@/components/prices/Buttons";
 import Menu from "@/components/prices/Menu";
-import React from "react";
 import Image from "next/image";
 import HappyStudent from "@/assests/happy-student.jpg";
 import ServiceReviewsSection from "@/components/services/ServiceReviewsSection";

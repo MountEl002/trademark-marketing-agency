@@ -1,7 +1,5 @@
-import React from "react";
-
-const Page = () => {
+const ScienceAssignmentHelp = () => {
   return <div></div>;
 };
 
-export default Page;
+export default ScienceAssignmentHelp;

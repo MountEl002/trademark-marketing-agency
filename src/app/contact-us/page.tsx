@@ -1,6 +1,4 @@
-import React from "react";
-
-const CountUs = () => {
+const ContanctUS = () => {
   return (
     <div>
       <h1>Contact High-Quality Essay</h1>
@@ -8,4 +6,4 @@ const CountUs = () => {
   );
 };
 
-export default CountUs;
+export default ContanctUS;

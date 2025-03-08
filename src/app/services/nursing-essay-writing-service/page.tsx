@@ -1,6 +1,4 @@
-import React from "react";
-
-const NursingPaper = () => {
+const NursingEssayWritingService = () => {
   return (
     <>
       <section>
@@ -10,4 +8,4 @@ const NursingPaper = () => {
   );
 };
 
-export default NursingPaper;
+export default NursingEssayWritingService;

@@ -1,6 +1,4 @@
-import React from "react";
-
-const Homework = () => {
+const DoMyHomeWork = () => {
   return (
     <>
       <section>
@@ -10,4 +8,4 @@ const Homework = () => {
   );
 };
 
-export default Homework;
+export default DoMyHomeWork;

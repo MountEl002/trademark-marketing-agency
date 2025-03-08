@@ -118,7 +118,7 @@ const serviceRepImage = {
   alt: "Annotated bibliography writing in progress",
 };
 
-const AnnotatedBibliography = () => {
+const AnnotatedBibliographyWritingService = () => {
   return (
     <>
       {/* Hero section */}
@@ -337,4 +337,4 @@ const AnnotatedBibliography = () => {
   );
 };
 
-export default AnnotatedBibliography;
+export default AnnotatedBibliographyWritingService;

@@ -1,6 +1,4 @@
-import React from "react";
-
-const Coursework = () => {
+const CourseworkWritingService = () => {
   return (
     <>
       <section>
@@ -10,4 +8,4 @@ const Coursework = () => {
   );
 };
 
-export default Coursework;
+export default CourseworkWritingService;

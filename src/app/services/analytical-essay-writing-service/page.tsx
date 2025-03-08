@@ -156,7 +156,7 @@ const faqData: FAQItem[] = [
   },
 ];
 
-const AnalyticalPaper = () => {
+const AnalyticalEssayWritingService = () => {
   return (
     <>
       {/* Hero section */}
@@ -313,4 +313,4 @@ const AnalyticalPaper = () => {
   );
 };
 
-export default AnalyticalPaper;
+export default AnalyticalEssayWritingService;

@@ -89,7 +89,7 @@ const faqData: FAQItem[] = [
   },
 ];
 
-const CaseStudy = () => {
+const CaseStudyWritingService = () => {
   return (
     <>
       {/* Hero section */}
@@ -279,4 +279,4 @@ const CaseStudy = () => {
   );
 };
 
-export default CaseStudy;
+export default CaseStudyWritingService;

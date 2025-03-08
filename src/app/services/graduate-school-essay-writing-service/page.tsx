@@ -1,7 +1,5 @@
-import React from "react";
-
-const page = () => {
+const GraduateSchoolEssayWritingService = () => {
   return <div>graduate-school-essay-writing-service</div>;
 };
 
-export default page;
+export default GraduateSchoolEssayWritingService;

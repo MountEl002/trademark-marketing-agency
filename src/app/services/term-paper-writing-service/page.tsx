@@ -1,6 +1,4 @@
-import React from "react";
-
-const TermPaper = () => {
+const TermPaperWritingServcie = () => {
   return (
     <>
       <section>
@@ -10,4 +8,4 @@ const TermPaper = () => {
   );
 };
 
-export default TermPaper;
+export default TermPaperWritingServcie;

@@ -1,6 +1,4 @@
-import React from "react";
-
-const ResearchPaper = () => {
+const ResearchPaperWritingService = () => {
   return (
     <>
       <section>
@@ -10,4 +8,4 @@ const ResearchPaper = () => {
   );
 };
 
-export default ResearchPaper;
+export default ResearchPaperWritingService;

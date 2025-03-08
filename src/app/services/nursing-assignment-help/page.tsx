@@ -1,7 +1,5 @@
-import React from "react";
-
-const page = () => {
+const NursingAssignmentHelp = () => {
   return <div></div>;
 };
 
-export default page;
+export default NursingAssignmentHelp;

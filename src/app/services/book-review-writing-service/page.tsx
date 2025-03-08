@@ -1,7 +1,5 @@
-import React from "react";
-
-const Page = () => {
+const BookReviewWritingService = () => {
   return <div>book-review-writing-service</div>;
 };
 
-export default Page;
+export default BookReviewWritingService;

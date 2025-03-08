@@ -1,6 +1,4 @@
-import React from "react";
-
-const FinancePaer = () => {
+const FinanceEssayWritingService = () => {
   return (
     <>
       <section>
@@ -10,4 +8,4 @@ const FinancePaer = () => {
   );
 };
 
-export default FinancePaer;
+export default FinanceEssayWritingService;

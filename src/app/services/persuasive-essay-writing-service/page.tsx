@@ -1,7 +1,5 @@
-import React from "react";
-
-const page = () => {
+const PersuasiveEssayWritingService = () => {
   return <div>persuasive-essay-writing-service</div>;
 };
 
-export default page;
+export default PersuasiveEssayWritingService;

@@ -1,6 +1,4 @@
-import React from "react";
-
-const CollegeEssay = () => {
+const CollegeEssayWritingService = () => {
   return (
     <>
       <section className="max-w-5xl mt-16 text-center text-gray-600">
@@ -10,4 +8,4 @@ const CollegeEssay = () => {
   );
 };
 
-export default CollegeEssay;
+export default CollegeEssayWritingService;

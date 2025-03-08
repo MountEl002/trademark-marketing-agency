@@ -75,7 +75,7 @@ const serviceRepImage = {
   alt: "Academic essay writing",
 };
 
-const EnglishAssignment = () => {
+const AcademicEssayWritingService = () => {
   return (
     <>
       {/* Hero section */}
@@ -191,4 +191,4 @@ const EnglishAssignment = () => {
   );
 };
 
-export default EnglishAssignment;
+export default AcademicEssayWritingService;

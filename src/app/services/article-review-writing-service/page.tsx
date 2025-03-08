@@ -102,7 +102,7 @@ const faqData: FAQItem[] = [
   },
 ];
 
-const ArticleReview = () => {
+const ArticleReviewWritingService = () => {
   return (
     <>
       {/* Hero section */}
@@ -329,4 +329,4 @@ const ArticleReview = () => {
   );
 };
 
-export default ArticleReview;
+export default ArticleReviewWritingService;

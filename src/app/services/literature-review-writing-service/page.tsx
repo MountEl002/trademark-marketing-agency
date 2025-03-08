@@ -1,6 +1,4 @@
-import React from "react";
-
-const LiteratureReview = () => {
+const LiteratureReviewWritingService = () => {
   return (
     <>
       <section>
@@ -10,4 +8,4 @@ const LiteratureReview = () => {
   );
 };
 
-export default LiteratureReview;
+export default LiteratureReviewWritingService;

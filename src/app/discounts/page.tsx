@@ -1,6 +1,4 @@
-import React from "react";
-
-const page = () => {
+const Discounts = () => {
   return (
     <>
       <section>
@@ -10,4 +8,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Discounts;

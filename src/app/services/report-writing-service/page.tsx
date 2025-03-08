@@ -1,7 +1,5 @@
-import React from "react";
-
-const page = () => {
+const ReportWritingService = () => {
   return <div>report-writing-service</div>;
 };
 
-export default page;
+export default ReportWritingService;

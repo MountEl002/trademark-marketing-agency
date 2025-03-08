@@ -1,6 +1,4 @@
-import React from "react";
-
-const CollegePaper = () => {
+const CustomEssayWritingService = () => {
   return (
     <>
       <section>
@@ -10,4 +8,4 @@ const CollegePaper = () => {
   );
 };
 
-export default CollegePaper;
+export default CustomEssayWritingService;

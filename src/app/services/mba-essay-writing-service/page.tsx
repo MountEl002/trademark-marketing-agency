@@ -1,6 +1,4 @@
-import React from "react";
-
-const MbaPaper = () => {
+const MbaEssayWritingService = () => {
   return (
     <>
       <section>
@@ -10,4 +8,4 @@ const MbaPaper = () => {
   );
 };
 
-export default MbaPaper;
+export default MbaEssayWritingService;

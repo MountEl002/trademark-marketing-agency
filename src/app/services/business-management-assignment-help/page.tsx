@@ -1,6 +1,4 @@
-import React from "react";
-
-const FastEssay = () => {
+const BusinessManagementAssignmentHelp = () => {
   return (
     <>
       <section>
@@ -10,4 +8,4 @@ const FastEssay = () => {
   );
 };
 
-export default FastEssay;
+export default BusinessManagementAssignmentHelp;

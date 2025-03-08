@@ -1,7 +1,5 @@
-import React from "react";
-
-const page = () => {
+const BusinessEssayWritingService = () => {
   return <div></div>;
 };
 
-export default page;
+export default BusinessEssayWritingService;

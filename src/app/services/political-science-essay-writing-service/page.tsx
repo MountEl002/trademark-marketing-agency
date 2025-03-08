@@ -1,6 +1,4 @@
-import React from "react";
-
-const MlaPaper = () => {
+const PoliticalScienceEssayWritingService = () => {
   return (
     <>
       <section>
@@ -10,4 +8,4 @@ const MlaPaper = () => {
   );
 };
 
-export default MlaPaper;
+export default PoliticalScienceEssayWritingService;

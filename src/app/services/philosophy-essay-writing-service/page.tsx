@@ -1,6 +1,4 @@
-import React from "react";
-
-const PhylosophyPaper = () => {
+const PhylosophyEssayWritingService = () => {
   return (
     <>
       <section>
@@ -10,4 +8,4 @@ const PhylosophyPaper = () => {
   );
 };
 
-export default PhylosophyPaper;
+export default PhylosophyEssayWritingService;

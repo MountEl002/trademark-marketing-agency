@@ -1,6 +1,4 @@
-import React from "react";
-
-const LabReport = () => {
+const LabReportWritingService = () => {
   return (
     <>
       <section>
@@ -10,4 +8,4 @@ const LabReport = () => {
   );
 };
 
-export default LabReport;
+export default LabReportWritingService;

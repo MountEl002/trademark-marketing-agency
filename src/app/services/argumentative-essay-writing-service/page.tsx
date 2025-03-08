@@ -175,7 +175,7 @@ const faqData: FAQItem[] = [
   },
 ];
 
-const ArgumentativeEssay = () => {
+const ArgumentativeEssayWritingService = () => {
   return (
     <>
       {/* Hero section */}
@@ -406,4 +406,4 @@ const ArgumentativeEssay = () => {
   );
 };
 
-export default ArgumentativeEssay;
+export default ArgumentativeEssayWritingService;

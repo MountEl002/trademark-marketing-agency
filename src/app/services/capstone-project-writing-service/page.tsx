@@ -232,7 +232,7 @@ const faqData: FAQItem[] = [
   },
 ];
 
-const CapstoneProject = () => {
+const CapstoneProjectWritingService = () => {
   return (
     <>
       {/* Hero section */}
@@ -557,4 +557,4 @@ const CapstoneProject = () => {
   );
 };
 
-export default CapstoneProject;
+export default CapstoneProjectWritingService;

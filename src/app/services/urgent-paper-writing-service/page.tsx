@@ -1,6 +1,4 @@
-import React from "react";
-
-const UrgentPaper = () => {
+const UrgentPaperWritingService = () => {
   return (
     <>
       <section>
@@ -10,4 +8,4 @@ const UrgentPaper = () => {
   );
 };
 
-export default UrgentPaper;
+export default UrgentPaperWritingService;

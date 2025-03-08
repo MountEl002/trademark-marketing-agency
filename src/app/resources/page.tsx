@@ -1,6 +1,4 @@
-import React from "react";
-
-const WritingTools = () => {
+const Resources = () => {
   return (
     <>
       <section>
@@ -10,4 +8,4 @@ const WritingTools = () => {
   );
 };
 
-export default WritingTools;
+export default Resources;

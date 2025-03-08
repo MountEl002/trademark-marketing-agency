@@ -1,6 +1,4 @@
-import React from "react";
-
-const page = () => {
+const FreePapers = () => {
   return (
     <>
       <section>
@@ -10,4 +8,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default FreePapers;

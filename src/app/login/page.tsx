@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
@@ -12,7 +12,7 @@ import ContinueWith from "@/components/common/login/ContinueWith";
 import EmailInfo from "@/components/common/login/EmailInfo";
 import Chat from "@/components/common/Chat";
 
-const LoginPage = () => {
+const Login = () => {
   const router = useRouter();
   const { login } = useAuth();
   const [email, setEmail] = useState("");
@@ -219,4 +219,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default Login;

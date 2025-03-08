@@ -132,7 +132,7 @@ const faqData: FAQItem[] = [
   },
 ];
 
-const Assignment = () => {
+const AssignmentWritingService = () => {
   return (
     <>
       {/* Hero section */}
@@ -420,4 +420,4 @@ const Assignment = () => {
   );
 };
 
-export default Assignment;
+export default AssignmentWritingService;

@@ -1,6 +1,4 @@
-import React from "react";
-
-const ScholarshipEssay = () => {
+const ScholarshipEssayWritingService = () => {
   return (
     <>
       <section>
@@ -10,4 +8,4 @@ const ScholarshipEssay = () => {
   );
 };
 
-export default ScholarshipEssay;
+export default ScholarshipEssayWritingService;

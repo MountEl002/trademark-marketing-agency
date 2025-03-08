@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import LightLogo from "@/components/common/LightLogo";
@@ -12,7 +12,7 @@ import Link from "next/link";
 import { FirebaseError } from "firebase/app";
 import Chat from "@/components/common/Chat";
 
-const SignUpPage = () => {
+const SignUp = () => {
   const router = useRouter();
   const { signup } = useAuth();
   const [email, setEmail] = useState("");
@@ -187,4 +187,4 @@ const SignUpPage = () => {
   );
 };
 
-export default SignUpPage;
+export default SignUp;

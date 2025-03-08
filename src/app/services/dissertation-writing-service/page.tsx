@@ -1,6 +1,4 @@
-import React from "react";
-
-const Dissertation = () => {
+const DissertationWritingService = () => {
   return (
     <>
       <section>
@@ -10,4 +8,4 @@ const Dissertation = () => {
   );
 };
 
-export default Dissertation;
+export default DissertationWritingService;

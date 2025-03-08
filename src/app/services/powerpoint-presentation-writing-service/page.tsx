@@ -1,6 +1,4 @@
-import React from "react";
-
-const PowerPointPresentation = () => {
+const PowerPointPresentationWritingService = () => {
   return (
     <>
       <section>
@@ -10,4 +8,4 @@ const PowerPointPresentation = () => {
   );
 };
 
-export default PowerPointPresentation;
+export default PowerPointPresentationWritingService;

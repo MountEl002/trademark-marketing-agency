@@ -1,6 +1,4 @@
-import React from "react";
-
-const PersonalStatement = () => {
+const PersonalStatementWritingService = () => {
   return (
     <>
       <section>
@@ -10,4 +8,4 @@ const PersonalStatement = () => {
   );
 };
 
-export default PersonalStatement;
+export default PersonalStatementWritingService;

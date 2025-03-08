@@ -89,7 +89,7 @@ const serviceRepImage = {
   alt: "Admission essay writing",
 };
 
-const page = () => {
+const AdmissionEssayWritingService = () => {
   return (
     <>
       {/* Hero section */}
@@ -303,4 +303,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default AdmissionEssayWritingService;

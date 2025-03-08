@@ -88,7 +88,7 @@ const faqData: FAQItem[] = [
   },
 ];
 
-const APAPaper = () => {
+const ApaPaperWritingService = () => {
   return (
     <>
       {/* Hero section */}
@@ -287,4 +287,4 @@ const APAPaper = () => {
   );
 };
 
-export default APAPaper;
+export default ApaPaperWritingService;
