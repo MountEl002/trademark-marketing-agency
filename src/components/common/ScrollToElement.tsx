@@ -27,7 +27,7 @@ export const ScrollToElement = ({
       const targetId = hash || "";
 
       // If we're already on the correct page, just scroll to the element
-      if (currentPath === pathname) {
+      if (currentPath === pathname || !pathname) {
         scrollToElement(targetId);
       } else {
         // Otherwise, navigate to the new page and then scroll after the page loads
