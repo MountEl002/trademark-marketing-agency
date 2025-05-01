@@ -1,67 +1,150 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import LightLogo from "@/components/common/LightLogo";
 import ContinueWith from "@/components/common/login/ContinueWith";
-import EmailInfo from "@/components/common/login/EmailInfo";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
-import { Tooltip } from "react-tooltip";
+// import { Tooltip } from "react-tooltip";
 import Link from "next/link";
 import { FirebaseError } from "firebase/app";
 import Chat from "@/components/common/Chat";
 
+interface FormFieldProps {
+  label: string;
+  type: string;
+  value: string;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  placeholder: string;
+  focusState: boolean;
+  handleFocus: () => void;
+  handleBlur: () => void;
+  isPassword?: boolean;
+  showPassword?: boolean;
+  toggleShowPassword?: () => void;
+}
+
+// Reusable form field component
+const FormField = ({
+  label,
+  type,
+  value,
+  onChange,
+  placeholder,
+  focusState,
+  handleFocus,
+  handleBlur,
+  isPassword = false,
+  showPassword,
+  toggleShowPassword,
+}: FormFieldProps) => {
+  const fieldBorder = `transition-all duration-500 border ${
+    focusState ? "border-blue-500 bg-gray-50" : "border-transparent bg-gray-100"
+  }`;
+
+  return (
+    <div className="mb-4">
+      <label className="label-email-password">{label}</label>
+      <div className={`relative container-input-email-password ${fieldBorder}`}>
+        <input
+          type={isPassword ? (showPassword ? "text" : "password") : type}
+          value={value}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          onChange={onChange}
+          placeholder={placeholder}
+          className="input-email-password"
+        />
+        {isPassword && (
+          <button
+            type="button"
+            onClick={toggleShowPassword}
+            data-tooltip-id="password-tooltip"
+            data-tooltip-content="Click to show or hide password"
+            className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600 focus:outline-none"
+          >
+            {showPassword ? (
+              <IoMdEye size={20} className="password-eye" />
+            ) : (
+              <IoMdEyeOff size={20} className="password-eye" />
+            )}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
+
+interface FormData {
+  email: string;
+  mobile: string;
+  username: string;
+  country: string;
+  password: string;
+  repeatPassword: string;
+}
+
 const SignUp = () => {
   const router = useRouter();
   const { signup } = useAuth();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [emialFieldActive, setEmailFieldActive] = useState(false);
-  const [passwordFieldActive, setPasswordFieldActive] = useState(false);
+  const [formData, setFormData] = useState<FormData>({
+    email: "",
+    mobile: "",
+    username: "",
+    country: "",
+    password: "",
+    repeatPassword: "",
+  });
+  const [passwordsMatch, setPasswordsMatch] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const emialFieldBorder = `transition-all duration-500 border ${
-    emialFieldActive
-      ? "border-blue-500 bg-gray-50"
-      : "border-transparent bg-gray-100"
-  }`;
+  // Single state object to track focus state of all fields
+  const [focusedField, setFocusedField] = useState<string | null>(null);
 
-  const passwordFieldBorder = `transition-all duration-500 border ${
-    passwordFieldActive
-      ? "border-blue-500 bg-gray-50"
-      : "border-transparent bg-gray-100"
-  }`;
+  useEffect(() => {
+    setPasswordsMatch(formData.password === formData.repeatPassword);
+  }, [formData.password, formData.repeatPassword]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleFocus = (fieldName: string) => {
+    setFocusedField(fieldName);
+  };
+
+  const handleBlur = () => {
+    setFocusedField(null);
+  };
+
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement>,
+    field: keyof FormData
+  ) => {
+    setFormData({ ...formData, [field]: e.target.value });
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
-      await signup(email, password);
-      router.push("/customer/orders/new");
+      await signup(formData.email, formData.password);
+      router.push("/");
     } catch (error) {
       console.error("Signup error:", error);
       if (error instanceof FirebaseError) {
-        // Handle specific Firebase errors
         setError(error.message);
-        setTimeout(() => {
-          setError("");
-        }, 5000);
       } else {
-        // Handle any other unexpected errors
         setError("Failed to create an account! Please try again");
-        setTimeout(() => {
-          setError("");
-        }, 5000);
       }
+      setTimeout(() => setError(""), 5000);
     } finally {
       setLoading(false);
     }
   };
+
+  const toggleShowPassword = () => setShowPassword(!showPassword);
 
   return (
     <section className="center-content-on-screen">
@@ -69,10 +152,11 @@ const SignUp = () => {
       <div className="centered-content-on-screen">
         <LightLogo />
         <div className="w-full px-4">
-          <h3 className="text-center">Create account</h3>
-          <div>
-            <ContinueWith />
-          </div>
+          <h3 className="text-center">Let’s get started</h3>
+          <p className="text-center mb-6">
+            Create your Trademark Marketing account
+          </p>
+          <ContinueWith />
           <div className="flex flex-row items-center gap-3 my-4">
             <div className="w-full h-0 border-[0.5px] border-gray-200"></div>
             <div className="text-center text-gray-500">or</div>
@@ -84,70 +168,94 @@ const SignUp = () => {
             </div>
           )}
           <form onSubmit={handleSubmit}>
-            <div className="mb-4">
-              <label className="label-email-password">Email</label>
-              <div
-                className={`relative container-input-email-password ${emialFieldBorder}`}
-              >
-                <input
-                  type="email"
-                  value={email}
-                  onFocus={() => {
-                    setEmailFieldActive(true);
-                  }}
-                  onBlur={() => {
-                    setEmailFieldActive(false);
-                  }}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email"
-                  className="input-email-password"
-                />
-                <EmailInfo />
-              </div>
-            </div>
-            <div className="mb-4">
-              <label htmlFor="password" className="label-email-password">
-                Password
-              </label>
-              <div
-                className={`relative container-input-email-password ${passwordFieldBorder}`}
-              >
-                <input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onFocus={() => {
-                    setPasswordFieldActive(true);
-                  }}
-                  onBlur={() => {
-                    setPasswordFieldActive(false);
-                  }}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password"
-                  className="input-email-password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  data-tooltip-id="password-tooltip"
-                  data-tooltip-content="Click to show or hide password"
-                  className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600 focus:outline-none"
-                >
-                  {showPassword ? (
-                    <IoMdEye size={20} className="password-eye" />
-                  ) : (
-                    <IoMdEyeOff size={20} className="password-eye" />
-                  )}
-                </button>
-                <Tooltip id="password-tooltip" />
-              </div>
-            </div>
+            <FormField
+              label="Email"
+              type="email"
+              value={formData.email}
+              onChange={(e) => handleChange(e, "email")}
+              placeholder="Enter your email"
+              focusState={focusedField === "email"}
+              handleFocus={() => handleFocus("email")}
+              handleBlur={handleBlur}
+            />
+
+            <FormField
+              label="Mobile"
+              type="text"
+              value={formData.mobile}
+              onChange={(e) => handleChange(e, "mobile")}
+              placeholder="Enter your mobile number"
+              focusState={focusedField === "mobile"}
+              handleFocus={() => handleFocus("mobile")}
+              handleBlur={handleBlur}
+            />
+
+            <FormField
+              label="Username"
+              type="text"
+              value={formData.username}
+              onChange={(e) => handleChange(e, "username")}
+              placeholder="Enter your preferred username"
+              focusState={focusedField === "username"}
+              handleFocus={() => handleFocus("username")}
+              handleBlur={handleBlur}
+            />
+
+            <FormField
+              label="Country"
+              type="text"
+              value={formData.country}
+              onChange={(e) => handleChange(e, "country")}
+              placeholder="Enter your country of residence"
+              focusState={focusedField === "country"}
+              handleFocus={() => handleFocus("country")}
+              handleBlur={handleBlur}
+            />
+
+            <FormField
+              label="Password"
+              type="password"
+              value={formData.password}
+              onChange={(e) => handleChange(e, "password")}
+              placeholder="Enter your password"
+              focusState={focusedField === "password"}
+              handleFocus={() => handleFocus("password")}
+              handleBlur={handleBlur}
+              isPassword={true}
+              showPassword={showPassword}
+              toggleShowPassword={toggleShowPassword}
+            />
+
+            <FormField
+              label="Repeat password"
+              type="password"
+              value={formData.repeatPassword}
+              onChange={(e) => handleChange(e, "repeatPassword")}
+              placeholder="Please repeat your password"
+              focusState={focusedField === "repeatPassword"}
+              handleFocus={() => handleFocus("repeatPassword")}
+              handleBlur={handleBlur}
+              isPassword={true}
+              showPassword={showPassword}
+              toggleShowPassword={toggleShowPassword}
+            />
+
+            <p
+              className={
+                passwordsMatch
+                  ? "hidden"
+                  : "block animate-pulse text-xs text-red-500"
+              }
+            >
+              Passwords do not match
+            </p>
+
             <div className="horizontal mt-5">
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || !passwordsMatch}
                 className={`button-blue w-full ${
-                  loading ? "cursor-not-allowed" : ""
+                  loading || !passwordsMatch ? "cursor-not-allowed" : ""
                 }`}
               >
                 {loading ? (
@@ -175,11 +283,8 @@ const SignUp = () => {
         <div className="user-agreeement">
           <p>
             By creating an account, you agree to the{" "}
-            <Link href="/terms-and-conditions">Terms and Conditions</Link>,{" "}
-            <Link href="/privacy-policy">Privacy Policy</Link>,{" "}
-            <Link href="/refund-policy">Refund Policy</Link>,{" "}
-            <Link href="/code-of-conduct">Code of Conduct</Link>, and{" "}
-            <Link href="/confidentiality-policy">Confidentiality Policy</Link>
+            <Link href="/terms-and-conditions">Terms and Conditions</Link>, and{" "}
+            <Link href="/privacy-policy">Privacy Policy</Link>
           </p>
         </div>
       </div>

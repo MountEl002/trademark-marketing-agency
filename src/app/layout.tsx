@@ -20,8 +20,8 @@ const lato = Lato({
 });
 
 export const metadata: Metadata = {
-  title: "Affordable High-Quality Essays",
-  description: "Offering Affordable High Quality Essay Services",
+  title: "Trademark Marketing Agency",
+  description: "Offering marketing services for your business",
 
   // Add additional metadata for SEO
   robots: {
@@ -29,8 +29,8 @@ export const metadata: Metadata = {
     follow: true,
   },
   openGraph: {
-    title: "Affordable High-Quality Essays",
-    description: "Offering Affordable High Quality Essay Services",
+    title: "Trademark Marketing Agency",
+    description: "Offering marketing services for your business",
     type: "website",
   },
 };

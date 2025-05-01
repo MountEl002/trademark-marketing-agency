@@ -83,7 +83,10 @@ const Login = () => {
       <div className="centered-content-on-screen">
         <LightLogo />
         <div className="w-full px-4">
-          <h3 className="text-center">Log into your account</h3>
+          <h3 className="text-center">Let’s get started</h3>
+          <p className="text-center mb-6">
+            Sign in to continue to Trademark Marketing
+          </p>
           <ContinueWith />
           <div className="flex flex-row items-center gap-3 my-4">
             <div className="w-full h-0 border-[0.5px] border-gray-200"></div>
@@ -203,16 +206,6 @@ const Login = () => {
               </Link>
             </p>
           </div>
-        </div>
-        <div className="user-agreeement">
-          <p>
-            By creating an account, you agree to the{" "}
-            <Link href="/terms-and-conditions">Terms and Conditions</Link>,{" "}
-            <Link href="/privacy-policy">Privacy Policy</Link>,{" "}
-            <Link href="/refund-policy">Refund Policy</Link>,{" "}
-            <Link href="/code-of-conduct">Code of Conduct</Link>, and{" "}
-            <Link href="/confidentiality-policy">Confidentiality Policy</Link>
-          </p>
         </div>
       </div>
     </section>

@@ -4,7 +4,6 @@ import { usePathname } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ScrollToTop from "@/components/common/BackToTop";
-import SecondNavBar from "../customer/SecondNavbar";
 import Chat from "../common/Chat";
 
 export function ClientLayoutWrapper({
@@ -28,7 +27,7 @@ export function ClientLayoutWrapper({
     <>
       <header>
         <Navbar />
-        <SecondNavBar />
+        {/* <MainNavbar /> */}
       </header>
       <main className="min-h-screen mt-16 bg-white">
         <Chat />

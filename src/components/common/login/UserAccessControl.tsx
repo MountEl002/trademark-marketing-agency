@@ -2,7 +2,6 @@ import React from "react";
 import SignUp from "./SignUp";
 import Login from "./Login";
 import { useAuth } from "@/contexts/AuthContext";
-import NewOrderButton from "@/components/customer/NewOrderButton";
 import UserAccount from "./UserAccount";
 
 const UserAccessControl = () => {
@@ -13,7 +12,6 @@ const UserAccessControl = () => {
       {user ? (
         <>
           <UserAccount />
-          <NewOrderButton />
         </>
       ) : (
         <>

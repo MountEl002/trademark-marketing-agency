@@ -4,9 +4,9 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { FaChevronDown, FaUser } from "react-icons/fa";
 import { usePathname } from "next/navigation";
-import Logout from "@/components/customer/Logout";
-import UserNumber from "@/components/customer/UserNumber";
-import SecondNavBarMobile from "@/components/customer/SecondNavbarMobile";
+import Logout from "@/components/Logout";
+import UserNumber from "@/components/UserNumber";
+import SecondNavBarMobile from "@/components/SecondNavbarMobile";
 
 const UserAccount = () => {
   const [myAccountMenuOpen, setMyAccountMenuOpen] = useState(true);

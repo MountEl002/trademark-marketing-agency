@@ -272,11 +272,11 @@ h6 {
 }
 
 .center-content-on-screen {
-  @apply flex max-[570px]:justify-start min-[570px]:justify-center min-h-screen min-w-full overflow-hidden !p-0 !m-0 bg-gray-100 text-gray-600;
+  @apply flex max-[570px]:justify-start min-[570px]:justify-center min-h-screen min-w-full overflow-auto !py-12 !m-0 bg-gray-100 text-gray-600;
 }
 
 .centered-content-on-screen {
-  @apply flex flex-col justify-between items-center w-full h-screen min-[570px]:w-[450px] min-[570px]:h-[650px] min-[570px]:border bg-white min-[570px]:rounded-3xl p-6;
+  @apply flex flex-col justify-between items-center w-full h-fit min-[570px]:w-[450px] min-[570px]:border bg-white min-[570px]:rounded-3xl p-6;
 }
 
 .centered-content-on-screen-rp {
