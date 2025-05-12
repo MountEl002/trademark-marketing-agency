@@ -30,7 +30,7 @@ const Navbar = () => {
             {/* Right Section */}
             <div className="horizontal gap-2">
               <LightLogo />
-              <Link href="/whatsapp">
+              <Link href="/customer/whatsapp">
                 <div className="rounded-md border-2 border-green-500 hover:bg-green-500 hover:text-white transition-all duration-500 cursor-pointer px-4 py-1 text-sm font-semibold">
                   <p>Upload</p>
                   <p>Views</p>

@@ -72,10 +72,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         await initializeUserDocuments(user.uid, user.email, userNumber);
 
         setUserNumber(userNumber.toString());
-        router.push("/customer/orders/new");
+        router.push("/customer/activate-account");
       } else {
         setUserNumber(userDoc.data().userNumber.toString());
-        router.push("/customer/orders/open");
+        router.push("/customer/dashboards");
       }
     } catch (error) {
       console.error("Error signing in with Google:", error);
@@ -99,10 +99,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         await initializeUserDocuments(user.uid, user.email, userNumber);
 
         setUserNumber(userNumber.toString());
-        router.push("/customer/orders/new");
+        router.push("/customer/activate-account");
       } else {
         setUserNumber(userDoc.data().userNumber.toString());
-        router.push("/customer/orders/open");
+        router.push("/customer/dashboards");
       }
     } catch (error) {
       console.error("Error signing in with Facebook:", error);

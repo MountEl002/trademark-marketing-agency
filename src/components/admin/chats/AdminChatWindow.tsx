@@ -18,7 +18,7 @@ import LoadingAnimantion from "@/components/common/LoadingAnimantion";
 import ChatToggle from "@/components/common/chat/ChatToggle";
 import ChatInput from "@/components/common/chat/ChatInput";
 import ChatsButton from "./ChatsButtons";
-import { UploadedFileInfo } from "@/types/order";
+import { UploadedFileInfo } from "@/types/fileData";
 import FileDownloadButton from "@/components/common/FileDownloadButton";
 import UniversalButton from "@/components/common/UniversalButton";
 import { IoMdClose } from "react-icons/io";

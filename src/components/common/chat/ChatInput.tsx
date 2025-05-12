@@ -4,7 +4,7 @@ import { MdClose } from "react-icons/md";
 import { useAuth } from "@/contexts/AuthContext";
 import { validateFiles } from "@/utils/s3-upload";
 import { uploadFilesToS3 } from "@/utils/s3-upload";
-import { UploadedFileInfo } from "@/types/order";
+import { UploadedFileInfo } from "@/types/fileData";
 import { customAlphabet } from "nanoid";
 import { useCallback, useEffect, useRef, useState } from "react";
 import LoadingAnimantion from "../LoadingAnimantion";

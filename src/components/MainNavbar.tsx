@@ -7,6 +7,7 @@ import { LuDownload } from "react-icons/lu";
 import { CgProfile } from "react-icons/cg";
 import { BiMoneyWithdraw } from "react-icons/bi";
 import { IoMdClose } from "react-icons/io";
+import Logout from "./Logout";
 
 interface MainNavbarItem {
   itemIcon: IconType;
@@ -20,21 +21,25 @@ interface MainNavbarProps {
 }
 
 const mainNavbarItems: MainNavbarItem[] = [
-  { itemIcon: RiHome6Line, name: "Dashboards", linkTo: "/" },
-  { itemIcon: TfiWallet, name: "Deposit Funds", linkTo: "deposit-funds" },
+  { itemIcon: RiHome6Line, name: "Dashboards", linkTo: "/customer/dashboards" },
+  {
+    itemIcon: TfiWallet,
+    name: "Deposit Funds",
+    linkTo: "/customer/deposit-funds",
+  },
   {
     itemIcon: RiHome6Line,
     name: "Activate Account",
-    linkTo: "activate-account",
+    linkTo: "/customer/activate-account",
   },
-  { itemIcon: BsWhatsapp, name: "Whatsapp", linkTo: "whatsapp" },
+  { itemIcon: BsWhatsapp, name: "Whatsapp", linkTo: "/customer/whatsapp" },
   {
     itemIcon: LuDownload,
     name: "Download Product",
-    linkTo: "download-product",
+    linkTo: "/customer/download-product",
   },
-  { itemIcon: CgProfile, name: "Profile", linkTo: "profile" },
-  { itemIcon: BiMoneyWithdraw, name: "Withdraw", linkTo: "withdraw" },
+  { itemIcon: CgProfile, name: "Profile", linkTo: "/customer/profile" },
+  { itemIcon: BiMoneyWithdraw, name: "Withdraw", linkTo: "/customer/withdraw" },
 ];
 
 const MainNavbar = ({ isOpen, onClose }: MainNavbarProps) => {
@@ -66,6 +71,7 @@ const MainNavbar = ({ isOpen, onClose }: MainNavbarProps) => {
             </Link>
           ))}
         </div>
+        <Logout />
       </div>
     </div>
   );

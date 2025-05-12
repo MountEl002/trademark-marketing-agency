@@ -16,7 +16,7 @@ import ChatBackground from "@/assests/chatbackgroundResized.png";
 import CustomerCareAgent4 from "@/assests/CustomerCareAgent4.jpg";
 import ChatToggle from "./chat/ChatToggle";
 import ChatInput from "./chat/ChatInput";
-import { UploadedFileInfo } from "@/types/order";
+import { UploadedFileInfo } from "@/types/fileData";
 import FileDownloadButton from "./FileDownloadButton";
 import UniversalButton from "./UniversalButton";
 import { IoMdClose } from "react-icons/io";

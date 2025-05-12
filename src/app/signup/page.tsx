@@ -130,7 +130,7 @@ const SignUp = () => {
 
     try {
       await signup(formData.email, formData.password);
-      router.push("/");
+      router.push("/customer/dashboards");
     } catch (error) {
       console.error("Signup error:", error);
       if (error instanceof FirebaseError) {
