@@ -1,6 +1,12 @@
 import React from "react";
 import { DashboardItemTemplate } from "@/types/trademark";
-import WhatsappImage from "@/assests/twitterLogo.png";
+import WhatsappImage from "@/assests/WhatsappLogo.png";
+import WhatsappWithdrawalsImage from "@/assests/WithdrawalsOne.png";
+import WithdrawalsImage from "@/assests/WithdrawalsTwo.png";
+import PackagesImage from "@/assests/MyPackages.png";
+import DepositImage from "@/assests/Deposit.png";
+import CashbackImage from "@/assests/Cashback.png";
+import BalanceImage from "@/assests/Balance.png";
 import DashboardsTemplate from "./DashboardsTemplate";
 
 const items: DashboardItemTemplate[] = [
@@ -13,44 +19,38 @@ const items: DashboardItemTemplate[] = [
   {
     title: "Whatsapp Withdrawals",
     amount: 0,
-    repImage: WhatsappImage,
-    repImageAlt: "Whatsapp logo",
+    repImage: WhatsappWithdrawalsImage,
+    repImageAlt: "Hand holding dedit card",
   },
   {
     title: "My Packages",
     packages: ["Inactive"],
-    repImage: WhatsappImage,
-    repImageAlt: "Whatsapp logo",
+    repImage: PackagesImage,
+    repImageAlt: "Hand holding a wallet",
   },
   {
     title: "Deposit",
     amount: 0,
-    repImage: WhatsappImage,
-    repImageAlt: "Whatsapp logo",
+    repImage: DepositImage,
+    repImageAlt: "open safe with cash",
   },
   {
     title: "Cashback",
     amount: 0,
-    repImage: WhatsappImage,
-    repImageAlt: "Whatsapp logo",
+    repImage: CashbackImage,
+    repImageAlt: "Stacked coins with an arrow",
   },
   {
     title: "Balance",
     amount: 0,
-    repImage: WhatsappImage,
-    repImageAlt: "Whatsapp logo",
+    repImage: BalanceImage,
+    repImageAlt: "Wallet with cash",
   },
   {
     title: "My Withdrawals",
     amount: 0,
-    repImage: WhatsappImage,
-    repImageAlt: "Whatsapp logo",
-  },
-  {
-    title: "Whatsapp Earnings",
-    amount: 0,
-    repImage: WhatsappImage,
-    repImageAlt: "Whatsapp logo",
+    repImage: WithdrawalsImage,
+    repImageAlt: "Hand holding dedit card",
   },
 ];
 

@@ -12,7 +12,7 @@ const DashboardsTemplate = ({ items }: DashboardsTemplateProps) => {
       {items.map((item, index) => (
         <div
           key={index}
-          className="border-2 bg-green-400  border-indigo-400 horizontal-space-between py-2 px-6 rounded-xl shadow-md"
+          className="border-2 bg-green-400  border-indigo-400 horizontal-space-between py-2 px-6 rounded-xl shadow-md hover:shadow-lg hover:scale-105 transition-all duration-500 ease-in-out"
         >
           <div className="verical-start gap-10 text-white font-bold">
             <p className="mb-3">{item.title}</p>
@@ -22,7 +22,7 @@ const DashboardsTemplate = ({ items }: DashboardsTemplateProps) => {
               <p className="text-2xl">{item.packages}</p>
             )}
           </div>
-          <div className="veritical p-1 rounded-[50%] bg-white shadow-md">
+          <div className="vertical h-20 w-20 p-1 rounded-[50%] bg-white shadow-md">
             <Image
               src={item.repImage}
               alt={item.repImageAlt}
