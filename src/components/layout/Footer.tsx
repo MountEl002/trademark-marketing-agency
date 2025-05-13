@@ -34,9 +34,9 @@ const Footer = () => {
     { id: 3, name: "Cookie Policy", LinkTo: "/cookie-policy" },
   ];
   const companyDeatails: CompanyDetail[] = [
-    { id: 1, name: "FAQ", LinkTo: "/#homepage-faq" },
+    // { id: 1, name: "FAQ", LinkTo: "/#homepage-faq" },
     { id: 2, name: "About Us", LinkTo: "/about-us" },
-    { id: 3, name: "Our Reviews", LinkTo: "/reviews" },
+    // { id: 3, name: "Our Reviews", LinkTo: "/reviews" },
     {
       id: 4,
       name: "Why Choose Us",

@@ -9,14 +9,14 @@ interface ButtonProps {
   disabled?: boolean;
 }
 
-const UniversalButton: React.FC<ButtonProps> = ({
+const UniversalButton = ({
   icon: Icon,
   text,
   onClick,
   buttonClassName = "",
   iconClassName = "",
   disabled = false,
-}) => {
+}: ButtonProps) => {
   return (
     <button
       type="button"

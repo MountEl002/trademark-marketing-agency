@@ -17,9 +17,6 @@
     "@radix-ui/react-popover": "^1.1.2",
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-tooltip": "^1.1.5",
-    "@tiptap/pm": "^2.11.0",
-    "@tiptap/react": "^2.11.0",
-    "@tiptap/starter-kit": "^2.11.0",
     "@types/firebase": "^2.4.32",
     "@types/react-slick": "^0.23.13",
     "@vercel/analytics": "^1.4.1",
@@ -29,6 +26,7 @@
     "embla-carousel-autoplay": "^8.3.1",
     "embla-carousel-react": "^8.3.1",
     "firebase": "^11.1.0",
+    "nanoid": "^5.1.5",
     "next": "^15.0.3",
     "react": "19.0.0-rc-69d4b800-20241021",
     "react-dom": "19.0.0-rc-69d4b800-20241021",
@@ -38,7 +36,6 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
-    "@shadcn/ui": "^0.0.4",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

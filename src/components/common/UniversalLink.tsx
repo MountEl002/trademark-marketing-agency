@@ -9,13 +9,13 @@ interface UniversalLinkProps {
   iconClassName: string;
 }
 
-const UniversalLink: React.FC<UniversalLinkProps> = ({
+const UniversalLink = ({
   icon: Icon,
   text,
   href,
   linkClassName = "",
   iconClassName = "",
-}) => {
+}: UniversalLinkProps) => {
   return (
     <Link
       href={href}

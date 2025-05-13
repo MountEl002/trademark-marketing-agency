@@ -31,7 +31,7 @@ export default function NotificationCarousel({
 
   return (
     <div className="vertical gap-6 w-full mx-auto max-w-4xl text-white px-6">
-      <div className="w-full bg-green-500 px-4 py-4 rounded-2xl shadow-md">
+      <div className="w-full bg-green-500 px-4 py-4 rounded-xl shadow-md">
         <div className="flex items-center">
           <div className="mr-2 text-black">
             <span>{currentNotification.source}</span>

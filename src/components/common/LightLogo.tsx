@@ -9,9 +9,9 @@ const LightLogo: React.FC = () => {
   const { user } = useAuth();
 
   return (
-    <Link href={`${user ? "/customer/orders/open" : "/"}`}>
+    <Link href={`${user ? "/customer/dashboards" : "/"}`}>
       <div className="flex flex-shrink-0 items-center">
-        <Image src={LogoImage} width={120} height={120} alt="Company Logo" />
+        <Image src={LogoImage} width={120} height={120} alt="Trademark Marketing Agency Logo" />
       </div>
     </Link>
   );
