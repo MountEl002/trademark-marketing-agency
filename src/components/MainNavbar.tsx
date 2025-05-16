@@ -25,7 +25,7 @@ const mainNavbarItems: MainNavbarItem[] = [
   {
     itemIcon: TfiWallet,
     name: "Deposit Funds",
-    linkTo: "/customer/deposit-funds",
+    linkTo: "/customer/deposit",
   },
   {
     itemIcon: RiHome6Line,
@@ -51,27 +51,28 @@ const MainNavbar = ({ isOpen, onClose }: MainNavbarProps) => {
           : "hidden"
       }
     >
-      <div className="relative bg-white w-fit pl-6 pr-28 min-h-screen">
+      <div className="relative bg-white w-fit pl-6 pr-28 h-[100vh] pb-6">
         <IoMdClose
           size={25}
           className="absolute top-3 right-3 cursor-pointer hover:scale-110 transition-all duration-500"
           onClick={onClose}
         />
-        <p className="text-xs">MAIN MENU</p>
-        <div className="vertical-start gap-1 text-sm my-6">
-          {mainNavbarItems.map((item) => (
-            <Link
-              key={item.name}
-              href={item.linkTo}
-              className="relative  group horizontal-start w-full gap-2 cursor-pointer hover:text-green-500 transition-all duration-500 px-2 py-3"
-            >
-              <item.itemIcon size={20} />
-              <p className="text-sm">{item.name}</p>
-              <span className="absolute hidden group-hover:block h-full w-[0.35rem] bg-green-500 -left-5 rounded-3xl"></span>
-            </Link>
-          ))}
+        <div className="vertical-space-between h-full">
+          <div className="vertical-start gap-1 text-sm my-6">
+            {mainNavbarItems.map((item) => (
+              <Link
+                key={item.name}
+                href={item.linkTo}
+                className="relative  group horizontal-start w-full gap-2 cursor-pointer hover:text-green-500 transition-all duration-500 px-2 py-3"
+              >
+                <item.itemIcon size={20} />
+                <p className="text-sm">{item.name}</p>
+                <span className="absolute hidden group-hover:block h-full w-[0.35rem] bg-green-500 -left-5 rounded-3xl"></span>
+              </Link>
+            ))}
+          </div>
+          <Logout />
         </div>
-        <Logout />
       </div>
     </div>
   );

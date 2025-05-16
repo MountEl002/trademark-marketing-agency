@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import Navbar from "@/components/layout/Navbar";
+// import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ScrollToTop from "@/components/common/BackToTop";
 import Chat from "../common/Chat";
@@ -15,9 +15,13 @@ export function ClientLayoutWrapper({
   const hideComponentsOn = ["/login", "/signup", "/forgot-password"];
 
   const isDraftOrderPage = pathname?.startsWith("/customer/orders/drafts/");
+  const isCustomerPage = pathname?.startsWith("/customer");
   const isAdminPage = pathname?.startsWith("/admin");
   const shouldHideComponents =
-    hideComponentsOn.includes(pathname) || isDraftOrderPage || isAdminPage;
+    hideComponentsOn.includes(pathname) ||
+    isDraftOrderPage ||
+    isAdminPage ||
+    isCustomerPage;
 
   if (shouldHideComponents) {
     return <>{children}</>;
@@ -25,10 +29,7 @@ export function ClientLayoutWrapper({
 
   return (
     <>
-      <header>
-        <Navbar />
-        {/* <MainNavbar /> */}
-      </header>
+      <header>{/* <MainNavbar /> */}</header>
       <main className="min-h-screen mt-16 bg-white">
         <Chat />
         <ScrollToTop />

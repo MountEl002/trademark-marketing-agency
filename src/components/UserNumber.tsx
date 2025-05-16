@@ -3,10 +3,10 @@
 import { useAuth } from "@/contexts/AuthContext";
 import React from "react";
 
-const UserNumber = () => {
-  const { userNumber } = useAuth();
+const Username = () => {
+  const { username } = useAuth();
 
-  return <span>{userNumber}</span>;
+  return <span>{username}</span>;
 };
 
-export default UserNumber;
+export default Username;

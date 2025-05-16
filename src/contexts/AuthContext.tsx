@@ -27,16 +27,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [username, setUsernme] = useState<string | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setUser(user);
+    const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
+      if (authUser) {
+        setUser(authUser);
+        const userDocRef = doc(db, "users", authUser.uid);
+        const userDocSnap = await getDoc(userDocRef);
+        if (userDocSnap.exists()) {
+          const userData = userDocSnap.data();
+          if (userData && userData.username) {
+            setUsername(userData.username);
+          } else {
+            setUsername(null);
+          }
+        } else {
+          // User authenticated but no profile document in Firestore yet
+          // (e.g., new social login user before profile completion)
+          setUsername(null);
+        }
+      } else {
+        setUser(null);
+        setUsername(null); // Clear username on logout or if no user
+      }
       setLoading(false);
     });
 
     return unsubscribe;
-  }, []);
+  }, []); // router is not directly used for navigation here, onAuthStateChanged handles state
 
   const signInWithGoogle = async () => {
     try {
@@ -45,13 +64,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         auth,
         provider
       );
-      const user = userCredential.user;
+      const authUser = userCredential.user; // Renamed to avoid conflict
 
-      const userDoc = await getDoc(doc(db, "users", user.uid));
+      const userDoc = await getDoc(doc(db, "users", authUser.uid));
 
+      // onAuthStateChanged will handle setting user and username states.
+      // This logic just handles initial redirection.
       if (!userDoc.exists()) {
+        // New user, needs profile completion
         router.push("/customer/profile-completion");
       } else {
+        // Existing user
         router.push("/customer/dashboards");
       }
     } catch (error) {
@@ -67,9 +90,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         auth,
         provider
       );
-      const user = userCredential.user;
+      const authUser = userCredential.user; // Renamed
 
-      const userDoc = await getDoc(doc(db, "users", user.uid));
+      const userDoc = await getDoc(doc(db, "users", authUser.uid));
 
       if (!userDoc.exists()) {
         router.push("/customer/profile-completion");
@@ -86,7 +109,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     email: string,
     password: string,
     mobile: string,
-    username: string,
+    usernameInput: string,
     country: string
   ) => {
     const userCredential = await createUserWithEmailAndPassword(
@@ -94,15 +117,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       email,
       password
     );
-    const user = userCredential.user;
+    const authUser = userCredential.user;
 
     await initializeUserDocuments(
-      user.uid,
-      user.email,
+      authUser.uid,
+      authUser.email,
       mobile,
-      username,
+      usernameInput,
       country
     );
+    setUsername(usernameInput);
+    router.push("/customer/dashboards");
   };
 
   const login = async (email: string, password: string) => {
@@ -111,16 +136,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       email,
       password
     );
-    const user = userCredential.user;
+    const authUser = userCredential.user;
 
-    const userDoc = await getDoc(doc(db, "users", user.uid));
-    if (userDoc.exists()) {
-      setUsernme(userDoc.data().username());
+    const userDoc = await getDoc(doc(db, "users", authUser.uid));
+    if (userDoc.exists() && userDoc.data()?.username) {
+      router.push("/customer/dashboards");
+    } else {
+      router.push("/customer/profile-completion");
     }
   };
 
   const logout = async () => {
     await signOut(auth);
+    router.push("/login");
   };
 
   return (
@@ -136,7 +164,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         signInWithFacebook,
       }}
     >
-      {!loading && children}
+      {children}
     </AuthContext.Provider>
   );
 }
