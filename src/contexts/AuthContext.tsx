@@ -19,37 +19,19 @@ import { useRouter } from "next/navigation";
 import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import { AuthContextType } from "@/types/transaction";
-import { getNextUserNumber, initializeUserDocuments } from "./userService";
+import { initializeUserDocuments } from "./userService";
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
-  const [userNumber, setUserNumber] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [username, setUsernme] = useState<string | null>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
-      if (user) {
-        try {
-          const userDoc = await getDoc(doc(db, "users", user.uid));
-          if (userDoc.exists()) {
-            const userNumber = userDoc.data().userNumber;
-            setUserNumber(userNumber != null ? userNumber.toString() : null);
-          } else {
-            console.log("User doc does not exist");
-            setUserNumber(null);
-          }
-        } catch (error) {
-          console.error("Error fetching user document:", error);
-          setUserNumber(null);
-        }
-      } else {
-        console.log("User doc does not exist");
-        setUserNumber(null);
-      }
       setLoading(false);
     });
 
@@ -68,13 +50,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const userDoc = await getDoc(doc(db, "users", user.uid));
 
       if (!userDoc.exists()) {
-        const userNumber = await getNextUserNumber();
-        await initializeUserDocuments(user.uid, user.email, userNumber);
-
-        setUserNumber(userNumber.toString());
-        router.push("/customer/activate-account");
+        router.push("/customer/profile-completion");
       } else {
-        setUserNumber(userDoc.data().userNumber.toString());
         router.push("/customer/dashboards");
       }
     } catch (error) {
@@ -95,13 +72,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const userDoc = await getDoc(doc(db, "users", user.uid));
 
       if (!userDoc.exists()) {
-        const userNumber = await getNextUserNumber();
-        await initializeUserDocuments(user.uid, user.email, userNumber);
-
-        setUserNumber(userNumber.toString());
-        router.push("/customer/activate-account");
+        router.push("/customer/profile-completion");
       } else {
-        setUserNumber(userDoc.data().userNumber.toString());
         router.push("/customer/dashboards");
       }
     } catch (error) {
@@ -110,7 +82,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const signup = async (email: string, password: string) => {
+  const signup = async (
+    email: string,
+    password: string,
+    mobile: string,
+    username: string,
+    country: string
+  ) => {
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       email,
@@ -118,10 +96,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     );
     const user = userCredential.user;
 
-    const userNumber = await getNextUserNumber();
-    await initializeUserDocuments(user.uid, user.email, userNumber);
-
-    setUserNumber(userNumber.toString());
+    await initializeUserDocuments(
+      user.uid,
+      user.email,
+      mobile,
+      username,
+      country
+    );
   };
 
   const login = async (email: string, password: string) => {
@@ -134,20 +115,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const userDoc = await getDoc(doc(db, "users", user.uid));
     if (userDoc.exists()) {
-      setUserNumber(userDoc.data().userNumber.toString());
+      setUsernme(userDoc.data().username());
     }
   };
 
   const logout = async () => {
     await signOut(auth);
-    setUserNumber(null);
   };
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        userNumber,
+        username,
         loading,
         signup,
         login,

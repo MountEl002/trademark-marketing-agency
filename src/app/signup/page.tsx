@@ -129,7 +129,13 @@ const SignUp = () => {
     setLoading(true);
 
     try {
-      await signup(formData.email, formData.password);
+      await signup(
+        formData.email,
+        formData.password,
+        formData.mobile,
+        formData.username,
+        formData.country
+      );
       router.push("/customer/dashboards");
     } catch (error) {
       console.error("Signup error:", error);

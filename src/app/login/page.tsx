@@ -9,7 +9,6 @@ import Link from "next/link";
 import { FirebaseError } from "firebase/app";
 import LightLogo from "@/components/common/LightLogo";
 import ContinueWith from "@/components/common/login/ContinueWith";
-import EmailInfo from "@/components/common/login/EmailInfo";
 import Chat from "@/components/common/Chat";
 
 const Login = () => {
@@ -120,7 +119,6 @@ const Login = () => {
                   placeholder="Enter your email"
                   className="input-email-password"
                 />
-                <EmailInfo />
               </div>
             </div>
             <div className="mb-4">
