@@ -34,8 +34,8 @@ const mainNavbarItems: MainNavbarItem[] = [
   },
   {
     itemIcon: RiHome6Line,
-    name: "Activate Account",
-    linkTo: "/customer/activate-account",
+    name: "Packages",
+    linkTo: "/customer/packages",
   },
   { itemIcon: BsWhatsapp, name: "Whatsapp", linkTo: "#" },
   { itemIcon: GoDot, name: "Upload Status", linkTo: "/customer/upload-status" },

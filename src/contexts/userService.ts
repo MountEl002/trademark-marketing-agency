@@ -1,5 +1,13 @@
 // userService.ts
-import { doc, getDoc, serverTimestamp, writeBatch } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  serverTimestamp,
+  writeBatch,
+  collection,
+  getDocs,
+  query,
+} from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
 export async function verifyUsername(username: string): Promise<boolean> {
@@ -24,12 +32,13 @@ export async function initializeUserDocuments(
   // 1. User Profile Document
   const userDocRef = doc(db, "users", userId);
   const userData: { [key: string]: unknown } = {
-    userId: userId, // Add userId field
+    userId: userId,
     email: email,
     mobile: mobile,
     username: username,
     country: country,
     balance: 0,
+    payments: 0,
     createdAt: serverTimestamp(),
   };
   batch.set(userDocRef, userData);
@@ -87,5 +96,33 @@ export async function getUserBalance(userId: string): Promise<number> {
     console.error("Error fetching user balance for userId:", userId, error);
     // In case of any other error (e.g., network issue, permissions)
     return 0;
+  }
+}
+
+export async function getUserPackageNames(userId: string): Promise<string[]> {
+  if (!userId) {
+    console.error("getUserPackageNames: userId is required.");
+    return [];
+  }
+
+  try {
+    // Reference to the packages subcollection of the specific user
+    const packagesCollectionRef = collection(db, "users", userId, "packages");
+    const packagesQuery = query(packagesCollectionRef);
+    const querySnapshot = await getDocs(packagesQuery);
+
+    // Extract packageName from each document
+    const packageNames: string[] = [];
+    querySnapshot.forEach((doc) => {
+      const packageData = doc.data();
+      if (packageData.packageName) {
+        packageNames.push(packageData.packageName);
+      }
+    });
+
+    return packageNames;
+  } catch (error) {
+    console.error("Error fetching package names for userId:", userId, error);
+    return [];
   }
 }

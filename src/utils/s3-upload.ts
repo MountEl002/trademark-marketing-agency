@@ -17,7 +17,7 @@ export interface FileUploadResponse {
   fileType: string;
   uploadedAt: Date;
   userId: string;
-  orderNumber?: string;
+  workId?: string;
 }
 
 // Initialize S3 Client
@@ -57,7 +57,7 @@ export async function uploadFilesToS3(
   files: File[],
   userId: string,
   isSuperAdmin?: boolean,
-  orderNumber?: string
+  workId?: string
 ): Promise<FileUploadResponse[]> {
   try {
     // Validate user permission
@@ -70,12 +70,12 @@ export async function uploadFilesToS3(
 
     // Upload all files to S3 and get their metadata
     const uploadPromises = files.map((file) =>
-      uploadSingleFileToS3(file, userId, orderNumber)
+      uploadSingleFileToS3(file, userId, workId)
     );
     const uploadedFiles = await Promise.all(uploadPromises);
 
     // Update Firebase with file metadata
-    await updateFirebaseFileMetadata(uploadedFiles, userId, orderNumber);
+    await updateFirebaseFileMetadata(uploadedFiles, userId, workId);
 
     return uploadedFiles;
   } catch (error) {
@@ -90,7 +90,7 @@ export async function uploadFilesToS3(
 async function uploadSingleFileToS3(
   file: File,
   userId: string,
-  orderNumber?: string
+  workId?: string
 ): Promise<FileUploadResponse> {
   const fileExtension = file.name.split(".").pop() || "";
   const uniqueFileName = `${userId}/${generateId()}.${fileExtension}`;
@@ -104,8 +104,8 @@ async function uploadSingleFileToS3(
       userId: userId,
       originalName: file.name,
     };
-    if (orderNumber) {
-      metadata.orderNumber = orderNumber;
+    if (workId) {
+      metadata.orderNumber = workId;
     }
 
     const uploadParams = {
@@ -127,7 +127,7 @@ async function uploadSingleFileToS3(
       fileType: file.type,
       uploadedAt: new Date(),
       userId,
-      ...(orderNumber && { orderNumber }), // Only include if orderNumber exists
+      ...(workId && { workId }), // Only include if orderNumber exists
     };
   } catch (error) {
     console.error("Error uploading file to S3:", error);
@@ -176,7 +176,7 @@ async function updateFirebaseFileMetadata(
         fileUrl: file.fileUrl,
         uploadedAt: file.uploadedAt,
         uploadedBy: userId,
-        orderNumber: file.orderNumber || null,
+        workId: file.workId || null,
         fileKey: file.fileKey, // Store the original fileKey as a field
       });
     }
@@ -210,49 +210,9 @@ export function validateFiles(
       "image/png",
       "image/gif",
       "image/webp",
-
-      // Documents
-      "application/pdf",
-      "application/msword", // .doc
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .docx
-      "application/vnd.oasis.opendocument.text", // .odt
-      "text/plain", // .txt
-      "text/rtf", // .rtf
-
-      // Spreadsheets
-      "application/vnd.ms-excel", // .xls
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // .xlsx
-      "application/vnd.oasis.opendocument.spreadsheet", // .ods
-
-      // Presentations
-      "application/vnd.ms-powerpoint", // .ppt
-      "application/vnd.openxmlformats-officedocument.presentationml.presentation", // .pptx
-      "application/vnd.oasis.opendocument.presentation", // .odp
-
-      // Archives
-      "application/zip",
-      "application/x-zip-compressed",
-      "application/x-rar-compressed",
-      "application/x-7z-compressed",
-
-      // Videos
-      "video/mp4",
-      "video/mpeg",
-      "video/quicktime", // .mov
-      "video/x-msvideo", // .avi
-      "video/x-ms-wmv", // .wmv
-      "video/webm",
-      "video/3gpp", // .3gp
-      "video/3gpp2", // .3g2
-      "video/x-matroska", // .mkv
-
-      // Other
-      "application/xml",
-      "text/csv",
-      "text/markdown",
-      "application/json",
+      "image/svg+xml",
     ],
-    maxFiles = 100,
+    maxFiles = 1,
   } = options;
 
   const errors: string[] = [];

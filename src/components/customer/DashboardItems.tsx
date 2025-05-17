@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { DashboardItemTemplate } from "@/types/trademark";
 import WhatsappImage from "@/assests/WhatsappLogo.png";
 import WhatsappWithdrawalsImage from "@/assests/WithdrawalsOne.png";
@@ -10,24 +10,69 @@ import DepositImage from "@/assests/Deposit.png";
 import CashbackImage from "@/assests/Cashback.png";
 import BalanceImage from "@/assests/Balance.png";
 import DashboardsTemplate from "./DashboardsTemplate";
-import { getUserBalance } from "@/contexts/userService";
+import { getUserBalance, getUserPackageNames } from "@/contexts/userService";
 import { useAuth } from "@/contexts/AuthContext";
 
-import { useEffect, useState } from "react";
 const DashboardItems = () => {
   const { user } = useAuth();
   const [userBalance, setUserBalance] = useState<number>(0);
+  const [formattedPackagesString, setFormattedPackagesString] =
+    useState<string>("Inactive");
+
+  // Format package names to a grammatically correct string with counts
+  const formatPackagesToString = (packages: string[]): string => {
+    if (packages.length === 0) {
+      return "Inactive";
+    }
+
+    // Count occurrences of each package
+    const packageCounts: Record<string, number> = {};
+    packages.forEach((pkg) => {
+      const normalizedPkg = pkg.trim();
+      if (normalizedPkg) {
+        packageCounts[normalizedPkg] = (packageCounts[normalizedPkg] || 0) + 1;
+      }
+    });
+
+    // Format each package with its count
+    const formattedItems = Object.entries(packageCounts).map(
+      ([name, count]) => {
+        return count > 1 ? `${name} (${count})` : name;
+      }
+    );
+
+    // Create grammatically correct string with proper Oxford comma and "and"
+    if (formattedItems.length === 1) {
+      return formattedItems[0];
+    } else if (formattedItems.length === 2) {
+      return `${formattedItems[0]} and ${formattedItems[1]}`;
+    } else {
+      const lastItem = formattedItems.pop();
+      return `${formattedItems.join(", ")}, and ${lastItem}`;
+    }
+  };
 
   useEffect(() => {
-    const fetchBalance = async () => {
+    const fetchUserData = async () => {
       if (user?.uid) {
+        // Fetch the user's balance
         const balance = await getUserBalance(user.uid);
         setUserBalance(balance);
+
+        // Fetch the user's package names
+        const packageNames = await getUserPackageNames(user.uid);
+        // Format the packages into a string for display
+        if (packageNames.length > 0) {
+          setFormattedPackagesString(formatPackagesToString(packageNames));
+        } else {
+          setFormattedPackagesString("Inactive");
+        }
       } else {
         setUserBalance(0);
+        setFormattedPackagesString("Inactive");
       }
     };
-    fetchBalance();
+    fetchUserData();
   }, [user?.uid]);
 
   const items: DashboardItemTemplate[] = [
@@ -45,7 +90,8 @@ const DashboardItems = () => {
     },
     {
       title: "My Packages",
-      packages: ["Inactive"],
+      // Assuming we're updating the DashboardItemTemplate type to accept string or string[]
+      packages: formattedPackagesString,
       repImage: PackagesImage,
       repImageAlt: "Hand holding a wallet",
     },
@@ -74,6 +120,7 @@ const DashboardItems = () => {
       repImageAlt: "Hand holding dedit card",
     },
   ];
+
   return (
     <div className="w-full bg-gray-100">
       <DashboardsTemplate items={items} />

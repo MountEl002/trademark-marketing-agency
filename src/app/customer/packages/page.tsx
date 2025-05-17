@@ -17,6 +17,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import PaymentDialog from "@/components/customer/PaymentDialog";
 import TransactionVerification from "@/components/customer/TransactionVerification";
 import { getUserBalance } from "@/contexts/userService";
+import { IoCheckmarkDoneSharp } from "react-icons/io5";
+import { IoMdClose } from "react-icons/io";
 
 interface PricingPlan {
   id: string;
@@ -84,6 +86,7 @@ const PricingCard: React.FC<{ plan: PricingPlan }> = ({ plan }) => {
   const [userBalance, setUserBalance] = useState(0);
   const [transactionId, setTransactionId] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   const router = useRouter();
   const { user } = useAuth();
@@ -105,7 +108,6 @@ const PricingCard: React.FC<{ plan: PricingPlan }> = ({ plan }) => {
         // If user has enough balance, show confirmation dialog
         setShowConfirmDialog(true);
       } else {
-        // Create a pending transaction in Firestore
         const userDocRef = doc(db, "users", user.uid);
         const transactionsCollectionRef = collection(
           userDocRef,
@@ -174,12 +176,20 @@ const PricingCard: React.FC<{ plan: PricingPlan }> = ({ plan }) => {
 
       // 4. Close dialog and redirect to dashboard
       setShowConfirmDialog(false);
-      router.push("/customer/dashboard");
+      setShowSuccessMessage(true);
+      setTimeout(() => {
+        router.push("/customer/dashboards");
+      }, 5000);
     } catch (error) {
       console.error("Error processing purchase:", error);
     } finally {
       setIsProcessing(false);
     }
+  };
+
+  const handleImmediateRedirect = () => {
+    setShowSuccessMessage(false);
+    router.push("/customer/dashboards");
   };
 
   const closePaymentDialog = () => {
@@ -303,6 +313,42 @@ const PricingCard: React.FC<{ plan: PricingPlan }> = ({ plan }) => {
                   {isProcessing ? "Processing..." : "Confirm"}
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Success Message */}
+      {showSuccessMessage && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold text-green-600">Success!</h3>
+              <button
+                onClick={handleImmediateRedirect}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <IoMdClose className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="border-t border-gray-200 pt-4">
+              <div className="flex items-center justify-center mb-4">
+                <div className="bg-green-100 p-2 rounded-full">
+                  <IoCheckmarkDoneSharp className="text-green-500 w-8 h-8" />
+                </div>
+              </div>
+              <p className="text-gray-700 text-center mb-4">
+                Your <span className="font-semibold">{plan.title}</span> package
+                has been successfully purchased!
+              </p>
+              <p className="text-sm text-gray-500 text-center mb-6">
+                Redirecting to dashboard in 5 seconds...
+              </p>
+              <button
+                onClick={handleImmediateRedirect}
+                className="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 transition-colors"
+              >
+                Go to Dashboard Now
+              </button>
             </div>
           </div>
         </div>
