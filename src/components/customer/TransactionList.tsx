@@ -1,11 +1,18 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { collection, query, getDocs, doc, orderBy } from "firebase/firestore";
+import {
+  collection,
+  query,
+  getDocs,
+  doc,
+  orderBy,
+  onSnapshot,
+} from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatDistanceToNow } from "date-fns";
-import { FiSearch } from "react-icons/fi";
+import { FiSearch, FiFilter } from "react-icons/fi";
 import TransactionVerification from "@/components/customer/TransactionVerification";
 
 interface Transaction {
@@ -28,21 +35,20 @@ export default function TransactionList() {
   const [selectedTransaction, setSelectedTransaction] = useState<string | null>(
     null
   );
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   const { user } = useAuth();
 
   useEffect(() => {
     if (!user) return;
 
+    const userDocRef = doc(db, "users", user.uid);
+    const transactionsCollectionRef = collection(userDocRef, "transactions");
+    const q = query(transactionsCollectionRef, orderBy("time", "desc"));
+
+    // First do initial load
     const fetchTransactions = async () => {
       try {
-        const userDocRef = doc(db, "users", user.uid);
-        const transactionsCollectionRef = collection(
-          userDocRef,
-          "transactions"
-        );
-        const q = query(transactionsCollectionRef, orderBy("time", "desc"));
-
         const querySnapshot = await getDocs(q);
         const transactionData: Transaction[] = [];
 
@@ -62,6 +68,22 @@ export default function TransactionList() {
     };
 
     fetchTransactions();
+
+    // Then set up real-time listener for updates
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const updatedTransactions: Transaction[] = [];
+      snapshot.forEach((doc) => {
+        updatedTransactions.push({
+          id: doc.id,
+          ...doc.data(),
+        } as Transaction);
+      });
+
+      setTransactions(updatedTransactions);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
   }, [user]);
 
   const handleVerifyClick = (transactionId: string) => {
@@ -78,17 +100,14 @@ export default function TransactionList() {
     try {
       if (!timestamp || !timestamp.toDate) return "N/A";
       return formatDistanceToNow(timestamp.toDate(), { addSuffix: true });
-    } catch (error) {
+    } catch {
       return "Invalid date";
     }
   };
 
   const getStatusClassName = (status: string | undefined) => {
-    // Allow status to be undefined
-    // Handle undefined or non-string status defensively
     if (typeof status !== "string" || !status) {
-      // Check for undefined, null, or empty string
-      return "text-gray-600"; // Return a default class
+      return "text-gray-600";
     }
     switch (status.toLowerCase()) {
       case "completed":
@@ -117,6 +136,11 @@ export default function TransactionList() {
       .includes(searchTermLower);
     return idMatch || typeMatch || statusMatch;
   });
+
+  // Check if any transaction has pending status
+  const hasPendingTransactions = filteredTransactions.some(
+    (transaction) => (transaction.status || "").toLowerCase() === "pending"
+  );
 
   const handleExport = (format: string) => {
     if (filteredTransactions.length === 0) return;
@@ -185,8 +209,9 @@ export default function TransactionList() {
   };
 
   return (
-    <div className="bg-white rounded shadow p-6">
-      <div className="flex justify-between items-center mb-6">
+    <div className="bg-white rounded shadow p-3 sm:p-6">
+      {/* Desktop filter and search */}
+      <div className="hidden sm:flex justify-between items-center mb-4">
         <div className="flex items-center">
           <select
             value={entriesPerPage}
@@ -213,94 +238,169 @@ export default function TransactionList() {
         </div>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full table-auto">
-          <thead>
-            <tr className="bg-gray-100 text-left">
-              <th className="px-4 py-2 border-b">Amount</th>
-              <th className="px-4 py-2 border-b">Type</th>
-              <th className="px-4 py-2 border-b">Time</th>
-              <th className="px-4 py-2 border-b">Status</th>
-              <th className="px-4 py-2 border-b">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan={5} className="text-center py-4">
-                  Loading transactions...
-                </td>
-              </tr>
-            ) : filteredTransactions.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="text-center py-4">
-                  No entries found
-                </td>
-              </tr>
-            ) : (
-              filteredTransactions
-                .slice(0, entriesPerPage)
-                .map((transaction) => (
-                  <tr key={transaction.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 border-b">
-                      Ksh{transaction.amount.toFixed(2)}
-                    </td>
-                    <td className="px-4 py-3 border-b">{transaction.type}</td>
-                    <td className="px-4 py-3 border-b">
-                      {formatTime(transaction.time)}
-                    </td>
-                    <td
-                      className={`px-4 py-3 border-b ${getStatusClassName(
-                        transaction.status
-                      )}`}
-                    >
-                      {transaction.status || "N/A"}
-                    </td>
-                    <td className="px-4 py-3 border-b">
-                      {(transaction.status || "").toLowerCase() === "pending" &&
-                        transaction.TransactionId && (
-                          <button
-                            onClick={() =>
-                              handleVerifyClick(transaction.TransactionId)
-                            }
-                            className="bg-blue-500 text-white text-xs px-3 py-1 rounded hover:bg-blue-600"
-                          >
-                            Verify
-                          </button>
-                        )}
-                    </td>
-                  </tr>
-                ))
-            )}
-          </tbody>
-        </table>
+      {/* Mobile filter and search toggle */}
+      <div className="flex sm:hidden justify-between items-center mb-4">
+        <button
+          onClick={() => setShowMobileFilters(!showMobileFilters)}
+          className="flex items-center text-gray-600 text-sm border rounded px-3 py-1"
+        >
+          <FiFilter className="mr-1" /> Filter
+        </button>
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Search..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="border rounded px-3 py-1 pl-8 text-sm w-full max-w-[120px]"
+          />
+          <FiSearch className="absolute left-2 top-2 text-gray-400" />
+        </div>
       </div>
 
-      <div className="mt-6 flex flex-wrap gap-2">
-        <button
-          onClick={() => handleExport("CSV")}
-          className="bg-green-500 text-white px-4 py-2 rounded text-sm hover:bg-green-600"
-        >
-          Export CSV
-        </button>
-        <button
-          onClick={() => handleExport("SQL")}
-          className="bg-green-500 text-white px-4 py-2 rounded text-sm hover:bg-green-600"
-        >
-          Export SQL
-        </button>
-        <button
-          onClick={() => handleExport("TXT")}
-          className="bg-green-500 text-white px-4 py-2 rounded text-sm hover:bg-green-600"
-        >
-          Export TXT
-        </button>
-        <button
-          onClick={() => handleExport("JSON")}
-          className="bg-green-500 text-white px-4 py-2 rounded text-sm hover:bg-green-600"
-        >
-          Export JSON
-        </button>
+      {/* Mobile filters - shown when toggled */}
+      {showMobileFilters && (
+        <div className="sm:hidden bg-gray-50 p-3 mb-4 rounded">
+          <div className="mb-3">
+            <label className="block text-sm text-gray-600 mb-1">
+              Entries per page
+            </label>
+            <select
+              value={entriesPerPage}
+              onChange={(e) => setEntriesPerPage(Number(e.target.value))}
+              className="border rounded px-2 py-1 w-full text-sm"
+            >
+              <option value="10">10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </div>
+        </div>
+      )}
+
+      {/* Responsive Table */}
+      <div className="overflow-x-auto -mx-3 sm:mx-0">
+        <div className="min-w-full inline-block align-middle">
+          <div className="overflow-hidden">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Amount
+                  </th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Type
+                  </th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Time
+                  </th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
+                  {hasPendingTransactions && (
+                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  )}
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {loading ? (
+                  <tr>
+                    <td
+                      colSpan={hasPendingTransactions ? 5 : 4}
+                      className="text-center py-4 text-sm"
+                    >
+                      Loading transactions...
+                    </td>
+                  </tr>
+                ) : filteredTransactions.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={hasPendingTransactions ? 5 : 4}
+                      className="text-center py-4 text-sm"
+                    >
+                      No entries found
+                    </td>
+                  </tr>
+                ) : (
+                  filteredTransactions
+                    .slice(0, entriesPerPage)
+                    .map((transaction) => {
+                      const isPending =
+                        (transaction.status || "").toLowerCase() === "pending";
+
+                      return (
+                        <tr key={transaction.id} className="hover:bg-gray-50">
+                          <td className="px-3 py-2 text-xs sm:text-sm whitespace-nowrap">
+                            Ksh {transaction.amount.toFixed(2)}
+                          </td>
+                          <td className="px-3 py-2 text-xs sm:text-sm whitespace-nowrap">
+                            {transaction.type}
+                          </td>
+                          <td className="px-3 py-2 text-xs sm:text-sm whitespace-nowrap">
+                            {formatTime(transaction.time)}
+                          </td>
+                          <td
+                            className={`px-3 py-2 text-xs sm:text-sm whitespace-nowrap ${getStatusClassName(
+                              transaction.status
+                            )}`}
+                          >
+                            {transaction.status || "N/A"}
+                          </td>
+                          {hasPendingTransactions && (
+                            <td className="px-3 py-2 text-xs sm:text-sm whitespace-nowrap">
+                              {isPending && transaction.TransactionId && (
+                                <button
+                                  onClick={() =>
+                                    handleVerifyClick(transaction.TransactionId)
+                                  }
+                                  className="bg-blue-500 text-white text-xs px-2 py-1 rounded hover:bg-blue-600"
+                                >
+                                  Verify
+                                </button>
+                              )}
+                            </td>
+                          )}
+                        </tr>
+                      );
+                    })
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      {/* Export buttons - stacked on mobile, row on desktop */}
+      <div className="mt-6 flex flex-col sm:flex-row flex-wrap gap-2">
+        <div className="grid grid-cols-2 sm:flex gap-2">
+          <button
+            onClick={() => handleExport("CSV")}
+            className="bg-green-500 text-white px-3 py-1.5 rounded text-xs sm:text-sm hover:bg-green-600"
+          >
+            Export CSV
+          </button>
+          <button
+            onClick={() => handleExport("SQL")}
+            className="bg-green-500 text-white px-3 py-1.5 rounded text-xs sm:text-sm hover:bg-green-600"
+          >
+            Export SQL
+          </button>
+          <button
+            onClick={() => handleExport("TXT")}
+            className="bg-green-500 text-white px-3 py-1.5 rounded text-xs sm:text-sm hover:bg-green-600"
+          >
+            Export TXT
+          </button>
+          <button
+            onClick={() => handleExport("JSON")}
+            className="bg-green-500 text-white px-3 py-1.5 rounded text-xs sm:text-sm hover:bg-green-600"
+          >
+            Export JSON
+          </button>
+        </div>
       </div>
 
       {showVerificationDialog && user && selectedTransaction && (
