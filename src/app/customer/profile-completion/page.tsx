@@ -147,7 +147,7 @@ const UpdateProfile = () => {
         // Then try to add to usernames collection
         try {
           // Check if the usernames collection exists and if the document exists
-          const usernameRef = doc(db, "usernames", username);
+          const usernameRef = doc(db, "userNames", username);
           const usernameDoc = await getDoc(usernameRef);
 
           if (usernameDoc.exists()) {
@@ -197,7 +197,7 @@ const UpdateProfile = () => {
         setLoading(false);
       }
     } finally {
-      setLoading(false);
+      router.push("/customer/dashboards");
     }
   };
 
@@ -334,7 +334,9 @@ const UpdateProfile = () => {
                 type="submit"
                 disabled={!formValid || loading}
                 className={`button-blue w-full ${
-                  !formValid || loading ? "opacity-50 cursor-not-allowed" : ""
+                  !formValid || loading
+                    ? "opacity-50 !cursor-not-allowed"
+                    : "cursor-pointer"
                 }`}
               >
                 {loading ? (

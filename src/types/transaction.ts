@@ -1,19 +1,5 @@
 // types.ts
 import { User } from "firebase/auth";
-
-export type TransactionType =
-  | "deposit"
-  | "withdrawal"
-  | "refund"
-  | "order-payment";
-
-export interface Transaction {
-  type: TransactionType;
-  amount: number;
-  timestamp: string;
-  description: string;
-}
-
 export interface AuthContextType {
   user: User | null;
   username: string | null;

@@ -16,7 +16,7 @@ import {
   UserCredential,
 } from "firebase/auth";
 import { useRouter } from "next/navigation";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import { AuthContextType } from "@/types/transaction";
 import { initializeUserDocuments } from "./userService";
@@ -57,6 +57,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return unsubscribe;
   }, []); // router is not directly used for navigation here, onAuthStateChanged handles state
 
+  useEffect(() => {
+    if (user?.uid) {
+      // Listen for real-time updates to the user document
+      const userDocRef = doc(db, "users", user.uid);
+      const unsubscribe = onSnapshot(userDocRef, (docSnapshot) => {
+        if (docSnapshot.exists()) {
+          const userData = docSnapshot.data();
+          // Update username state when it changes in the database
+          setUsername(userData.username || null);
+        }
+      });
+
+      return () => unsubscribe();
+    }
+  }, [user]);
+
   const signInWithGoogle = async () => {
     try {
       const provider = new GoogleAuthProvider();
@@ -71,7 +87,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // onAuthStateChanged will handle setting user and username states.
       // This logic just handles initial redirection.
       if (!userDoc.exists()) {
-        // New user, needs profile completion
+        await initializeUserDocuments(
+          authUser.uid,
+          authUser.email,
+          null,
+          null,
+          null
+        );
         router.push("/customer/profile-completion");
       } else {
         // Existing user
@@ -95,6 +117,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const userDoc = await getDoc(doc(db, "users", authUser.uid));
 
       if (!userDoc.exists()) {
+        await initializeUserDocuments(
+          authUser.uid,
+          authUser.email,
+          null,
+          null,
+          null
+        );
         router.push("/customer/profile-completion");
       } else {
         router.push("/customer/dashboards");

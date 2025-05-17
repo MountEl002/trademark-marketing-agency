@@ -44,7 +44,7 @@ export default function NotificationCarousel({
         <p>Get Unlimited Bonus</p>
       </div>
       <Link
-        href="/deposit"
+        href="/customer/deposit"
         className="px-4 py-2 border border-green-500 rounded-lg hover:bg-green-500 tranastion-all duration-500"
       >
         Deposit

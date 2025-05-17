@@ -8,6 +8,11 @@ import { CgProfile } from "react-icons/cg";
 import { BiMoneyWithdraw } from "react-icons/bi";
 import { IoMdClose } from "react-icons/io";
 import Logout from "./Logout";
+import { WiSunrise } from "react-icons/wi";
+import { GoLink } from "react-icons/go";
+import { GoDot } from "react-icons/go";
+import { useState } from "react";
+import { usePathname } from "next/navigation";
 
 interface MainNavbarItem {
   itemIcon: IconType;
@@ -32,7 +37,18 @@ const mainNavbarItems: MainNavbarItem[] = [
     name: "Activate Account",
     linkTo: "/customer/activate-account",
   },
-  { itemIcon: BsWhatsapp, name: "Whatsapp", linkTo: "/customer/whatsapp" },
+  { itemIcon: BsWhatsapp, name: "Whatsapp", linkTo: "#" },
+  { itemIcon: GoDot, name: "Upload Status", linkTo: "/customer/upload-status" },
+  {
+    itemIcon: GoDot,
+    name: "Whatsapp Records",
+    linkTo: "/customer/whatsapp-records",
+  },
+  {
+    itemIcon: GoDot,
+    name: "Whatsapp Withdrawals",
+    linkTo: "/customer/whatsapp-withdrawals",
+  },
   {
     itemIcon: LuDownload,
     name: "Download Product",
@@ -40,9 +56,25 @@ const mainNavbarItems: MainNavbarItem[] = [
   },
   { itemIcon: CgProfile, name: "Profile", linkTo: "/customer/profile" },
   { itemIcon: BiMoneyWithdraw, name: "Withdraw", linkTo: "/customer/withdraw" },
+  {
+    itemIcon: WiSunrise,
+    name: "Early Payment",
+    linkTo: "/customer/early-payment",
+  },
+  {
+    itemIcon: GoLink,
+    name: "Refferals",
+    linkTo: "/customer/refferals",
+  },
 ];
 
 const MainNavbar = ({ isOpen, onClose }: MainNavbarProps) => {
+  const [subMenuOpen, setSubMenuOpen] = useState(false);
+  const pathname = usePathname();
+
+  const toggleSubMenu = () => {
+    setSubMenuOpen(!subMenuOpen);
+  };
   return (
     <div
       className={
@@ -63,11 +95,23 @@ const MainNavbar = ({ isOpen, onClose }: MainNavbarProps) => {
               <Link
                 key={item.name}
                 href={item.linkTo}
-                className="relative  group horizontal-start w-full gap-2 cursor-pointer hover:text-green-500 transition-all duration-500 px-2 py-3"
+                className={`relative group horizontal-start w-full gap-2 cursor-pointer transition-all duration-500 px-2 py-3 ${
+                  item.itemIcon === GoDot ? "ml-6" : "ml-0"
+                } ${
+                  pathname === item.linkTo
+                    ? "text-green-500"
+                    : "hover:text-green-500"
+                }`}
               >
-                <item.itemIcon size={20} />
+                <item.itemIcon size={item.itemIcon === GoDot ? 10 : 20} />
                 <p className="text-sm">{item.name}</p>
-                <span className="absolute hidden group-hover:block h-full w-[0.35rem] bg-green-500 -left-5 rounded-3xl"></span>
+                <span
+                  className={`absolute h-full w-[0.35rem] bg-green-500 -left-5 rounded-3xl ${
+                    pathname === item.linkTo
+                      ? "block"
+                      : "hidden group-hover:block"
+                  }`}
+                ></span>
               </Link>
             ))}
           </div>
