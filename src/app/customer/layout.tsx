@@ -6,9 +6,9 @@ import Navbar from "@/components/layout/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
-import HeroSectionImage1 from "@/assests/HeroSectionImage1.png"; // Adjust the path as necessary
+import HeroSectionImage1 from "@/assests/HeroSectionImage1.png";
 import NotificationCarousel from "@/components/common/NotificationCarousel";
-import { notifications } from "@/contexts/globalData"; // Adjust the path as necessary
+import { notifications } from "@/contexts/globalData";
 
 export default function CustomerLayout({
   children,
@@ -20,48 +20,53 @@ export default function CustomerLayout({
   const pathname = usePathname();
 
   useEffect(() => {
-    if (loading) {
-      return;
-    }
+    if (loading) return;
 
     if (!user) {
       router.push("/login");
       return;
     }
 
+    // Handle routing based on profile completion status
     if (pathname.startsWith("/customer")) {
-      if (username) {
-        if (pathname === "/customer/profile-completion") {
-          router.push("/customer/dashboards");
-        }
-      } else {
-        if (pathname !== "/customer/profile-completion") {
-          router.push("/customer/profile-completion");
-        }
+      if (username && pathname === "/customer/profile-completion") {
+        router.push("/customer/dashboards");
+      } else if (!username && pathname !== "/customer/profile-completion") {
+        router.push("/customer/profile-completion");
       }
     }
   }, [user, username, loading, router, pathname]);
 
-  if (loading) {
-    return <LoadingScreen />;
-  }
+  // Show loading screen while authentication is in progress
+  if (loading) return <LoadingScreen />;
 
-  if (!user) {
-    return null;
-  }
+  // Redirect if not authenticated
+  if (!user) return null;
 
+  // Show loading during redirects
   if (
-    user &&
-    !username &&
-    pathname.startsWith("/customer") &&
-    pathname !== "/customer/profile-completion"
+    (user &&
+      !username &&
+      pathname.startsWith("/customer") &&
+      pathname !== "/customer/profile-completion") ||
+    (user && username && pathname === "/customer/profile-completion")
   ) {
     return <LoadingScreen />;
   }
 
-  if (user && username && pathname === "/customer/profile-completion") {
-    return <LoadingScreen />;
+  if (
+    pathname === "/customer/profile-completion" ||
+    pathname === "/customer/deposit"
+  ) {
+    return (
+      <>
+        <Navbar />
+        <Chat />
+        {children}
+      </>
+    );
   }
+
   return (
     <>
       <Navbar />
