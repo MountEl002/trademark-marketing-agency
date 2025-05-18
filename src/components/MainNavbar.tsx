@@ -10,8 +10,7 @@ import { IoMdClose } from "react-icons/io";
 import Logout from "./Logout";
 import { WiSunrise } from "react-icons/wi";
 import { GoLink } from "react-icons/go";
-import { GoDot } from "react-icons/go";
-import { useState } from "react";
+import { BiImageAdd } from "react-icons/bi";
 import { usePathname } from "next/navigation";
 
 interface MainNavbarItem {
@@ -37,17 +36,15 @@ const mainNavbarItems: MainNavbarItem[] = [
     name: "Packages",
     linkTo: "/customer/packages",
   },
-  { itemIcon: BsWhatsapp, name: "Whatsapp", linkTo: "#" },
-  { itemIcon: GoDot, name: "Upload Status", linkTo: "/customer/upload-status" },
   {
-    itemIcon: GoDot,
-    name: "Whatsapp Records",
-    linkTo: "/customer/whatsapp-records",
+    itemIcon: BiImageAdd,
+    name: "Upload Status",
+    linkTo: "/customer/upload-status",
   },
   {
-    itemIcon: GoDot,
-    name: "Whatsapp Withdrawals",
-    linkTo: "/customer/whatsapp-withdrawals",
+    itemIcon: BsWhatsapp,
+    name: "Whatsapp Records",
+    linkTo: "/customer/whatsapp-records",
   },
   {
     itemIcon: LuDownload,
@@ -69,12 +66,8 @@ const mainNavbarItems: MainNavbarItem[] = [
 ];
 
 const MainNavbar = ({ isOpen, onClose }: MainNavbarProps) => {
-  const [subMenuOpen, setSubMenuOpen] = useState(false);
   const pathname = usePathname();
 
-  const toggleSubMenu = () => {
-    setSubMenuOpen(!subMenuOpen);
-  };
   return (
     <div
       className={
@@ -95,15 +88,14 @@ const MainNavbar = ({ isOpen, onClose }: MainNavbarProps) => {
               <Link
                 key={item.name}
                 href={item.linkTo}
-                className={`relative group horizontal-start w-full gap-2 cursor-pointer transition-all duration-500 px-2 py-3 ${
-                  item.itemIcon === GoDot ? "ml-6" : "ml-0"
+                className={`relative group horizontal-start w-full gap-2 cursor-pointer transition-all duration-500 px-2 py-3
                 } ${
                   pathname === item.linkTo
                     ? "text-green-500"
                     : "hover:text-green-500"
                 }`}
               >
-                <item.itemIcon size={item.itemIcon === GoDot ? 10 : 20} />
+                <item.itemIcon size={20} />
                 <p className="text-sm">{item.name}</p>
                 <span
                   className={`absolute h-full w-[0.35rem] bg-green-500 -left-5 rounded-3xl ${

@@ -1,15 +1,17 @@
+//initialize-chat.ts
+
 import { auth, db } from "@/lib/firebase";
 import { doc, getDoc, setDoc, runTransaction } from "firebase/firestore";
 
-const UNREG_COUNTER_DOC = "unregisteredUserNumber";
+const UNREG_COUNTER_DOC = "unregisteredUserName";
 const LOCAL_STORAGE_KEY = "anonymousChatUser";
 
 interface AnonymousUser {
-  number: string;
+  name: string;
   createdAt: number;
 }
 
-export const getChatUserNumber = async (): Promise<string> => {
+export const getChatUserName = async (): Promise<string> => {
   // Check if user is authenticated
   const currentUser = auth.currentUser;
 
@@ -26,10 +28,10 @@ const handleAuthenticatedUser = async (userId: string): Promise<string> => {
   const chatDoc = await getDoc(chatDocRef);
 
   if (chatDoc.exists()) {
-    return chatDoc.data().userNumber;
+    return chatDoc.data().userName;
   }
 
-  // Get user's assigned number from users collection
+  // Get user's username from users collection
   const userDocRef = doc(db, "users", userId);
   const userDoc = await getDoc(userDocRef);
 
@@ -37,15 +39,15 @@ const handleAuthenticatedUser = async (userId: string): Promise<string> => {
     throw new Error("User document not found");
   }
 
-  const userNumber = userDoc.data().userNumber.toString();
+  const userName = userDoc.data().username || `User_${userId.substring(0, 5)}`;
 
   // Create chat document
   await setDoc(chatDocRef, {
-    userNumber,
+    userName,
     createdAt: Date.now(),
   });
 
-  return userNumber;
+  return userName;
 };
 
 const handleUnauthenticatedUser = async (): Promise<string> => {
@@ -57,7 +59,7 @@ const handleUnauthenticatedUser = async (): Promise<string> => {
         const anonymousUser: AnonymousUser = JSON.parse(savedUser);
 
         // Add validation for the parsed data
-        if (!anonymousUser.number || !anonymousUser.createdAt) {
+        if (!anonymousUser.name || !anonymousUser.createdAt) {
           throw new Error("Invalid stored user data");
         }
 
@@ -65,12 +67,12 @@ const handleUnauthenticatedUser = async (): Promise<string> => {
         const chatDocRef = doc(
           db,
           "unregisteredUsersChats",
-          anonymousUser.number
+          anonymousUser.name
         );
         const chatDoc = await getDoc(chatDocRef);
 
         if (chatDoc.exists()) {
-          return anonymousUser.number;
+          return anonymousUser.name;
         }
       } catch (error) {
         // Clear invalid or expired data
@@ -79,29 +81,29 @@ const handleUnauthenticatedUser = async (): Promise<string> => {
       }
     }
 
-    // Get new number from counter
-    const number = await getNextUnregisteredUserNumber();
+    // Get new guest username
+    const guestName = await getNextGuestUserName();
 
     // Create chat document with expiration
-    await setDoc(doc(db, "unregisteredUsersChats", number), {
+    await setDoc(doc(db, "unregisteredUsersChats", guestName), {
       createdAt: Date.now(),
     });
 
     // Save to localStorage
     const anonymousUser: AnonymousUser = {
-      number,
+      name: guestName,
       createdAt: Date.now(),
     };
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(anonymousUser));
 
-    return number;
+    return guestName;
   } catch (error) {
     console.error("Error handling unauthenticated user:", error);
     throw error;
   }
 };
 
-const getNextUnregisteredUserNumber = async (): Promise<string> => {
+const getNextGuestUserName = async (): Promise<string> => {
   const counterRef = doc(db, "counters", UNREG_COUNTER_DOC);
 
   try {
@@ -122,9 +124,9 @@ const getNextUnregisteredUserNumber = async (): Promise<string> => {
       return nextNumber;
     });
 
-    return newNumber.toString();
+    return `Guest_${newNumber}`;
   } catch (error) {
-    console.error("Error getting next unregistered user number:", error);
+    console.error("Error getting next guest username:", error);
     throw error;
   }
 };

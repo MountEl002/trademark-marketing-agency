@@ -1,11 +1,10 @@
-import React from "react";
+import DownloadProduct from "@/components/customer/DownloadProduct";
+// In your page component
 
-const DownloadProduct = () => {
+export default function DownloadProductPage() {
   return (
-    <div>
-      <h1>Download Product Page</h1>
+    <div className="mx-auto px-4 pb-12 max-w-6xl">
+      <DownloadProduct />
     </div>
   );
-};
-
-export default DownloadProduct;
+}

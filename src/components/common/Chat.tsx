@@ -10,7 +10,7 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import Image from "next/image";
-import { getChatUserNumber } from "@/utils/initialize-chat";
+import { getChatUserName } from "@/utils/initialize-chat";
 import { FaUser } from "react-icons/fa";
 import ChatBackground from "@/assests/chatbackgroundResized.png";
 import CustomerCareAgent4 from "@/assests/CustomerCareAgent4.jpg";
@@ -26,12 +26,12 @@ interface Message {
   text: string;
   sender: "user" | "admin";
   timestamp: number;
-  userNumber: string;
+  userName: string;
   files?: UploadedFileInfo[];
 }
 
 const Chat = () => {
-  const [userNumber, setUserNumber] = useState<string | null>(null);
+  const [userName, setUserName] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState<string>("");
   const [isInitializing, setIsInitializing] = useState(true);
@@ -43,18 +43,18 @@ const Chat = () => {
     let isMounted = true;
     let messageCleanup: (() => void) | undefined;
 
-    // Initialize chat user number
+    // Initialize chat user name
     const initializeChat = async () => {
       try {
-        if (!userNumber && isInitializing) {
-          const number = await getChatUserNumber();
+        if (!userName && isInitializing) {
+          const name = await getChatUserName();
           if (isMounted) {
-            setUserNumber(number);
+            setUserName(name);
             setIsInitializing(false);
-            setupMessageListener(number);
+            setupMessageListener(name);
           }
-        } else if (userNumber) {
-          setupMessageListener(userNumber);
+        } else if (userName) {
+          setupMessageListener(userName);
         }
       } catch (error) {
         console.error("Error initializing chat:", error);
@@ -65,12 +65,12 @@ const Chat = () => {
     };
 
     // Setup message listener
-    const setupMessageListener = async (currentUserNumber: string) => {
+    const setupMessageListener = async (currentUserName: string) => {
       const currentUser = auth.currentUser;
       const chatCollection = currentUser
         ? "registeredUsersChats"
         : "unregisteredUsersChats";
-      const chatDocId = currentUser ? currentUser.uid : currentUserNumber;
+      const chatDocId = currentUser ? currentUser.uid : currentUserName;
 
       const messagesRef = collection(
         db,
@@ -118,13 +118,13 @@ const Chat = () => {
     const chatCollection = currentUser
       ? "registeredUsersChats"
       : "unregisteredUsersChats";
-    const chatDocId = currentUser ? currentUser.uid : userNumber;
+    const chatDocId = currentUser ? currentUser.uid : userName;
 
     const message: Message = {
       text: messageData.text,
       sender: "user",
       timestamp: Date.now(),
-      userNumber: userNumber as string,
+      userName: userName as string,
       ...(messageData.files &&
         messageData.files.length > 0 && { files: messageData.files }),
     };
@@ -159,9 +159,7 @@ const Chat = () => {
                 <div className="bg-white p-2 rounded-[50%]">
                   <FaUser />
                 </div>
-                <p className="font-semibold">
-                  Customer {userNumber || "Loading..."}
-                </p>
+                <p className="font-semibold">{userName || "Loading..."}</p>
               </div>
               <UniversalButton
                 icon={IoMdClose}
