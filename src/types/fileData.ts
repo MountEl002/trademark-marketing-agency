@@ -8,4 +8,6 @@ export interface UploadedFileInfo {
   file?: File;
   uploadedAt?: string;
   uploadedBy?: string;
+  workId?: string;
+  fileId?: string;
 }

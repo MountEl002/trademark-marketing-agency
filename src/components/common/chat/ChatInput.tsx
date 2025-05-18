@@ -2,8 +2,8 @@ import { GrAttachment } from "react-icons/gr";
 import { IoSend } from "react-icons/io5";
 import { MdClose } from "react-icons/md";
 import { useAuth } from "@/contexts/AuthContext";
-import { validateFiles } from "@/utils/s3-upload";
-import { uploadFilesToS3 } from "@/utils/s3-upload";
+import { validateFile } from "@/utils/s3-upload";
+import { uploadChatImageToS3 } from "@/utils/s3-upload";
 import { UploadedFileInfo } from "@/types/fileData";
 import { customAlphabet } from "nanoid";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -20,7 +20,7 @@ interface ChatInputProps {
   setNewMessage: (message: string) => void;
   sendMessage: (messageData: {
     text: string;
-    files?: UploadedFileInfo[];
+    files?: Omit<UploadedFileInfo, "file">[];
   }) => void;
 }
 
@@ -35,7 +35,9 @@ const ChatInput: React.FC<ChatInputProps> = ({
     adminUid: null as string | null,
   });
   const [dropBoxActive, setDropBoxActive] = useState(false);
-  const [uploadingFiles, setUploadingFiles] = useState<UploadedFileInfo[]>([]);
+  const [uploadingFile, setUploadingFile] = useState<UploadedFileInfo | null>(
+    null
+  );
   const [uploadError, setUploadError] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [sendingMessage, setSendingMessage] = useState(false);
@@ -64,21 +66,22 @@ const ChatInput: React.FC<ChatInputProps> = ({
 
   const handleFileChange = useCallback(
     (files: FileList | null) => {
-      if (!files || (!user && !adminAuthStatus.isAdmin)) return;
+      if (!files || files.length === 0 || (!user && !adminAuthStatus.isAdmin))
+        return;
 
-      // Validate files
-      const validation = validateFiles(Array.from(files), {
-        maxSizeInMB: 200,
-        maxFiles: 100,
-      });
+      // Only take the first file since we only allow single file upload
+      const file = files[0];
+
+      // Validate single file
+      const validation = validateFile(file);
 
       if (!validation.valid) {
         setUploadError(validation.errors.join(", "));
         return;
       }
 
-      // Create file objects with upload status
-      const newFiles: UploadedFileInfo[] = Array.from(files).map((file) => ({
+      // Create file object with upload status (for chat files, use fileId instead of workId)
+      const newFile: UploadedFileInfo = {
         id: generateId(),
         file,
         fileName: file.name,
@@ -87,9 +90,10 @@ const ChatInput: React.FC<ChatInputProps> = ({
         status: "pending",
         uploadedBy: user?.uid || "admin",
         uploadedAt: new Date().toISOString(),
-      }));
+        fileId: generateId(), // Generate fileId for chat files
+      };
 
-      setUploadingFiles((prev) => [...prev, ...newFiles]);
+      setUploadingFile(newFile);
       setUploadError("");
     },
     [adminAuthStatus.isAdmin, user]
@@ -112,6 +116,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
       setDropBoxActive(false);
     }
   };
+
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
       e.preventDefault();
@@ -126,19 +131,16 @@ const ChatInput: React.FC<ChatInputProps> = ({
   );
 
   // Remove file before upload
-  const removeFile = useCallback((fileId: string) => {
-    setUploadingFiles((prev) => prev.filter((file) => file.id !== fileId));
+  const removeFile = useCallback(() => {
+    setUploadingFile(null);
   }, []);
 
   const handleSendMessage = useCallback(async () => {
     try {
       setSendingMessage(true);
-      // First send each file as a separate message
-      if (uploadingFiles.length > 0) {
-        const files = uploadingFiles
-          .filter((uf) => uf.file)
-          .map((uf) => uf.file as File);
 
+      // If there's a file to upload
+      if (uploadingFile && uploadingFile.file) {
         if (!user && !adminAuthStatus.isAdmin) {
           setUploadError("User is not authenticated.");
           return;
@@ -148,47 +150,54 @@ const ChatInput: React.FC<ChatInputProps> = ({
           ? `admin_${adminAuthStatus.adminUid}`
           : user!.uid;
 
-        const uploadedFiles = adminAuthStatus.isAdmin
-          ? await uploadFilesToS3(files, uploaderId, true)
-          : await uploadFilesToS3(files, uploaderId);
-
-        // Send each file as a separate message
-        for (const file of uploadedFiles) {
-          // Create file info without the File object
-          const fileInfo: Omit<UploadedFileInfo, "file"> = {
-            id: generateId(),
-            fileKey: file.fileKey,
-            fileName: file.fileName,
-            fileUrl: file.fileUrl,
+        try {
+          // Use the new chat-specific upload function
+          const result = await uploadChatImageToS3(
+            uploadingFile.file,
+            uploaderId
+          );
+          const uploadResult = {
+            fileKey: result.fileKey,
+            fileName: result.fileName,
+            fileUrl: result.fileUrl,
             progress: 100,
-            status: "completed",
+            status: "completed" as const,
+            id: generateId(),
             uploadedBy: uploaderId,
             uploadedAt: new Date().toISOString(),
+            fileId: result.fileId!, // Chat files have fileId instead of workId
           };
+
+          // Send message with file
           sendMessage({
             text: newMessage.trim(),
-            files: [fileInfo],
+            files: [uploadResult],
           });
+        } catch (error) {
+          console.error("Error uploading file:", error);
+          setUploadError("Failed to upload file. Please try again.");
+          return;
         }
       } else {
+        // Send text-only message
         if (newMessage.trim()) {
           sendMessage({ text: newMessage });
         }
       }
 
       // Clear state after successful send
-      setUploadingFiles([]);
+      setUploadingFile(null);
       setNewMessage("");
     } catch (error) {
-      console.error("Error sending message with files:", error);
+      console.error("Error sending message:", error);
       setUploadError(
-        "Failed to send files. Please check your internet connection and try again."
+        "Failed to send message. Please check your internet connection and try again."
       );
     } finally {
       setSendingMessage(false);
     }
   }, [
-    uploadingFiles,
+    uploadingFile,
     newMessage,
     setNewMessage,
     user,
@@ -221,7 +230,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
         )}
         <div className="w-[90%] h-full border border-blue-500 rounded-lg p-1">
           {/* File upload preview area */}
-          {uploadingFiles.length > 0 && (
+          {uploadingFile && (
             <div className="absolute bottom-[105%] right-1/2 translate-x-1/2 w-[95%] rounded-lg bg-gray-100">
               <div
                 className={`flex h-20 p-2 m-2 ${
@@ -239,32 +248,24 @@ const ChatInput: React.FC<ChatInputProps> = ({
                 {sendingMessage ? (
                   <div className="vertical gap-2">
                     <LoadingAnimantion />
-                    <p>
-                      Sending file{uploadingFiles.length === 1 ? "" : "s"}...
-                    </p>
+                    <p>Sending file...</p>
                   </div>
                 ) : (
-                  uploadingFiles.map((file) => (
-                    <div
-                      key={file.id}
-                      className="flex items-center gap-2 bg-white rounded-md p-2 text-sm h-fit"
+                  <div className="flex items-center gap-2 bg-white rounded-md p-2 text-sm h-fit">
+                    <span className="truncate max-w-[150px]">
+                      {uploadingFile.fileName}
+                    </span>
+                    <button
+                      onClick={removeFile}
+                      className="text-red-500 hover:text-red-700"
                     >
-                      <span className="truncate max-w-[150px]">
-                        {file.fileName}
-                      </span>
-                      <button
-                        onClick={() => removeFile(file.id)}
-                        className="text-red-500 hover:text-red-700"
-                      >
-                        <MdClose />
-                      </button>
-                    </div>
-                  ))
+                      <MdClose />
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
           )}
-          {/* Error display */}
           <textarea
             name="message"
             id="message"
@@ -280,8 +281,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
             type="file"
             ref={fileInputRef}
             onChange={(e) => handleFileChange(e.target.files)}
-            multiple
             className="hidden"
+            accept="image/*"
           />
           <button
             className={`group bg-transparent rounded-[50%] transition-all duration-500 p-2 ${
@@ -293,8 +294,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
             disabled={(!user && !adminAuthStatus.isAdmin) || sendingMessage}
             title={
               user || adminAuthStatus.isAdmin
-                ? "Attach files"
-                : "Please login or signup to attach files"
+                ? "Attach image"
+                : "Please login or signup to attach images"
             }
           >
             <GrAttachment className="text-blue-600 group-hover:text-white transition-all duration-500" />
