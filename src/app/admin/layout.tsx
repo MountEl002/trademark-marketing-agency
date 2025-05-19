@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
-import LoadingAnimation from "@/components/common/LoadingAnimantion";
 import LoadingScreen from "@/components/common/LoadingScreen";
 
 export default function AdminLayout({
