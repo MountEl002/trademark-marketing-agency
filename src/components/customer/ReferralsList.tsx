@@ -201,13 +201,13 @@ const ReferralsList: React.FC = () => {
         </p>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto text-sm">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
               <th
                 scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 tracking-wider"
               >
                 <div className="flex items-center space-x-2">
                   <FaUser className="text-gray-400" />
@@ -216,7 +216,7 @@ const ReferralsList: React.FC = () => {
               </th>
               <th
                 scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 tracking-wider"
               >
                 <div className="flex items-center space-x-2">
                   <FaCalendarAlt className="text-gray-400" />
@@ -225,7 +225,7 @@ const ReferralsList: React.FC = () => {
               </th>
               <th
                 scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 tracking-wider"
               >
                 <div className="flex items-center space-x-2">
                   <FaBox className="text-gray-400" />
@@ -234,7 +234,7 @@ const ReferralsList: React.FC = () => {
               </th>
               <th
                 scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 tracking-wider"
               >
                 <div className="flex items-center space-x-2">
                   <FaMoneyBillWave className="text-gray-400" />
