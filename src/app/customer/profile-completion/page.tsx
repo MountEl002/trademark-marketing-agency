@@ -21,6 +21,7 @@ import { FirebaseError } from "firebase/app";
 import Chat from "@/components/common/Chat";
 import { IoMdCheckmarkCircle, IoMdCloseCircle } from "react-icons/io";
 import SearchableSelect from "@/components/customer/SearchableSelect";
+import ReferralCodeInput from "@/components/customer/ReferralCodeInput";
 
 const UpdateProfile = () => {
   const router = useRouter();
@@ -40,6 +41,10 @@ const UpdateProfile = () => {
   const [usernameFieldActive, setUsernameFieldActive] = useState(false);
   const [mobileFieldActive, setMobileFieldActive] = useState(false);
   const [countryFieldActive, setCountryFieldActive] = useState(false);
+
+  const { component: referralComponent, processReferral } = ReferralCodeInput({
+    username,
+  });
 
   // Dynamic border styles based on field focus
   const usernameBorder = `transition-all duration-500 border ${
@@ -153,6 +158,7 @@ const UpdateProfile = () => {
               createdAt: new Date(),
             });
           }
+          await processReferral();
         } catch (innerError) {
           // If there's an error with the usernames collection, log it but don't fail the whole operation
           console.error("Error updating username record:", innerError);
@@ -307,7 +313,7 @@ const UpdateProfile = () => {
                 />
               </div>
             </div>
-
+            {referralComponent}
             <div className="horizontal">
               <button
                 type="submit"

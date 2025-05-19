@@ -17,6 +17,7 @@ import Chat from "@/components/common/Chat";
 import SearchableSelect from "@/components/customer/SearchableSelect";
 import { countries } from "@/contexts/globalData";
 import { verifyUsername } from "@/contexts/userService";
+import ReferralCodeInput from "@/components/customer/ReferralCodeInput";
 
 interface FormFieldProps {
   label: string;
@@ -144,6 +145,10 @@ const SignUp = () => {
   // Single state object to track focus state of all fields
   const [focusedField, setFocusedField] = useState<string | null>(null);
 
+  const { component: referralComponent, processReferral } = ReferralCodeInput({
+    username: formData.username,
+  });
+
   useEffect(() => {
     setPasswordsMatch(formData.password === formData.repeatPassword);
   }, [formData.password, formData.repeatPassword]);
@@ -219,6 +224,7 @@ const SignUp = () => {
         formData.username,
         formData.country
       );
+      await processReferral();
       setShowSuccessPopup(true);
 
       setTimeout(() => {
@@ -323,7 +329,7 @@ const SignUp = () => {
                 required={true}
               />
             </div>
-
+            {referralComponent}
             <FormField
               label="Password"
               type="password"
