@@ -16,10 +16,10 @@ import { db } from "@/lib/firebase";
 import { useAuth } from "@/contexts/AuthContext";
 import PaymentDialog from "@/components/customer/PaymentDialog";
 import TransactionVerification from "@/components/customer/TransactionVerification";
+import { addPackageToReferral } from "@/utils/referrals";
 import { getUserBalance } from "@/contexts/userService";
 import { IoCheckmarkDoneSharp } from "react-icons/io5";
 import { IoMdClose } from "react-icons/io";
-import { useReferralPackageUpdater } from "@/components/customer/ReferralPackageUpdater";
 
 interface PricingPlan {
   id: string;
@@ -90,15 +90,10 @@ const PricingCard: React.FC<{ plan: PricingPlan }> = ({ plan }) => {
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   const router = useRouter();
-  const { user } = useAuth();
-
-  const { updateReferralPackages } = useReferralPackageUpdater({
-    userId: user?.uid || "",
-    username: user?.displayName || "", // Using displayName as username
-  });
+  const { user, username } = useAuth();
 
   const handleGetStarted = async () => {
-    if (!user) {
+    if (!user || !username) {
       // Redirect to login if user is not authenticated
       router.push("/login");
       return;
@@ -180,20 +175,20 @@ const PricingCard: React.FC<{ plan: PricingPlan }> = ({ plan }) => {
         status: "completed",
       });
 
-      // 4. Update referral packages collection
-      const referralUpdateSuccess = await updateReferralPackages({
-        packageName: plan.title,
-        packagePrice: plan.price,
-        purchasedAt: new Date(),
-      });
-
-      if (referralUpdateSuccess) {
-        console.log("Referral packages updated successfully");
+      // 4. Add package to referrals collection (NEW)
+      if (username) {
+        const success = await addPackageToReferral(username, plan.title);
+        if (!success) {
+          console.warn(
+            `Could not add package to referrals for username: ${username}`
+          );
+          // You can decide whether to continue or throw an error here
+        }
       } else {
-        console.warn("Failed to update referral packages");
+        console.warn("Username is null, skipping referral package update");
       }
 
-      // 4. Close dialog and redirect to dashboard
+      // 5. Close dialog and redirect to dashboard
       setShowConfirmDialog(false);
       setShowSuccessMessage(true);
       setTimeout(() => {
