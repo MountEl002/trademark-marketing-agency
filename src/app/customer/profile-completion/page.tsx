@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import { countries } from "@/contexts/globalData";
 import {
   doc,
   getDoc,
@@ -19,34 +20,21 @@ import LightLogo from "@/components/common/LightLogo";
 import { FirebaseError } from "firebase/app";
 import Chat from "@/components/common/Chat";
 import { IoMdCheckmarkCircle, IoMdCloseCircle } from "react-icons/io";
-import { IoIosArrowDown } from "react-icons/io";
-
-// List of countries for the dropdown
-const countries = [
-  "United States",
-  "Canada",
-  "United Kingdom",
-  "Australia",
-  "Germany",
-  "France",
-  "Japan",
-  "India",
-  "Brazil",
-  // Add more countries as needed
-];
+import SearchableSelect from "@/components/customer/SearchableSelect";
 
 const UpdateProfile = () => {
   const router = useRouter();
   const { user } = useAuth();
   const [username, setUsername] = useState("");
   const [mobile, setMobile] = useState("");
-  const [country, setCountry] = useState("");
+  const [country, setCountry] = useState(""); // Fixed: country is a string, not an object
   const [usernameExists, setUsernameExists] = useState(false);
   const [usernameChecking, setUsernameChecking] = useState(false);
   const [formValid, setFormValid] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   // Field focus states
   const [usernameFieldActive, setUsernameFieldActive] = useState(false);
@@ -172,6 +160,8 @@ const UpdateProfile = () => {
         }
 
         setSuccess(true);
+        setShowSuccessPopup(true);
+        // Wait 2 seconds before redirecting
         setTimeout(() => {
           router.push("/customer/dashboards");
         }, 2000);
@@ -218,7 +208,7 @@ const UpdateProfile = () => {
             </div>
           )}
 
-          {success && (
+          {success && !showSuccessPopup && (
             <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-lg relative mb-4">
               Profile updated successfully! Redirecting...
             </div>
@@ -299,33 +289,22 @@ const UpdateProfile = () => {
               </div>
             </div>
 
-            <div className="mb-6">
+            <div
+              className="mb-6"
+              onFocus={() => setCountryFieldActive(true)}
+              onBlur={() => setCountryFieldActive(false)}
+            >
               <label htmlFor="country" className="label-email-password">
                 Country
               </label>
-              <div
-                className={`relative container-input-email-password ${countryBorder}`}
-              >
-                <select
-                  id="country"
+              <div className={`${countryBorder} rounded-lg`}>
+                <SearchableSelect
+                  options={countries}
                   value={country}
-                  onFocus={() => setCountryFieldActive(true)}
-                  onBlur={() => setCountryFieldActive(false)}
-                  onChange={(e) => setCountry(e.target.value)}
-                  className="input-email-password appearance-none pr-8"
-                >
-                  <option value="" disabled>
-                    Select your country
-                  </option>
-                  {countries.map((c) => (
-                    <option key={c} value={c}>
-                      {c}
-                    </option>
-                  ))}
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
-                  <IoIosArrowDown />
-                </div>
+                  onChange={(value) => setCountry(value)}
+                  placeholder="Select a country"
+                  required
+                />
               </div>
             </div>
 

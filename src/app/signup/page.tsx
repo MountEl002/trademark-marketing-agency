@@ -10,6 +10,8 @@ import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import Link from "next/link";
 import { FirebaseError } from "firebase/app";
 import Chat from "@/components/common/Chat";
+import SearchableSelect from "@/components/customer/SearchableSelect";
+import { countries } from "@/contexts/globalData";
 
 interface FormFieldProps {
   label: string;
@@ -123,6 +125,11 @@ const SignUp = () => {
     setFormData({ ...formData, [field]: e.target.value });
   };
 
+  // Handler for country selection
+  const handleCountryChange = (selectedCountry: string) => {
+    setFormData({ ...formData, country: selectedCountry });
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
@@ -207,16 +214,17 @@ const SignUp = () => {
               handleBlur={handleBlur}
             />
 
-            <FormField
-              label="Country"
-              type="text"
-              value={formData.country}
-              onChange={(e) => handleChange(e, "country")}
-              placeholder="Enter your country of residence"
-              focusState={focusedField === "country"}
-              handleFocus={() => handleFocus("country")}
-              handleBlur={handleBlur}
-            />
+            {/* Replace the Country FormField with SearchableSelect */}
+            <div className="mb-4">
+              <label className="label-email-password">Country</label>
+              <SearchableSelect
+                options={countries}
+                value={formData.country}
+                onChange={handleCountryChange}
+                placeholder="Select your country of residence"
+                required={true}
+              />
+            </div>
 
             <FormField
               label="Password"
