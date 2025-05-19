@@ -1,9 +1,9 @@
-// AuthContext.tsx
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
 import {
   User,
+  getIdTokenResult,
   createUserWithEmailAndPassword,
   onAuthStateChanged,
   signInWithEmailAndPassword,
@@ -19,7 +19,7 @@ import { useRouter } from "next/navigation";
 import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import { AuthContextType } from "@/types/transaction";
-import { initializeUserDocuments } from "./userService";
+import { initializeUserDocuments } from "@/contexts/userService";
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
@@ -28,11 +28,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
+  // Combined auth state monitoring effect
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
       if (authUser) {
         setUser(authUser);
+
+        // Get user document data
         const userDocRef = doc(db, "users", authUser.uid);
         const userDocSnap = await getDoc(userDocRef);
         if (userDocSnap.exists()) {
@@ -43,23 +47,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setUsername(null);
           }
         } else {
-          // User authenticated but no profile document in Firestore yet
-          // (e.g., new social login user before profile completion)
           setUsername(null);
         }
+
+        // Check for admin claims
+        try {
+          const idTokenResult = await getIdTokenResult(authUser, true);
+          setIsAdmin(idTokenResult.claims.admin === true);
+        } catch (error) {
+          console.error("Error getting ID token result:", error);
+          setIsAdmin(false);
+        }
       } else {
+        // No user is signed in
         setUser(null);
-        setUsername(null); // Clear username on logout or if no user
+        setUsername(null);
+        setIsAdmin(false);
       }
+
+      // Only set loading to false after all auth state is resolved
       setLoading(false);
     });
 
-    return unsubscribe;
-  }, []); // router is not directly used for navigation here, onAuthStateChanged handles state
+    return () => unsubscribe();
+  }, []);
 
+  // Real-time updates to the user document
   useEffect(() => {
     if (user?.uid) {
-      // Listen for real-time updates to the user document
       const userDocRef = doc(db, "users", user.uid);
       const unsubscribe = onSnapshot(userDocRef, (docSnapshot) => {
         if (docSnapshot.exists()) {
@@ -80,12 +95,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         auth,
         provider
       );
-      const authUser = userCredential.user; // Renamed to avoid conflict
+      const authUser = userCredential.user;
 
       const userDoc = await getDoc(doc(db, "users", authUser.uid));
 
-      // onAuthStateChanged will handle setting user and username states.
-      // This logic just handles initial redirection.
       if (!userDoc.exists()) {
         await initializeUserDocuments(
           authUser.uid,
@@ -112,7 +125,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         auth,
         provider
       );
-      const authUser = userCredential.user; // Renamed
+      const authUser = userCredential.user;
 
       const userDoc = await getDoc(doc(db, "users", authUser.uid));
 
@@ -177,6 +190,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = async () => {
     await signOut(auth);
+    setIsAdmin(false);
     router.push("/login");
   };
 
@@ -184,6 +198,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     <AuthContext.Provider
       value={{
         user,
+        isAdmin,
         username,
         loading,
         signup,

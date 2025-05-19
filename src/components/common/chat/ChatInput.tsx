@@ -9,7 +9,6 @@ import { customAlphabet } from "nanoid";
 import { useCallback, useEffect, useRef, useState } from "react";
 import LoadingAnimantion from "../LoadingAnimantion";
 import { VscFileSymlinkFile } from "react-icons/vsc";
-import { isUserSuperAdmin } from "@/utils/admin-setup";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 // Generate unique IDs for files
@@ -29,7 +28,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
   setNewMessage,
   sendMessage,
 }) => {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const [adminAuthStatus, setAdminAuthStatus] = useState({
     isAdmin: false,
     adminUid: null as string | null,
@@ -48,10 +47,9 @@ const ChatInput: React.FC<ChatInputProps> = ({
 
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        const adminStatus = await isUserSuperAdmin(firebaseUser.uid);
         setAdminAuthStatus({
-          isAdmin: adminStatus,
-          adminUid: adminStatus ? firebaseUser.uid : null,
+          isAdmin: isAdmin,
+          adminUid: isAdmin ? firebaseUser.uid : null,
         });
       } else {
         setAdminAuthStatus({
@@ -62,7 +60,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [isAdmin]);
 
   const handleFileChange = useCallback(
     (files: FileList | null) => {

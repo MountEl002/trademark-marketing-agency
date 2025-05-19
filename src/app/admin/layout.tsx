@@ -1,77 +1,45 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { isUserSuperAdmin } from "@/utils/admin-setup";
-import AdminChatWindow from "@/components/admin/chats/AdminChatWindow";
+import React, { useEffect, useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
+import LoadingAnimation from "@/components/common/LoadingAnimantion";
 
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isAuthorized, setIsAuthorized] = useState(false);
+  const { user, isAdmin, loading } = useAuth();
   const router = useRouter();
-  const pathname = usePathname();
-
-  // Skip auth check for login page
-  const isLoginPage = pathname === "/admin/login";
+  const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
-    if (isLoginPage) {
-      setIsLoading(false);
-      return;
-    }
-
-    const auth = getAuth();
-
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        const adminStatus = await isUserSuperAdmin(user.uid);
-        setIsAuthorized(adminStatus);
-        if (!adminStatus) {
-          router.push("/admin/login");
-        }
-      } else {
-        setIsAuthorized(false);
+    // Only run redirects after auth state is fully determined
+    if (!loading) {
+      if (!user) {
+        // User is not authenticated - redirect to admin login
         router.push("/admin/login");
+      } else if (!isAdmin) {
+        // User is authenticated but not an admin - redirect to home
+        router.push("/");
+      } else {
+        // User is authenticated and is an admin
+        setAuthChecked(true);
       }
-      setIsLoading(false);
-    });
+    }
+  }, [user, isAdmin, loading, router]);
 
-    return () => unsubscribe();
-  }, [router, isLoginPage]);
-
-  if (isLoading) {
+  // Show loading state while checking authentication
+  if (loading || (!authChecked && user && !isAdmin)) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900" />
+      <div className="min-h-screen flex items-center justify-center gap-4 bg-gray-900 text-white">
+        <LoadingAnimation className="mr-3" />
+        <p>Loading...</p>
       </div>
     );
   }
 
-  // Allow rendering of login page without authorization
-  if (!isAuthorized && !isLoginPage) {
-    return null;
-  }
-
-  // For login page, render without the admin layout
-  if (isLoginPage) {
-    return <>{children}</>;
-  }
-
-  // Regular admin layout for authorized users
-  return (
-    <div className="relative flex h-screen">
-      <aside className="w-64 bg-gray-800 text-white p-6">
-        <nav className="space-y-4">
-          <h2 className="text-xl font-bold mb-6">Admin Dashboard</h2>
-        </nav>
-      </aside>
-      <main className="flex-1 p-8 bg-gray-100 overflow-auto">{children}</main>
-      <AdminChatWindow />
-    </div>
-  );
+  // Only render children when user is authenticated and is confirmed as admin
+  return authChecked ? children : null;
 }

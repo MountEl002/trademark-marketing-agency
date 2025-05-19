@@ -2,6 +2,7 @@
 import { User } from "firebase/auth";
 export interface AuthContextType {
   user: User | null;
+  isAdmin: boolean;
   username: string | null;
   loading: boolean;
   signup: (

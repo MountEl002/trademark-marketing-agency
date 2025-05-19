@@ -1,90 +1,98 @@
-// src/app/admin/login/page.tsx
+//admin login page
+
 "use client";
 
-import { useState } from "react";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import React, { useState, useEffect } from "react";
+import GoogleLogo from "@/assests/googleLogo.png";
+import Image from "next/image";
+import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
-import { isUserSuperAdmin } from "@/utils/admin-setup";
+import { useAuth } from "@/contexts/AuthContext"; // Import useAuth
+import LoadingAnimantion from "@/components/common/LoadingAnimantion";
 
-const AdminLogin = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+export default function AdminLoginPage() {
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { user, isAdmin, loading: authLoading } = useAuth(); // Use the context
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+  useEffect(() => {
+    // If user is already logged in and is an admin, redirect from login page
+    if (!authLoading && user && isAdmin) {
+      router.push("/admin");
+    }
+  }, [user, isAdmin, authLoading, router]);
+
+  const handleGoogleLogin = async () => {
+    setError(null);
+    setLoading(true);
+    const provider = new GoogleAuthProvider();
     try {
-      const auth = getAuth();
-      // First, attempt to sign in
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      await signInWithPopup(auth, provider);
+    } catch (caughtError: unknown) {
+      let errorMessage = "Failed to login with Google. Please try again.";
 
-      // Then check if the user is a super admin
-      const isSuperAdmin = await isUserSuperAdmin(userCredential.user.uid);
-
-      if (!isSuperAdmin) {
-        // If not a super admin, sign them out and show error
-        await auth.signOut();
-        setError("Access denied. Only administrators can login.");
-        return;
+      if (
+        typeof caughtError === "object" &&
+        caughtError !== null &&
+        "message" in caughtError
+      ) {
+        errorMessage = String((caughtError as { message: unknown }).message);
+      } else if (caughtError instanceof Error) {
+        errorMessage = caughtError.message;
+      } else if (typeof caughtError === "string") {
+        errorMessage = caughtError;
       }
 
-      // If they are a super admin, redirect to admin dashboard
-      router.push("/admin");
-    } catch (error) {
-      setError("Invalid credentials or insufficient permissions");
-      window.alert(error);
+      setError(errorMessage);
+      console.error("Google Login Error:", caughtError);
+    } finally {
+      setLoading(false);
     }
   };
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-300">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
-        <h2 className="text-2xl font-bold mb-6 text-center">Admin Login</h2>
+  // If still checking auth state, or user is admin and being redirected, show loading
+  if (authLoading || (user && isAdmin)) {
+    return (
+      <div className="min-h-screen flex items-center justify-center gap-10 bg-gray-900 text-white">
+        <LoadingAnimantion className="mr-3" />
+        <p>Checking authentication...</p>
+      </div>
+    );
+  }
 
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
+      <div className="bg-gray-800 p-8 sm:p-10 rounded-lg shadow-xl w-full max-w-md">
+        <h1 className="text-3xl font-bold mb-6 text-center text-blue-400">
+          Admin Login
+        </h1>
         {error && (
-          <div className="bg-red-100 text-red-600 p-3 rounded mb-4">
-            {error}
-          </div>
+          <p className="mb-4 text-red-400 bg-red-900/30 p-3 rounded">{error}</p>
         )}
 
-        <form onSubmit={handleLogin} className="space-y-4">
-          <div>
-            <label className="block mb-2">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-2 border rounded"
-              required
+        <button
+          onClick={handleGoogleLogin}
+          disabled={loading}
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-md transition duration-150 ease-in-out flex items-center justify-center disabled:opacity-50"
+        >
+          {loading ? (
+            <LoadingAnimantion className="mr-4" />
+          ) : (
+            <Image
+              src={GoogleLogo}
+              alt="Google Logo"
+              className="object-cover h-5 w-5 mr-3"
             />
-          </div>
-
-          <div>
-            <label className="block mb-2">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-2 border rounded"
-              required
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-          >
-            Login
-          </button>
-        </form>
+          )}
+          {loading ? "Signing in..." : "Sign in with Google"}
+        </button>
+        <p className="text-xs text-gray-500 mt-6 text-center">
+          You must sign in with the Google account associated with DataSphere
+          Research Limited.
+        </p>
       </div>
     </div>
   );
-};
-
-export default AdminLogin;
+}
