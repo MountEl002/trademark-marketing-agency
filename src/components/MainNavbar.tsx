@@ -13,6 +13,7 @@ import { GoLink } from "react-icons/go";
 import { BiImageAdd } from "react-icons/bi";
 import { usePathname } from "next/navigation";
 import { MdOutlineWorkspacePremium } from "react-icons/md";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface MainNavbarItem {
   itemIcon: IconType;
@@ -66,13 +67,14 @@ const mainNavbarItems: MainNavbarItem[] = [
   },
   {
     itemIcon: GoLink,
-    name: "Refferals",
-    linkTo: "/customer/refferals",
+    name: "Referrals",
+    linkTo: "/customer/referrals",
   },
 ];
 
 const MainNavbar = ({ isOpen, onClose }: MainNavbarProps) => {
   const pathname = usePathname();
+  const { username } = useAuth();
 
   return (
     <div
@@ -113,7 +115,13 @@ const MainNavbar = ({ isOpen, onClose }: MainNavbarProps) => {
               </Link>
             ))}
           </div>
-          <Logout />
+          <div className="vertical-start gap-6">
+            <p>
+              Username:{" "}
+              <span className="text-blue-600 font-semibold">{username}</span>
+            </p>
+            <Logout />
+          </div>
         </div>
       </div>
     </div>
