@@ -79,7 +79,7 @@ export default function PaymentDialog({
             <div className="flex justify-between items-center">
               <span className="text-gray-600">Paybill Number:</span>
               <div className="flex items-center">
-                <span className="font-medium mr-2">5088400</span>
+                <span className="font-medium mr-2">508400</span>
                 <button
                   onClick={() => copyToClipboard("5088400", "paybill")}
                   className="text-gray-500 hover:text-green-500 focus:outline-none relative"

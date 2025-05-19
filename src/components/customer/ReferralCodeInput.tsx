@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { IoMdCheckmarkCircle, IoMdCloseCircle } from "react-icons/io";
 import { doc, getDoc, collection, writeBatch } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface ReferralCodeInputProps {
   username: string;
@@ -18,6 +19,8 @@ const ReferralCodeInput = ({
   const [isCodeValid, setIsCodeValid] = useState<boolean | null>(null);
   const [isChecking, setIsChecking] = useState<boolean>(false);
   const [fieldActive, setFieldActive] = useState<boolean>(false);
+
+  const { user } = useAuth();
 
   // Dynamic border styles based on field focus
   const fieldBorder = `transition-all duration-500 border ${
@@ -76,6 +79,8 @@ const ReferralCodeInput = ({
       // 1. Always create a document for the current user in referrals collection
       const userReferralDocRef = doc(db, "referrals", username);
       batch.set(userReferralDocRef, {
+        userId: user?.uid,
+        packages: [],
         createdAt: new Date(),
         referrals: 0, // Counter for future referrals
       });

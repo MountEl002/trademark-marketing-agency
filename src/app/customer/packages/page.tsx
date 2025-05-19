@@ -19,6 +19,7 @@ import TransactionVerification from "@/components/customer/TransactionVerificati
 import { getUserBalance } from "@/contexts/userService";
 import { IoCheckmarkDoneSharp } from "react-icons/io5";
 import { IoMdClose } from "react-icons/io";
+import { useReferralPackageUpdater } from "@/components/customer/ReferralPackageUpdater";
 
 interface PricingPlan {
   id: string;
@@ -90,6 +91,11 @@ const PricingCard: React.FC<{ plan: PricingPlan }> = ({ plan }) => {
 
   const router = useRouter();
   const { user } = useAuth();
+
+  const { updateReferralPackages } = useReferralPackageUpdater({
+    userId: user?.uid || "",
+    username: user?.displayName || "", // Using displayName as username
+  });
 
   const handleGetStarted = async () => {
     if (!user) {
@@ -173,6 +179,19 @@ const PricingCard: React.FC<{ plan: PricingPlan }> = ({ plan }) => {
         description: `Purchase of ${plan.title} Package`,
         status: "completed",
       });
+
+      // 4. Update referral packages collection
+      const referralUpdateSuccess = await updateReferralPackages({
+        packageName: plan.title,
+        packagePrice: plan.price,
+        purchasedAt: new Date(),
+      });
+
+      if (referralUpdateSuccess) {
+        console.log("Referral packages updated successfully");
+      } else {
+        console.warn("Failed to update referral packages");
+      }
 
       // 4. Close dialog and redirect to dashboard
       setShowConfirmDialog(false);
