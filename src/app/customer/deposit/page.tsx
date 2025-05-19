@@ -95,7 +95,7 @@ export default function DepositComponent() {
           </div>
 
           <Link
-            href="/customer/transactions"
+            href="/customer/all-transactions"
             className="bg-green-500 text-white px-6 py-2 rounded-lg shadow-sm hover:bg-green-600 transition-all duration-500"
           >
             Logs
