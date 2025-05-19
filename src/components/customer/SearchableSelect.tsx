@@ -97,7 +97,7 @@ export default function SearchableSelect({
           type="text"
           tabIndex={-1}
           className="opacity-0 h-0 w-0 absolute"
-          value={value}
+          defaultValue={value}
           required
         />
       )}

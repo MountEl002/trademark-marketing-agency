@@ -12,6 +12,7 @@ import { WiSunrise } from "react-icons/wi";
 import { GoLink } from "react-icons/go";
 import { BiImageAdd } from "react-icons/bi";
 import { usePathname } from "next/navigation";
+import { MdOutlineWorkspacePremium } from "react-icons/md";
 
 interface MainNavbarItem {
   itemIcon: IconType;
@@ -35,6 +36,11 @@ const mainNavbarItems: MainNavbarItem[] = [
     itemIcon: RiHome6Line,
     name: "Packages",
     linkTo: "/customer/packages",
+  },
+  {
+    itemIcon: MdOutlineWorkspacePremium,
+    name: "Buy Premium Code",
+    linkTo: "/customer/buy-premium-code",
   },
   {
     itemIcon: BiImageAdd,

@@ -5,13 +5,18 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import LightLogo from "@/components/common/LightLogo";
 import ContinueWith from "@/components/common/login/ContinueWith";
-import { IoMdEye, IoMdEyeOff } from "react-icons/io";
-// import { Tooltip } from "react-tooltip";
+import {
+  IoMdEye,
+  IoMdEyeOff,
+  IoMdCheckmarkCircle,
+  IoMdCloseCircle,
+} from "react-icons/io";
 import Link from "next/link";
 import { FirebaseError } from "firebase/app";
 import Chat from "@/components/common/Chat";
 import SearchableSelect from "@/components/customer/SearchableSelect";
 import { countries } from "@/contexts/globalData";
+import { verifyUsername } from "@/contexts/userService";
 
 interface FormFieldProps {
   label: string;
@@ -25,6 +30,9 @@ interface FormFieldProps {
   isPassword?: boolean;
   showPassword?: boolean;
   toggleShowPassword?: () => void;
+  isUsername?: boolean;
+  usernameExists?: boolean;
+  usernameChecking?: boolean;
 }
 
 // Reusable form field component
@@ -40,6 +48,9 @@ const FormField = ({
   isPassword = false,
   showPassword,
   toggleShowPassword,
+  isUsername = false,
+  usernameExists,
+  usernameChecking,
 }: FormFieldProps) => {
   const fieldBorder = `transition-all duration-500 border ${
     focusState ? "border-blue-500 bg-gray-50" : "border-transparent bg-gray-100"
@@ -56,7 +67,7 @@ const FormField = ({
           onBlur={handleBlur}
           onChange={onChange}
           placeholder={placeholder}
-          className="input-email-password"
+          className={`input-email-password ${isUsername ? "pr-10" : ""}`}
         />
         {isPassword && (
           <button
@@ -73,7 +84,31 @@ const FormField = ({
             )}
           </button>
         )}
+        {isUsername && value.length >= 3 && (
+          <div className="absolute right-3 top-2.5">
+            {usernameChecking ? (
+              <div className="animate-spin h-5 w-5 border-2 border-blue-500 rounded-full border-t-transparent" />
+            ) : usernameExists ? (
+              <IoMdCloseCircle
+                size={20}
+                className="text-red-500"
+                data-tooltip-id="username-taken"
+              />
+            ) : (
+              <IoMdCheckmarkCircle
+                size={20}
+                className="text-green-500"
+                data-tooltip-id="username-available"
+              />
+            )}
+          </div>
+        )}
       </div>
+      {isUsername && usernameExists && value.length >= 3 && (
+        <p className="text-xs text-red-500 mt-1">
+          This username is already taken
+        </p>
+      )}
     </div>
   );
 };
@@ -102,6 +137,9 @@ const SignUp = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  const [usernameExists, setUsernameExists] = useState<boolean>(false);
+  const [usernameChecking, setUsernameChecking] = useState<boolean>(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState<boolean>(false);
 
   // Single state object to track focus state of all fields
   const [focusedField, setFocusedField] = useState<string | null>(null);
@@ -109,6 +147,30 @@ const SignUp = () => {
   useEffect(() => {
     setPasswordsMatch(formData.password === formData.repeatPassword);
   }, [formData.password, formData.repeatPassword]);
+
+  // Check if username exists in database
+  useEffect(() => {
+    const checkUsername = async () => {
+      if (formData.username.length >= 3) {
+        setUsernameChecking(true);
+        try {
+          const exists = await verifyUsername(formData.username);
+          setUsernameExists(exists);
+        } catch (error) {
+          console.error("Error checking username:", error);
+          setUsernameExists(false);
+        } finally {
+          setUsernameChecking(false);
+        }
+      }
+    };
+
+    const timer = setTimeout(() => {
+      checkUsername();
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [formData.username]);
 
   const handleFocus = (fieldName: string) => {
     setFocusedField(fieldName);
@@ -122,7 +184,14 @@ const SignUp = () => {
     e: ChangeEvent<HTMLInputElement>,
     field: keyof FormData
   ) => {
-    setFormData({ ...formData, [field]: e.target.value });
+    let value = e.target.value;
+
+    // Special handling for username to prevent spaces
+    if (field === "username") {
+      value = value.trim().toLowerCase();
+    }
+
+    setFormData({ ...formData, [field]: value });
   };
 
   // Handler for country selection
@@ -135,6 +204,13 @@ const SignUp = () => {
     setError("");
     setLoading(true);
 
+    // Validate form
+    if (usernameExists) {
+      setError("Username is already taken. Please choose another one.");
+      setLoading(false);
+      return;
+    }
+
     try {
       await signup(
         formData.email,
@@ -143,7 +219,13 @@ const SignUp = () => {
         formData.username,
         formData.country
       );
-      router.push("/customer/dashboards");
+      setShowSuccessPopup(true);
+
+      setTimeout(() => {
+        if (showSuccessPopup) {
+          router.push("/customer/dashboards");
+        }
+      }, 15000);
     } catch (error) {
       console.error("Signup error:", error);
       if (error instanceof FirebaseError) {
@@ -158,6 +240,19 @@ const SignUp = () => {
   };
 
   const toggleShowPassword = () => setShowPassword(!showPassword);
+
+  const handleContinueToDashboard = () => {
+    setShowSuccessPopup(false);
+    router.push("/customer/dashboards");
+  };
+
+  const formIsValid =
+    formData.email &&
+    formData.mobile &&
+    formData.username.length >= 3 &&
+    formData.country &&
+    passwordsMatch &&
+    !usernameExists;
 
   return (
     <section className="center-content-on-screen">
@@ -212,6 +307,9 @@ const SignUp = () => {
               focusState={focusedField === "username"}
               handleFocus={() => handleFocus("username")}
               handleBlur={handleBlur}
+              isUsername={true}
+              usernameExists={usernameExists}
+              usernameChecking={usernameChecking}
             />
 
             {/* Replace the Country FormField with SearchableSelect */}
@@ -267,9 +365,9 @@ const SignUp = () => {
             <div className="horizontal mt-5">
               <button
                 type="submit"
-                disabled={loading || !passwordsMatch}
+                disabled={loading || !formIsValid}
                 className={`button-blue w-full ${
-                  loading || !passwordsMatch ? "cursor-not-allowed" : ""
+                  loading || !formIsValid ? "cursor-not-allowed opacity-50" : ""
                 }`}
               >
                 {loading ? (
@@ -302,6 +400,34 @@ const SignUp = () => {
           </p>
         </div>
       </div>
+
+      {/* Success Popup Dialog */}
+      {showSuccessPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md mx-4 shadow-xl">
+            <div className="flex justify-center mb-4">
+              <div className="bg-green-100 p-3 rounded-full">
+                <IoMdCheckmarkCircle size={40} className="text-green-500" />
+              </div>
+            </div>
+            <h3 className="text-xl font-semibold text-center mb-2">
+              Thank You for Joining!
+            </h3>
+            <p className="text-gray-600 text-center mb-6">
+              Your Trademark Marketing account has been created successfully.
+              Welcome aboard!
+            </p>
+            <div className="flex justify-center">
+              <button
+                onClick={handleContinueToDashboard}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition-colors"
+              >
+                Continue to Dashboard
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };
