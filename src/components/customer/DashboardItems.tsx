@@ -10,12 +10,17 @@ import DepositImage from "@/assests/Deposit.png";
 import CashbackImage from "@/assests/Cashback.png";
 import BalanceImage from "@/assests/Balance.png";
 import DashboardsTemplate from "./DashboardsTemplate";
-import { getUserBalance, getUserPackageNames } from "@/contexts/userService";
+import {
+  getUserBalance,
+  getUserPackageNames,
+  getUserPayments,
+} from "@/contexts/userService";
 import { useAuth } from "@/contexts/AuthContext";
 
 const DashboardItems = () => {
   const { user } = useAuth();
   const [userBalance, setUserBalance] = useState<number>(0);
+  const [userPayments, setUserPayments] = useState<number>(0);
   const [formattedPackagesString, setFormattedPackagesString] =
     useState<string>("Inactive");
 
@@ -59,6 +64,10 @@ const DashboardItems = () => {
         const balance = await getUserBalance(user.uid);
         setUserBalance(balance);
 
+        // Fetch the user's payments
+        const payments = await getUserPayments(user.uid);
+        setUserPayments(payments);
+
         // Fetch the user's package names
         const packageNames = await getUserPackageNames(user.uid);
         // Format the packages into a string for display
@@ -78,12 +87,12 @@ const DashboardItems = () => {
   const items: DashboardItemTemplate[] = [
     {
       title: "Whatsapp Earnings",
-      amount: 0,
+      amount: userPayments,
       repImage: WhatsappImage,
       repImageAlt: "Whatsapp logo",
     },
     {
-      title: "Whatsapp Withdrawals",
+      title: "Earning Withdrawals",
       amount: 0,
       repImage: WhatsappWithdrawalsImage,
       repImageAlt: "Hand holding dedit card",

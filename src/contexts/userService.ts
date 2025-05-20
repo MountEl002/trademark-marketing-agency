@@ -99,6 +99,33 @@ export async function getUserBalance(userId: string): Promise<number> {
   }
 }
 
+export async function getUserPayments(userId: string): Promise<number> {
+  if (!userId) {
+    console.error("getUserBalance: userId is required.");
+    return 0;
+  }
+
+  const userDocRef = doc(db, "users", userId);
+  try {
+    const docSnap = await getDoc(userDocRef);
+
+    if (docSnap.exists()) {
+      const userData = docSnap.data();
+      const paymentValue =
+        typeof userData.payments === "number" ? userData.payments : 0;
+      return parseFloat(paymentValue.toFixed(2));
+    } else {
+      console.warn(
+        `User document not found for userId: ${userId}. Returning 0.00 payments.`
+      );
+      return 0;
+    }
+  } catch (error) {
+    console.error("Error fetching user payments for userId:", userId, error);
+    return 0;
+  }
+}
+
 export async function getUserPackageNames(userId: string): Promise<string[]> {
   if (!userId) {
     console.error("getUserPackageNames: userId is required.");

@@ -95,7 +95,7 @@ const MainNavbar = ({ isOpen, onClose }: MainNavbarProps) => {
           className="absolute top-3 right-3 cursor-pointer hover:scale-110 transition-all duration-500"
           onClick={onClose}
         />
-        <div className="vertical-space-between h-full">
+        <div className="vertical-start gap-12 h-full">
           <div className="vertical-start gap-1 text-sm my-6">
             {mainNavbarItems.map((item) => (
               <Link
@@ -120,7 +120,7 @@ const MainNavbar = ({ isOpen, onClose }: MainNavbarProps) => {
               </Link>
             ))}
           </div>
-          <div className="vertical-start gap-6 mb-12">
+          <div className="vertical-start gap-6">
             <p>
               Username:{" "}
               <span className="text-blue-600 font-semibold">{username}</span>

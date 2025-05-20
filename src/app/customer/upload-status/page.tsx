@@ -157,7 +157,7 @@ const WhatsappStatusUpload: React.FC = () => {
               <p className="text-2xl font-bold text-gray-800">
                 Ksh {balance.toFixed(2)}
               </p>
-              <p className="text-gray-500">Whatsapp Balance</p>
+              <p className="text-gray-500">Deposit Balance</p>
             </div>
             <div className="border-dashed border rounded-md p-4 mx-2">
               <p className="text-2xl font-bold text-gray-800">Ksh {payments}</p>
