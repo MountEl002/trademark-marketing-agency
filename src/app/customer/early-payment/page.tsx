@@ -32,7 +32,7 @@ const pricingPlansData: PricingPlan[] = [
   {
     id: "Early Paymment",
     title: "Early Paymment",
-    price: 600,
+    price: 450,
     features: [
       "Advertise With us",
       "Cashback",

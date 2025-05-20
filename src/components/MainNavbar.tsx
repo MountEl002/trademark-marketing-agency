@@ -14,6 +14,7 @@ import { BiImageAdd } from "react-icons/bi";
 import { usePathname } from "next/navigation";
 import { MdOutlineWorkspacePremium } from "react-icons/md";
 import { useAuth } from "@/contexts/AuthContext";
+import { LuLayoutDashboard } from "react-icons/lu";
 
 interface MainNavbarItem {
   itemIcon: IconType;
@@ -27,7 +28,11 @@ interface MainNavbarProps {
 }
 
 const mainNavbarItems: MainNavbarItem[] = [
-  { itemIcon: RiHome6Line, name: "Dashboards", linkTo: "/customer/dashboards" },
+  {
+    itemIcon: LuLayoutDashboard,
+    name: "Dashboards",
+    linkTo: "/customer/dashboards",
+  },
   {
     itemIcon: TfiWallet,
     name: "Deposit Funds",
@@ -115,7 +120,7 @@ const MainNavbar = ({ isOpen, onClose }: MainNavbarProps) => {
               </Link>
             ))}
           </div>
-          <div className="vertical-start gap-6">
+          <div className="vertical-start gap-6 mb-12">
             <p>
               Username:{" "}
               <span className="text-blue-600 font-semibold">{username}</span>

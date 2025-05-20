@@ -32,7 +32,7 @@ const pricingPlansData: PricingPlan[] = [
   {
     id: "Premium Code",
     title: "Premium Code",
-    price: 450,
+    price: 600,
     features: [
       "Advertise With us",
       "Cashback",
