@@ -153,3 +153,42 @@ export async function getUserPackageNames(userId: string): Promise<string[]> {
     return [];
   }
 }
+
+// Package values
+const PACKAGE_VALUES: { [key: string]: number } = {
+  "Premium Code": 600,
+  Bronze: 850,
+  Gold: 3000,
+  Silver: 1750,
+  "Early Payment": 450,
+  Basic: 350,
+};
+
+export async function getUserPackageValue(userId: string): Promise<number> {
+  if (!userId) {
+    console.error("getUserPackageValue: userId is required.");
+    return 0;
+  }
+
+  try {
+    const packageNames = await getUserPackageNames(userId);
+    let totalValue = 0;
+    const packageCounts: { [key: string]: number } = {};
+    packageNames.forEach((packageName) => {
+      packageCounts[packageName] = (packageCounts[packageName] || 0) + 1;
+    });
+
+    Object.entries(packageCounts).forEach(([packageName, count]) => {
+      const packageValue = PACKAGE_VALUES[packageName];
+      if (packageValue) {
+        totalValue += packageValue * count;
+      } else {
+        console.warn(`Package value not found for: ${packageName}`);
+      }
+    });
+    return totalValue;
+  } catch (error) {
+    console.error("Error calculating package value for userId:", userId, error);
+    return 0;
+  }
+}

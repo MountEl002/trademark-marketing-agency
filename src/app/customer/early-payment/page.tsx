@@ -30,8 +30,8 @@ interface PricingPlan {
 
 const pricingPlansData: PricingPlan[] = [
   {
-    id: "Early Paymment",
-    title: "Early Paymment",
+    id: "Early Payment",
+    title: "Early Payment",
     price: 450,
     features: [
       "Advertise With us",

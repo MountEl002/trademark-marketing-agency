@@ -3,7 +3,11 @@
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { validateFile, uploadImageToS3 } from "@/utils/s3-upload";
-import { getUserBalance, getUserPackageNames } from "@/contexts/userService";
+import {
+  getUserBalance,
+  getUserPackageNames,
+  getUserPayments,
+} from "@/contexts/userService";
 import Link from "next/link";
 import LoadingAnimantion from "@/components/common/LoadingAnimantion";
 
@@ -14,7 +18,7 @@ const WhatsappStatusUpload: React.FC = () => {
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [uploadError, setUploadError] = useState<string>("");
   const [balance, setBalance] = useState<number>(0);
-  const [payments, setPayments] = useState<number>(0);
+  const [userPayments, setUserPayments] = useState<number>(0);
   const [userPackages, setUserPackages] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -33,13 +37,11 @@ const WhatsappStatusUpload: React.FC = () => {
         try {
           const userBalance = await getUserBalance(user.uid);
           setBalance(userBalance);
+          const payments = await getUserPayments(user.uid);
+          setUserPayments(payments);
 
           const packages = await getUserPackageNames(user.uid);
           setUserPackages(packages);
-
-          // In a real app, you would have a similar function to fetch payments
-          // For now, we'll just set it to 0 as per the image
-          setPayments(0);
         } catch (error) {
           console.error("Error fetching user data:", error);
         }
@@ -160,7 +162,9 @@ const WhatsappStatusUpload: React.FC = () => {
               <p className="text-gray-500">Deposit Balance</p>
             </div>
             <div className="border-dashed border rounded-md p-4 mx-2">
-              <p className="text-2xl font-bold text-gray-800">Ksh {payments}</p>
+              <p className="text-2xl font-bold text-gray-800">
+                Ksh {userPayments}
+              </p>
               <p className="text-gray-500">Payments</p>
             </div>
           </div>

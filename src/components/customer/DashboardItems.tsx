@@ -13,6 +13,7 @@ import DashboardsTemplate from "./DashboardsTemplate";
 import {
   getUserBalance,
   getUserPackageNames,
+  getUserPackageValue,
   getUserPayments,
 } from "@/contexts/userService";
 import { useAuth } from "@/contexts/AuthContext";
@@ -21,6 +22,7 @@ const DashboardItems = () => {
   const { user } = useAuth();
   const [userBalance, setUserBalance] = useState<number>(0);
   const [userPayments, setUserPayments] = useState<number>(0);
+  const [userCashback, setUserCashback] = useState<number>(0);
   const [formattedPackagesString, setFormattedPackagesString] =
     useState<string>("Inactive");
 
@@ -68,6 +70,9 @@ const DashboardItems = () => {
         const payments = await getUserPayments(user.uid);
         setUserPayments(payments);
 
+        const cashback = await getUserPackageValue(user.uid);
+        setUserCashback(cashback);
+
         // Fetch the user's package names
         const packageNames = await getUserPackageNames(user.uid);
         // Format the packages into a string for display
@@ -112,7 +117,7 @@ const DashboardItems = () => {
     },
     {
       title: "Cashback",
-      amount: 0,
+      amount: userCashback,
       repImage: CashbackImage,
       repImageAlt: "Stacked coins with an arrow",
     },
