@@ -1,9 +1,12 @@
+// app/admin/layout.tsx
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import { useRouter } from "next/navigation";
 import LoadingScreen from "@/components/common/LoadingScreen";
+import AdminChatWindow from "@/components/admin/chats/AdminChatWindow";
+import Navbar from "@/components/admin/layout/Navbar";
 
 export default function AdminLayout({
   children,
@@ -12,24 +15,45 @@ export default function AdminLayout({
 }) {
   const { user, isAdmin, loading } = useAuth();
   const router = useRouter();
-  const [authChecked, setAuthChecked] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
-    if (!loading) {
-      if (!user) {
-        router.push("/admin/login");
-      } else if (!isAdmin) {
-        router.push("/");
-      } else {
-        setAuthChecked(true);
-      }
+    if (loading) {
+      return;
     }
-  }, [user, isAdmin, loading, router]);
+    if (!user) {
+      if (pathname !== "/admin/login") {
+        router.push("/admin/login");
+      }
+      return;
+    }
+    if (user && !isAdmin) {
+      router.push("/");
+      return;
+    }
+    if (user && isAdmin && pathname === "/admin/login") {
+      router.push("/admin");
+    }
+  }, [user, isAdmin, loading, router, pathname]);
 
-  if (loading || (!authChecked && user && !isAdmin)) {
-    return <LoadingScreen />;
+  if (loading) {
+    return <LoadingScreen message="Loading admin dashboard" />;
   }
 
-  // Only render children when user is authenticated and is confirmed as admin
-  return authChecked ? children : null;
+  if (!user && pathname === "/admin/login") {
+    return <>{children}</>;
+  }
+  if (user && isAdmin && pathname !== "/admin/login") {
+    return (
+      <>
+        <Navbar />
+        {children}
+        <AdminChatWindow />
+      </>
+    );
+  }
+  if (user && isAdmin && pathname === "/admin/login") {
+    return <LoadingScreen message="Redirecting to admin dashboard..." />;
+  }
+  return null;
 }

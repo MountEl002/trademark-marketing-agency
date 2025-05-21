@@ -3,9 +3,11 @@ import LightLogo from "../common/LightLogo";
 import { TbMenuDeep } from "react-icons/tb";
 import MainNavbar from "../MainNavbar";
 import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { isAdmin } = useAuth();
   const toggleNavbar = () => {
     setIsOpen(!isOpen);
   };
@@ -27,6 +29,17 @@ const Navbar = () => {
             >
               <TbMenuDeep size={23} className="rotate-180" />
             </div>
+            {/* Center section for admin */}
+            <Link
+              href={"/admin"}
+              className={
+                isAdmin
+                  ? "flex items-center justify-center animate-bounce bg-blue-500 hover:bg-blue-600 rounded-lg px-4 py-2 text-white font-semibold transition-all duration-500"
+                  : "hidden"
+              }
+            >
+              Admin Dashboard
+            </Link>
             {/* Right Section */}
             <div className="horizontal gap-2">
               <LightLogo />
