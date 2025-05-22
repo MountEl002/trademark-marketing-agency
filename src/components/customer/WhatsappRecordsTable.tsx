@@ -240,10 +240,10 @@ export default function WhatsappRecordsTable() {
               filteredFiles.slice(0, entriesPerPage).map((file) => (
                 <tr key={file.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {file.amount}
+                    {file.amount.toLocaleString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {file.views}
+                    {file.views.toLocaleString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {formatDate(file.uploadedAt, "MMM d, yyyy 'at' h:mm a")}

@@ -17,7 +17,7 @@ const DashboardsTemplate = ({ items }: DashboardsTemplateProps) => {
           <div className="verical-start gap-10 text-white font-bold">
             <p className="mb-3">{item.title}</p>
             {(item.amount ?? -1) >= 0 ? (
-              <p className="text-2xl">{`KSh. ${item.amount?.toFixed(2)}`}</p>
+              <p className="text-2xl">{`KSh. ${item.amount?.toLocaleString()}`}</p>
             ) : (
               <p className="text-2xl">{item.packages}</p>
             )}

@@ -334,7 +334,7 @@ export default function TransactionList() {
                       return (
                         <tr key={transaction.id} className="hover:bg-gray-50">
                           <td className="px-3 py-2 text-xs sm:text-sm whitespace-nowrap">
-                            Ksh {transaction.amount.toFixed(2)}
+                            Ksh {transaction.amount.toLocaleString()}
                           </td>
                           <td className="px-3 py-2 text-xs sm:text-sm whitespace-nowrap">
                             {transaction.type}

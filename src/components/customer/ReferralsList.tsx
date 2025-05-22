@@ -266,7 +266,7 @@ const ReferralsList: React.FC = () => {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm font-medium text-emerald-600">
-                    Ksh {referredUser.referralBonus.toFixed(2)}
+                    Ksh {referredUser.referralBonus.toLocaleString()}
                   </div>
                 </td>
               </tr>
@@ -282,7 +282,7 @@ const ReferralsList: React.FC = () => {
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="text-base font-bold text-emerald-600">
-                  Ksh {totalBonus.toFixed(2)}
+                  Ksh {totalBonus.toLocaleString()}
                 </div>
               </td>
             </tr>

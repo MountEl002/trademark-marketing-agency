@@ -57,7 +57,9 @@ export default function PaymentDialog({
             <div className="flex justify-between items-center">
               <span className="text-gray-600">Amount:</span>
               <div className="flex items-center">
-                <span className="font-medium mr-2">Ksh{amount.toFixed(2)}</span>
+                <span className="font-medium mr-2">
+                  Ksh {amount.toLocaleString()}
+                </span>
                 <button
                   onClick={() => copyToClipboard(amount.toString(), "amount")}
                   className="text-gray-500 hover:text-green-500 focus:outline-none relative"
