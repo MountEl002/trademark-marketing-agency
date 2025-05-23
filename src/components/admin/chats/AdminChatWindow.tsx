@@ -9,6 +9,8 @@ import {
   orderBy,
   onSnapshot,
   getDocs,
+  doc, // Added
+  updateDoc, // Added
 } from "firebase/firestore";
 import Image from "next/image";
 import { FaUser } from "react-icons/fa";
@@ -23,7 +25,6 @@ import FileDownloadButton from "@/components/common/FileDownloadButton";
 import UniversalButton from "@/components/common/UniversalButton";
 import { IoMdClose } from "react-icons/io";
 
-// Helper function for formatting message timestamps
 const formatMessageTimestamp = (timestamp: number): string => {
   const messageDate = new Date(timestamp);
   const now = new Date();
@@ -32,13 +33,11 @@ const formatMessageTimestamp = (timestamp: number): string => {
   const diffDays = diffHours / 24;
 
   if (diffHours < 24) {
-    // HH:mm
     return `${messageDate.getHours().toString().padStart(2, "0")}:${messageDate
       .getMinutes()
       .toString()
       .padStart(2, "0")}`;
   } else if (diffDays < 7) {
-    // Day, HH:mm
     const dayName = messageDate.toLocaleDateString(undefined, {
       weekday: "long",
     });
@@ -51,9 +50,8 @@ const formatMessageTimestamp = (timestamp: number): string => {
       .padStart(2, "0")}`;
     return `${dayName}, ${time}`;
   } else {
-    // DD/MM/YYYY
     const day = messageDate.getDate().toString().padStart(2, "0");
-    const month = (messageDate.getMonth() + 1).toString().padStart(2, "0"); // Month is 0-indexed
+    const month = (messageDate.getMonth() + 1).toString().padStart(2, "0");
     const year = messageDate.getFullYear();
     return `${day}/${month}/${year}`;
   }
@@ -63,8 +61,10 @@ interface ChatPreview {
   id: string;
   username: string;
   lastMessageText?: string;
-  lastMessageTimestamp: number; // Timestamp of the last message
+  lastMessageTimestamp: number;
   unreadCount: number;
+  adminLastReadTimestamp?: number; // Timestamp when admin last "cleared" unreads for this chat
+  chatType: "registered" | "unregistered"; // To determine collection path easily
 }
 
 interface Message {
@@ -88,33 +88,46 @@ const AdminChatWindow = () => {
   const [selectedChat, setSelectedChat] = useState<ChatPreview | null>(null);
   const [showChats, setShowChats] = useState(true);
 
-  // This logic might need adjustment if guest IDs are not > 10 characters
-  // Or if registered user IDs can be short. Assuming current logic is fine.
   const isRegisteredUser = selectedChat
-    ? selectedChat.id.length > 10 &&
-      !/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/i.test(
-        selectedChat.id
-      ) // Heuristic for registered
+    ? selectedChat.chatType === "registered"
     : false;
-
   const chatId = selectedChat ? selectedChat.id : null;
   const currentUsername = selectedChat ? selectedChat.username : null;
 
   const handleChatClick = (chat: ChatPreview) => {
-    setSelectedChat(chat);
+    const now = Date.now();
+
+    setChats((prevChats) =>
+      prevChats.map((c) =>
+        c.id === chat.id
+          ? { ...c, unreadCount: 0, adminLastReadTimestamp: now }
+          : c
+      )
+    );
+    setSelectedChat({ ...chat, unreadCount: 0, adminLastReadTimestamp: now });
     setShowChats(false);
     setLoadingMessages(true);
-    // Potentially mark messages as read here if that functionality were added
+
+    const collectionPath =
+      chat.chatType === "registered"
+        ? "registeredUsersChats"
+        : "unregisteredUsersChats";
+    const chatDocRef = doc(db, collectionPath, chat.id);
+    updateDoc(chatDocRef, { adminLastReadTimestamp: now }).catch((err) =>
+      console.error("Error updating adminLastReadTimestamp on click:", err)
+    );
   };
 
   const handleChatsToggle = () => {
     setShowChats(true);
     setSelectedChat(null);
+    // Optionally, re-fetch chats if live updates are needed when returning to the list
+    // fetchChats(); // Uncomment if you want the list to refresh counts when toggled.
   };
 
   const toggleChat = () => {
     setChatOpen(true);
-    fetchChats(); // Fetch chats when chat window is opened
+    fetchChats();
   };
 
   async function fetchChats() {
@@ -130,14 +143,14 @@ const AdminChatWindow = () => {
       ]);
 
       const allChatDocs = [
-        ...registeredDocsSnap.docs.map((doc) => ({
-          id: doc.id,
-          data: doc.data(),
+        ...registeredDocsSnap.docs.map((d) => ({
+          id: d.id,
+          data: d.data(),
           type: "registered" as const,
         })),
-        ...unregisteredDocsSnap.docs.map((doc) => ({
-          id: doc.id,
-          data: doc.data(),
+        ...unregisteredDocsSnap.docs.map((d) => ({
+          id: d.id,
+          data: d.data(),
           type: "unregistered" as const,
         })),
       ];
@@ -160,12 +173,13 @@ const AdminChatWindow = () => {
         );
 
         if (allMessagesForChat.length === 0) {
-          return null; // No messages, this chat will be filtered out
+          return null;
         }
 
-        const lastMessage = allMessagesForChat[0]; // Most recent message
+        const lastMessage = allMessagesForChat[0];
+        const firebaseAdminLastRead = chatDoc.data.adminLastReadTimestamp || 0;
         const unreadCount = allMessagesForChat.filter(
-          (m) => m.sender === "user"
+          (m) => m.sender === "user" && m.timestamp > firebaseAdminLastRead
         ).length;
 
         return {
@@ -176,9 +190,11 @@ const AdminChatWindow = () => {
             lastMessage.text ||
             (lastMessage.files && lastMessage.files.length > 0
               ? `${lastMessage.files.length} attachment(s)`
-              : ""),
+              : "Attachment(s)"),
           lastMessageTimestamp: lastMessage.timestamp,
           unreadCount: unreadCount,
+          adminLastReadTimestamp: firebaseAdminLastRead,
+          chatType: chatDoc.type,
         } as ChatPreview;
       });
 
@@ -186,7 +202,6 @@ const AdminChatWindow = () => {
         (preview) => preview !== null
       ) as ChatPreview[];
 
-      // Sort by lastMessageTimestamp descending (latest message first)
       resolvedPreviews.sort(
         (a, b) => b.lastMessageTimestamp - a.lastMessageTimestamp
       );
@@ -201,19 +216,15 @@ const AdminChatWindow = () => {
   }
 
   useEffect(() => {
-    if (!chatId) {
+    if (!chatId || !selectedChat) {
+      // Added !selectedChat check
       setMessages([]);
       setLoadingMessages(false);
       return;
     }
 
-    // Determine collection based on selectedChat's properties, if needed for robustness
-    // For now, re-using isRegisteredUser logic based on selectedChat.id structure
     const chatCollection =
-      (selectedChat?.id.length ?? 0) > 10 &&
-      !/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/i.test(
-        selectedChat!.id
-      )
+      selectedChat.chatType === "registered"
         ? "registeredUsersChats"
         : "unregisteredUsersChats";
 
@@ -225,14 +236,36 @@ const AdminChatWindow = () => {
       q,
       (snapshot) => {
         const fetchedMessages = snapshot.docs.map(
-          (doc) =>
-            ({
-              id: doc.id,
-              ...doc.data(),
-            } as Message)
+          (d) => ({ id: d.id, ...d.data() } as Message)
         );
         setMessages(fetchedMessages);
         setLoadingMessages(false);
+
+        // Mark messages as read by updating adminLastReadTimestamp because chat is open
+        if (selectedChat) {
+          const now = Date.now();
+          const currentChatDocRef = doc(db, chatCollection, selectedChat.id);
+          updateDoc(currentChatDocRef, { adminLastReadTimestamp: now })
+            .then(() => {
+              setSelectedChat((prev) =>
+                prev ? { ...prev, adminLastReadTimestamp: now } : null
+              );
+              // Update the specific chat in the main list to ensure its unreadCount is 0
+              setChats((prevChats) =>
+                prevChats.map((c) =>
+                  c.id === selectedChat.id
+                    ? { ...c, unreadCount: 0, adminLastReadTimestamp: now }
+                    : c
+                )
+              );
+            })
+            .catch((err) =>
+              console.error(
+                "Error auto-updating adminLastReadTimestamp for open chat:",
+                err
+              )
+            );
+        }
       },
       (err) => {
         console.error("Error fetching messages:", err);
@@ -241,7 +274,8 @@ const AdminChatWindow = () => {
     );
 
     return () => unsubscribe();
-  }, [chatId, selectedChat]); // Added selectedChat to dependencies for isRegisteredUser re-evaluation
+  }, [chatId, selectedChat]); // selectedChat dependency ensures effect reruns if type/id changes
+  // and its properties are available for updateDoc logic.
 
   const sendMessage = async (messageData: {
     text: string;
@@ -252,17 +286,15 @@ const AdminChatWindow = () => {
       (!messageData.files || messageData.files.length === 0)
     )
       return;
-
-    if (!chatId || !currentUsername) {
-      console.error(
-        "Cannot send message: no chat selected or username missing."
-      );
+    if (!chatId || !currentUsername || !selectedChat) {
+      console.error("Cannot send message: chat/user context missing.");
       return;
     }
 
-    const chatCollection = isRegisteredUser
-      ? "registeredUsersChats"
-      : "unregisteredUsersChats";
+    const chatCollection =
+      selectedChat.chatType === "registered"
+        ? "registeredUsersChats"
+        : "unregisteredUsersChats";
 
     const message: Message = {
       text: messageData.text,
@@ -280,7 +312,28 @@ const AdminChatWindow = () => {
         collection(db, `${chatCollection}/${chatId}/messages`),
         message
       );
-      // setNewMessage(""); // ChatInput handles its own state
+      // After sending a message, also update adminLastReadTimestamp for this chat
+      const now = Date.now();
+      const currentChatDocRef = doc(db, chatCollection, selectedChat.id);
+      updateDoc(currentChatDocRef, { adminLastReadTimestamp: now })
+        .then(() => {
+          setSelectedChat((prev) =>
+            prev ? { ...prev, adminLastReadTimestamp: now } : null
+          );
+          setChats((prevChats) =>
+            prevChats.map((c) =>
+              c.id === selectedChat.id
+                ? { ...c, unreadCount: 0, adminLastReadTimestamp: now }
+                : c
+            )
+          );
+        })
+        .catch((err) =>
+          console.error(
+            "Error updating adminLastReadTimestamp after send:",
+            err
+          )
+        );
     } catch (error) {
       console.error("Error sending message:", error);
     }
@@ -308,7 +361,6 @@ const AdminChatWindow = () => {
               backgroundRepeat: "no-repeat",
             }}
           >
-            {/* Header */}
             <div className="horizontal-space-between w-full bg-blue-200 p-3">
               {selectedChat ? (
                 <>
@@ -358,62 +410,57 @@ const AdminChatWindow = () => {
                   <LoadingAnimantion />
                 </div>
               ) : (
-                <>
-                  <div className="p-4 flex-1 overflow-y-auto chat-scrollbars">
-                    {chats.length === 0 && !error ? (
-                      <div className="text-center py-12 bg-gray-50 rounded-lg">
-                        <p className="text-gray-600">No active chats found</p>
-                      </div>
-                    ) : (
-                      <div className="space-y-3">
-                        {chats.map((chat) => (
-                          <div
-                            key={chat.id}
-                            className={`block p-3 border rounded-lg transition duration-150 cursor-pointer ${
-                              chat.unreadCount > 0
-                                ? "bg-blue-100 hover:bg-blue-200" // Unread chats color
-                                : "bg-gray-100 hover:bg-gray-50" // Read chats color
-                            }`}
-                            onClick={() => handleChatClick(chat)}
-                          >
-                            <div className="flex justify-between items-start">
-                              <div className="flex-grow min-w-0">
-                                {" "}
-                                {/* Added flex-grow and min-w-0 for better truncation */}
-                                <span className="font-medium text-gray-800 block truncate">
-                                  {chat.username}
+                <div className="p-4 flex-1 overflow-y-auto chat-scrollbars">
+                  {chats.length === 0 && !error ? (
+                    <div className="text-center py-12 bg-gray-50 rounded-lg">
+                      <p className="text-gray-600">No active chats found</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {chats.map((chat) => (
+                        <div
+                          key={chat.id}
+                          className={`block p-3 border rounded-lg transition duration-150 cursor-pointer ${
+                            chat.unreadCount > 0
+                              ? "bg-blue-100 hover:bg-blue-200"
+                              : "bg-gray-100 hover:bg-gray-50"
+                          }`}
+                          onClick={() => handleChatClick(chat)}
+                        >
+                          <div className="flex justify-between items-start">
+                            <div className="flex-grow min-w-0">
+                              <span className="font-medium text-gray-800 block truncate">
+                                {chat.username}
+                              </span>
+                              {chat.lastMessageText && (
+                                <p className="text-sm text-gray-600 truncate mt-1">
+                                  {chat.lastMessageText}
+                                </p>
+                              )}
+                            </div>
+                            <div className="flex flex-col items-end ml-2 flex-shrink-0">
+                              {chat.lastMessageTimestamp && (
+                                <span className="text-xs text-gray-500 mb-1">
+                                  {formatMessageTimestamp(
+                                    chat.lastMessageTimestamp
+                                  )}
                                 </span>
-                                {chat.lastMessageText && (
-                                  <p className="text-sm text-gray-600 truncate mt-1">
-                                    {chat.lastMessageText}
-                                  </p>
-                                )}
-                              </div>
-                              <div className="flex flex-col items-end ml-2 flex-shrink-0">
-                                {chat.lastMessageTimestamp && (
-                                  <span className="text-xs text-gray-500 mb-1">
-                                    {formatMessageTimestamp(
-                                      chat.lastMessageTimestamp
-                                    )}
-                                  </span>
-                                )}
-                                {chat.unreadCount > 0 && (
-                                  <span className="bg-red-500 text-white text-xs font-bold rounded-full px-2 py-0.5">
-                                    {chat.unreadCount}
-                                  </span>
-                                )}
-                              </div>
+                              )}
+                              {chat.unreadCount > 0 && (
+                                <span className="bg-red-500 text-white text-xs font-bold rounded-full px-2 py-0.5">
+                                  {chat.unreadCount}
+                                </span>
+                              )}
                             </div>
                           </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               )
             ) : (
               <>
-                {/* Messages container */}
                 <div className="flex-1 flex flex-col-reverse overflow-y-auto overflow-x-hidden chat-scrollbars p-2">
                   {loadingMessages ? (
                     <div className="vertical gap-4 h-full flex-1 justify-center items-center">
@@ -451,21 +498,26 @@ const AdminChatWindow = () => {
                           >
                             {message.files && message.files.length > 0 && (
                               <div className="mb-2 space-y-1">
-                                {message.files.map((file) => (
-                                  <div
-                                    key={file.id} // Assuming file has a unique id; if not, use fileKey or index
-                                    className="flex items-center gap-2 bg-white/10 rounded p-2"
-                                  >
-                                    <span className="text-xs truncate flex-1">
-                                      {file.fileName}
-                                    </span>
-                                    <FileDownloadButton
-                                      fileName={file.fileName}
-                                      fileKey={file.fileKey}
-                                      className="!p-1"
-                                    />
-                                  </div>
-                                ))}
+                                {message.files.map(
+                                  (
+                                    file,
+                                    index // Added index as key fallback
+                                  ) => (
+                                    <div
+                                      key={file.id || file.fileKey || index}
+                                      className="flex items-center gap-2 bg-white/10 rounded p-2"
+                                    >
+                                      <span className="text-xs truncate flex-1">
+                                        {file.fileName}
+                                      </span>
+                                      <FileDownloadButton
+                                        fileName={file.fileName}
+                                        fileKey={file.fileKey}
+                                        className="!p-1"
+                                      />
+                                    </div>
+                                  )
+                                )}
                               </div>
                             )}
                             <p className="text-sm whitespace-normal overflow-x-auto chat-scrollbars">
@@ -487,7 +539,6 @@ const AdminChatWindow = () => {
                 </div>
               </>
             )}
-            {/* Input area */}
             {selectedChat && !showChats && (
               <ChatInput
                 newMessage={newMessage}
