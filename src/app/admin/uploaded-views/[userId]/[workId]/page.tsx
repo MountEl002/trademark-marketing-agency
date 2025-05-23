@@ -11,6 +11,8 @@ import {
   where,
   updateDoc,
   doc,
+  getDoc,
+  increment, // Import increment
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { FiChevronLeft, FiEye, FiEdit, FiCheck, FiX } from "react-icons/fi";
@@ -89,10 +91,10 @@ function StatusDialog({
 export default function ImageDetailPage({
   params,
 }: {
-  params: Promise<{ username: string; workId: string }>;
+  params: Promise<{ userId: string; workId: string }>; // Changed username to userId
 }) {
   const resolvedParams = React.use(params);
-  const { username, workId } = resolvedParams;
+  const { userId, workId } = resolvedParams; // Changed username to userId
 
   const { user, isAdmin, loading } = useAuth();
   const router = useRouter();
@@ -102,6 +104,7 @@ export default function ImageDetailPage({
   const [updating, setUpdating] = useState(false);
   const [localImageUrl, setLocalImageUrl] = useState<string | null>(null);
   const [downloadingImage, setDownloadingImage] = useState(false);
+  const [displayUsername, setDisplayUsername] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading && (!user || !isAdmin)) {
@@ -109,42 +112,45 @@ export default function ImageDetailPage({
       return;
     }
 
-    async function fetchFileData() {
+    async function fetchFileDataAndUser() {
       try {
         setFetchingData(true);
 
-        // First find the user by username
-        const userNameQuery = query(
-          collection(db, "userNames"),
-          where("__name__", "==", username)
-        );
-        const userNameSnap = await getDocs(userNameQuery);
+        // Fetch user's username for display
+        const userDocRef = doc(db, "users", userId);
+        const userDocSnap = await getDoc(userDocRef);
 
-        if (userNameSnap.empty) {
-          console.error("Username not found:", username);
-          router.push("/admin/uploaded-views");
+        if (userDocSnap.exists()) {
+          setDisplayUsername(userDocSnap.data().username || "User");
+        } else {
+          console.error("User not found for image detail:", userId);
+          // If user not found, the file query below might also fail or be incorrect
+          router.push("/admin/uploaded-views"); // Redirect if user is essential
           return;
         }
 
-        const userId = userNameSnap.docs[0].data().userId;
-
-        // Get the specific file with the workId
+        // Get the specific file with the workId using userId
         const filesQuery = query(
           collection(db, "users", userId, "files"),
-          where("workId", "==", parseInt(workId))
+          where("workId", "==", parseInt(workId)) // Assuming workId in DB is number
         );
         const filesSnapshot = await getDocs(filesQuery);
 
         if (filesSnapshot.empty) {
-          console.error("File not found with workId:", workId);
-          router.push(`/admin/uploaded-views/${username}`);
+          console.error(
+            "File not found with workId:",
+            workId,
+            "for user:",
+            userId
+          );
+          router.push(`/admin/uploaded-views/${userId}`); // Go back to user's file list
           return;
         }
 
         const fileDoc = filesSnapshot.docs[0];
         const data = fileDoc.data();
 
-        const fileData = {
+        const currentFileData = {
           docId: fileDoc.id,
           workId: data.workId?.toString() || "N/A",
           uploadedAt: data.uploadedAt?.toDate() || new Date(),
@@ -156,85 +162,81 @@ export default function ImageDetailPage({
           fileType: data.fileType || "image/png",
         };
 
-        setFileData(fileData);
-
-        // Handle image download and local storage
-        await handleImageDownload(fileData);
+        setFileData(currentFileData);
+        await handleImageDownload(currentFileData);
       } catch (error) {
         console.error("Error fetching file data:", error);
+        // Potentially redirect or show error message
+        router.push(`/admin/uploaded-views/${userId}`);
       } finally {
         setFetchingData(false);
       }
     }
 
-    if (!loading && user && isAdmin) {
-      fetchFileData();
+    if (!loading && user && isAdmin && userId && workId) {
+      fetchFileDataAndUser();
     }
-  }, [loading, user, isAdmin, username, workId, router]);
+  }, [loading, user, isAdmin, userId, workId, router]);
 
-  const handleImageDownload = async (fileData: FileData) => {
+  const handleImageDownload = async (currentFileData: FileData) => {
+    if (!currentFileData.fileUrl) {
+      setDownloadingImage(false);
+      setLocalImageUrl("/assets/placeholderImage.jpg"); // Fallback if no URL
+      return;
+    }
     try {
       setDownloadingImage(true);
-
-      // Clean up old files from localStorage (files older than 24 hours)
       cleanupOldFiles();
-
-      // Check if image already exists in localStorage
-      const existingImageUrl = getFileFromLocalStorage(fileData.fileUrl);
+      const existingImageUrl = getFileFromLocalStorage(currentFileData.fileUrl);
 
       if (existingImageUrl) {
         setLocalImageUrl(existingImageUrl);
         return;
       }
 
-      // Download and store the image
       const downloadedImageUrl = await downloadAndStoreFile(
-        fileData.fileUrl,
-        fileData.fileName,
-        fileData.fileType
+        currentFileData.fileUrl,
+        currentFileData.fileName,
+        currentFileData.fileType
       );
 
       if (downloadedImageUrl) {
         setLocalImageUrl(downloadedImageUrl);
       } else {
         console.error("Failed to download image");
-        // Keep the original URL as fallback
-        setLocalImageUrl(fileData.fileUrl);
+        setLocalImageUrl(currentFileData.fileUrl); // Fallback to original URL
       }
     } catch (error) {
       console.error("Error handling image download:", error);
-      // Use original URL as fallback
-      setLocalImageUrl(fileData.fileUrl);
+      setLocalImageUrl(currentFileData.fileUrl); // Fallback to original URL
     } finally {
       setDownloadingImage(false);
     }
   };
 
   const handleStatusChange = async (newStatus: string) => {
-    if (!fileData) return;
+    if (!fileData || !userId) return;
 
     try {
       setUpdating(true);
-
-      // Find the user ID again
-      const userNameQuery = query(
-        collection(db, "userNames"),
-        where("__name__", "==", username)
-      );
-      const userNameSnap = await getDocs(userNameQuery);
-      const userId = userNameSnap.docs[0].data().userId;
-
-      // Update the file document
       const fileDocRef = doc(db, "users", userId, "files", fileData.docId);
-      await updateDoc(fileDocRef, {
-        status: newStatus,
-      });
 
-      // Update local state
+      const updateData: { status: string } = { status: newStatus };
+      await updateDoc(fileDocRef, updateData);
+
+      // If status is "confirmed", update user's payments
+      if (newStatus === "confirmed" && fileData.amount > 0) {
+        const userDocRef = doc(db, "users", userId);
+        await updateDoc(userDocRef, {
+          payments: increment(fileData.amount),
+        });
+      }
+
       setFileData({ ...fileData, status: newStatus });
       setStatusDialogOpen(false);
     } catch (error) {
       console.error("Error updating status:", error);
+      // Add user feedback here, e.g., a toast notification
     } finally {
       setUpdating(false);
     }
@@ -262,7 +264,12 @@ export default function ImageDetailPage({
   }
 
   if (!fileData) {
-    return null;
+    // This case should ideally be handled by redirection in useEffect if data is not found
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <p className="text-red-500">File data could not be loaded.</p>
+      </div>
+    );
   }
 
   return (
@@ -283,10 +290,11 @@ export default function ImageDetailPage({
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="mb-6">
           <button
-            onClick={() => router.push(`/admin/uploaded-views/${username}`)}
+            onClick={() => router.push(`/admin/uploaded-views/${userId}`)} // Changed to userId
             className="flex items-center text-blue-600 hover:text-blue-800"
           >
-            <FiChevronLeft className="mr-1" /> Back to {username}’s Images
+            <FiChevronLeft className="mr-1" /> Back to{" "}
+            {displayUsername || userId}’s Images
           </button>
         </div>
 
@@ -316,7 +324,7 @@ export default function ImageDetailPage({
                   className="w-full h-full object-contain"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
-                    target.src = "/assets/placeholderImage.jpg";
+                    target.src = "/assets/placeholderImage.jpg"; // Fallback image
                   }}
                   priority
                 />
@@ -387,7 +395,8 @@ export default function ImageDetailPage({
                     Amount
                   </label>
                   <div className="text-lg font-semibold text-green-600">
-                    {fileData.amount.toLocaleString()}
+                    {/* Assuming amount is a currency, format appropriately if needed */}
+                    Ksh {fileData.amount.toLocaleString()}
                   </div>
                 </div>
 
@@ -414,7 +423,6 @@ export default function ImageDetailPage({
         </div>
       </main>
 
-      {/* Status Change Dialog */}
       <StatusDialog
         isOpen={statusDialogOpen}
         onClose={() => setStatusDialogOpen(false)}

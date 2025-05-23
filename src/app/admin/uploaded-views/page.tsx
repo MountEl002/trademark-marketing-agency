@@ -36,11 +36,10 @@ export default function UploadedViewsPage() {
         for (const userDoc of usersSnapshot.docs) {
           const userData = userDoc.data();
           const userId = userDoc.id;
-          const username = userData.username;
+          const username = userData.username; // Username is still fetched for display
 
-          if (!username) continue;
+          if (!username) continue; // Or handle as needed, e.g. display userId
 
-          // Check if user has files subcollection
           const filesQuery = query(
             collection(db, "users", userId, "files"),
             orderBy("uploadedAt", "desc"),
@@ -60,7 +59,6 @@ export default function UploadedViewsPage() {
           }
         }
 
-        // Sort by latest upload time (most recent first)
         usersWithFiles.sort(
           (a, b) => b.latestUploadTime.getTime() - a.latestUploadTime.getTime()
         );
@@ -140,32 +138,37 @@ export default function UploadedViewsPage() {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {usersWithUploads.map((user) => (
-                      <tr
-                        key={user.userId}
-                        onClick={() =>
-                          router.push(`/admin/uploaded-views/${user.username}`)
-                        }
-                        className="hover:bg-gray-50 cursor-pointer transition-colors"
-                      >
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center">
-                            <FiImage className="text-blue-500 mr-2" />
-                            <span className="text-sm font-medium text-gray-900">
-                              {user.username}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center">
-                            <FiClock className="text-gray-400 mr-2" />
-                            <span className="text-sm text-gray-500">
-                              {user.latestUploadTime.toLocaleString()}
-                            </span>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
+                    {usersWithUploads.map(
+                      (
+                        u // Renamed user to u to avoid conflict with context user
+                      ) => (
+                        <tr
+                          key={u.userId}
+                          onClick={
+                            () =>
+                              router.push(`/admin/uploaded-views/${u.userId}`) // Changed to userId
+                          }
+                          className="hover:bg-gray-50 cursor-pointer transition-colors"
+                        >
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center">
+                              <FiImage className="text-blue-500 mr-2" />
+                              <span className="text-sm font-medium text-gray-900">
+                                {u.username}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center">
+                              <FiClock className="text-gray-400 mr-2" />
+                              <span className="text-sm text-gray-500">
+                                {u.latestUploadTime.toLocaleString()}
+                              </span>
+                            </div>
+                          </td>
+                        </tr>
+                      )
+                    )}
                   </tbody>
                 </table>
               </div>

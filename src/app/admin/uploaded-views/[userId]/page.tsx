@@ -4,7 +4,14 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import React from "react";
-import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  query,
+  orderBy,
+  doc,
+  getDoc,
+} from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { FiChevronLeft, FiImage, FiClock, FiEye } from "react-icons/fi";
 
@@ -20,15 +27,16 @@ interface FileData {
 export default function UserUploadsPage({
   params,
 }: {
-  params: Promise<{ username: string }>;
+  params: Promise<{ userId: string }>; // Changed from username to userId
 }) {
   const resolvedParams = React.use(params);
-  const username = resolvedParams.username;
+  const userId = resolvedParams.userId; // Changed from username to userId
 
   const { user, isAdmin, loading } = useAuth();
   const router = useRouter();
   const [userFiles, setUserFiles] = useState<FileData[]>([]);
   const [fetchingData, setFetchingData] = useState(true);
+  const [displayUsername, setDisplayUsername] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading && (!user || !isAdmin)) {
@@ -36,31 +44,34 @@ export default function UserUploadsPage({
       return;
     }
 
-    async function fetchUserFiles() {
+    async function fetchUserFilesAndData() {
       try {
         setFetchingData(true);
 
-        // First find the user by username
-        const userNameQuery = query(
-          collection(db, "userNames"),
-          where("__name__", "==", username)
-        );
-        const userNameSnap = await getDocs(userNameQuery);
+        // Fetch user's username for display
+        const userDocRef = doc(db, "users", userId);
+        const userDocSnap = await getDoc(userDocRef);
 
-        if (userNameSnap.empty) {
-          console.error("Username not found:", username);
-          router.push("/admin/uploaded-views");
-          return;
+        if (userDocSnap.exists()) {
+          setDisplayUsername(userDocSnap.data().username || "User");
+        } else {
+          console.error("User not found:", userId);
+          setDisplayUsername("Unknown User");
+          // Optionally, redirect if user not found, though files might still be fetched if ID is valid for subcollection
         }
 
-        const userId = userNameSnap.docs[0].data().userId;
-
-        // Get all files for this user
+        // Get all files for this user using userId
         const filesQuery = query(
           collection(db, "users", userId, "files"),
           orderBy("uploadedAt", "desc")
         );
         const filesSnapshot = await getDocs(filesQuery);
+
+        if (filesSnapshot.empty && !userDocSnap.exists()) {
+          // If user doc doesn't exist and no files, likely invalid userId
+          router.push("/admin/uploaded-views");
+          return;
+        }
 
         const files: FileData[] = [];
         filesSnapshot.forEach((doc) => {
@@ -83,10 +94,10 @@ export default function UserUploadsPage({
       }
     }
 
-    if (!loading && user && isAdmin) {
-      fetchUserFiles();
+    if (!loading && user && isAdmin && userId) {
+      fetchUserFilesAndData();
     }
-  }, [loading, user, isAdmin, username, router]);
+  }, [loading, user, isAdmin, userId, router]);
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -139,7 +150,7 @@ export default function UserUploadsPage({
             <div className="flex items-center mb-6">
               <FiImage className="text-blue-600 mr-3 text-2xl" />
               <h2 className="text-2xl font-bold text-gray-800">
-                Images uploaded by {username}
+                Images uploaded by {displayUsername || userId}
               </h2>
             </div>
 
@@ -175,10 +186,10 @@ export default function UserUploadsPage({
                   <tbody className="bg-white divide-y divide-gray-200">
                     {userFiles.map((file, index) => (
                       <tr
-                        key={index}
+                        key={index} // Consider using file.workId if unique and stable
                         onClick={() =>
                           router.push(
-                            `/admin/uploaded-views/${username}/${file.workId}`
+                            `/admin/uploaded-views/${userId}/${file.workId}` // Changed to userId
                           )
                         }
                         className="hover:bg-gray-50 cursor-pointer transition-colors"
