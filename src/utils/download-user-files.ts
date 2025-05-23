@@ -19,7 +19,7 @@ const s3Client = new S3Client({
 export async function downloadAndStoreFile(
   fileUrl: string,
   fileName: string,
-  fileType: string
+  fileType?: string
 ): Promise<string | null> {
   try {
     // Extract S3 key from the file URL
