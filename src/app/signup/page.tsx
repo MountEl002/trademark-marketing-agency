@@ -15,8 +15,9 @@ import { FirebaseError } from "firebase/app";
 import SearchableSelect from "@/components/customer/SearchableSelect";
 import { countries } from "@/contexts/globalData";
 import { verifyUsername } from "@/contexts/userService";
-import ReferralCodeInput from "@/components/customer/ReferralCodeInput";
 import ContinueWithGoogle from "@/components/common/login/ContinueWithGoogle";
+import { doc, getDoc, setDoc, updateDoc, increment } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 interface FormFieldProps {
   label: string;
@@ -141,12 +142,19 @@ const SignUp = () => {
   const [usernameChecking, setUsernameChecking] = useState<boolean>(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState<boolean>(false);
 
+  // Referral code states
+  const [referralCode, setReferralCode] = useState<string>("");
+  const [referralCodeValid, setReferralCodeValid] = useState<boolean | null>(
+    null
+  );
+  const [referralCodeChecking, setReferralCodeChecking] =
+    useState<boolean>(false);
+  const [showReferralConfirmation, setShowReferralConfirmation] =
+    useState<boolean>(false);
+  const [referralMessage, setReferralMessage] = useState<string>("");
+
   // Single state object to track focus state of all fields
   const [focusedField, setFocusedField] = useState<string | null>(null);
-
-  const { component: referralComponent, processReferral } = ReferralCodeInput({
-    username: formData.username,
-  });
 
   useEffect(() => {
     setPasswordsMatch(formData.password === formData.repeatPassword);
@@ -176,6 +184,45 @@ const SignUp = () => {
     return () => clearTimeout(timer);
   }, [formData.username]);
 
+  // Check referral code validity
+  useEffect(() => {
+    const checkReferralCode = async () => {
+      if (referralCode.trim().length >= 3) {
+        setReferralCodeChecking(true);
+        try {
+          // Check if referral code exists in userNames collection
+          const usernameRef = doc(db, "userNames", referralCode.trim());
+          const usernameDoc = await getDoc(usernameRef);
+
+          if (usernameDoc.exists()) {
+            setReferralCodeValid(true);
+            setReferralMessage(
+              `Valid referral code from user: ${referralCode}`
+            );
+          } else {
+            setReferralCodeValid(false);
+            setReferralMessage("Referral code not found");
+          }
+        } catch (error) {
+          console.error("Error checking referral code:", error);
+          setReferralCodeValid(false);
+          setReferralMessage("Error validating referral code");
+        } finally {
+          setReferralCodeChecking(false);
+        }
+      } else {
+        setReferralCodeValid(null);
+        setReferralMessage("");
+      }
+    };
+
+    const timer = setTimeout(() => {
+      checkReferralCode();
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [referralCode]);
+
   const handleFocus = (fieldName: string) => {
     setFocusedField(fieldName);
   };
@@ -203,19 +250,62 @@ const SignUp = () => {
     setFormData({ ...formData, country: selectedCountry });
   };
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
+  // Handler for referral code input
+  const handleReferralCodeChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.trim();
+    setReferralCode(value);
+  };
 
-    // Validate form
-    if (usernameExists) {
-      setError("Username is already taken. Please choose another one.");
-      setLoading(false);
-      return;
-    }
+  // Process referral after successful signup
+  const processReferral = async () => {
+    if (!referralCode.trim() || !referralCodeValid) return;
 
     try {
+      // Check if referral document exists in referrals collection
+      const referralRef = doc(db, "referrals", referralCode.trim());
+      const referralDoc = await getDoc(referralRef);
+
+      if (referralDoc.exists()) {
+        // Update existing referral document - increment referrals count
+        await updateDoc(referralRef, {
+          referrals: increment(1),
+        });
+      } else {
+        // Create new referral document with referrals initialized to 1
+        await setDoc(referralRef, {
+          referrals: 1,
+          createdAt: new Date(),
+        });
+      }
+
+      // Create referral document for current user
+      const currentUserReferralRef = doc(db, "referrals", formData.username);
+      await setDoc(currentUserReferralRef, {
+        createdAt: new Date(),
+        packages: [],
+        referrals: 0,
+        userId: "", // This will be updated with actual userId after signup
+      });
+
+      console.log("Referral processed successfully");
+    } catch (error) {
+      console.error("Error processing referral:", error);
+      // Don't throw error to prevent signup failure
+    }
+  };
+
+  const handleReferralConfirmation = () => {
+    setShowReferralConfirmation(false);
+    // Continue with signup process
+    handleActualSubmit();
+  };
+
+  const handleActualSubmit = async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      // First, complete the signup process
       await signup(
         formData.email,
         formData.password,
@@ -223,14 +313,23 @@ const SignUp = () => {
         formData.username,
         formData.country
       );
-      await processReferral();
+
+      // Process referral after successful signup
+      if (referralCode.trim() && referralCodeValid) {
+        try {
+          await processReferral();
+        } catch (referralError) {
+          console.error("Error processing referral:", referralError);
+          // Don't fail the entire signup process if referral processing fails
+        }
+      }
+
       setShowSuccessPopup(true);
 
+      // Wait 2 seconds before redirecting
       setTimeout(() => {
-        if (showSuccessPopup) {
-          router.push("/customer/dashboards");
-        }
-      }, 15000);
+        router.push("/customer/dashboards");
+      }, 2000);
     } catch (error) {
       console.error("Signup error:", error);
       if (error instanceof FirebaseError) {
@@ -241,6 +340,24 @@ const SignUp = () => {
       setTimeout(() => setError(""), 5000);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+
+    // Validate form
+    if (usernameExists) {
+      setError("Username is already taken. Please choose another one.");
+      return;
+    }
+
+    // If referral code is provided and valid, show confirmation
+    if (referralCode.trim() && referralCodeValid) {
+      setShowReferralConfirmation(true);
+    } else {
+      // No referral code or invalid, proceed directly
+      handleActualSubmit();
     }
   };
 
@@ -258,6 +375,12 @@ const SignUp = () => {
     formData.country &&
     passwordsMatch &&
     !usernameExists;
+
+  const referralFieldBorder = `transition-all duration-500 border ${
+    focusedField === "referral"
+      ? "border-blue-500 bg-gray-50"
+      : "border-transparent bg-gray-100"
+  }`;
 
   return (
     <section className="center-content-on-screen">
@@ -316,7 +439,6 @@ const SignUp = () => {
               usernameChecking={usernameChecking}
             />
 
-            {/* Replace the Country FormField with SearchableSelect */}
             <div className="mb-4">
               <label className="label-email-password">Country</label>
               <SearchableSelect
@@ -327,7 +449,52 @@ const SignUp = () => {
                 required={true}
               />
             </div>
-            {referralComponent}
+
+            {/* Referral Code Input */}
+            <div className="mb-4">
+              <label htmlFor="referralCode" className="label-email-password">
+                Referral Code (Optional)
+              </label>
+              <div
+                className={`relative container-input-email-password ${referralFieldBorder}`}
+              >
+                <input
+                  id="referralCode"
+                  type="text"
+                  value={referralCode}
+                  onFocus={() => handleFocus("referral")}
+                  onBlur={handleBlur}
+                  onChange={handleReferralCodeChange}
+                  placeholder="Enter referral code"
+                  className="input-email-password pr-10"
+                  autoComplete="off"
+                />
+                {referralCode.length >= 3 && (
+                  <div className="absolute right-3 top-2.5">
+                    {referralCodeChecking ? (
+                      <div className="animate-spin h-5 w-5 border-2 border-blue-500 rounded-full border-t-transparent" />
+                    ) : referralCodeValid === false ? (
+                      <IoMdCloseCircle size={20} className="text-red-500" />
+                    ) : referralCodeValid === true ? (
+                      <IoMdCheckmarkCircle
+                        size={20}
+                        className="text-green-500"
+                      />
+                    ) : null}
+                  </div>
+                )}
+              </div>
+              {referralMessage && (
+                <p
+                  className={`text-sm mt-1 ${
+                    referralCodeValid ? "text-green-600" : "text-red-500"
+                  }`}
+                >
+                  {referralMessage}
+                </p>
+              )}
+            </div>
+
             <FormField
               label="Password"
               type="password"
@@ -404,6 +571,46 @@ const SignUp = () => {
           </p>
         </div>
       </div>
+
+      {/* Referral Confirmation Popup */}
+      {showReferralConfirmation && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md mx-4 shadow-xl">
+            <div className="flex justify-center mb-4">
+              <div className="bg-blue-100 p-3 rounded-full">
+                <IoMdCheckmarkCircle size={40} className="text-blue-500" />
+              </div>
+            </div>
+            <h3 className="text-xl font-semibold text-center mb-2">
+              Referral Code Valid!
+            </h3>
+            <p className="text-gray-600 text-center mb-6">
+              You were referred by{" "}
+              <span className="font-semibold">{referralCode}</span>. Click
+              continue to complete your registration with this referral.
+            </p>
+            <div className="flex justify-center gap-3">
+              <button
+                onClick={() => setShowReferralConfirmation(false)}
+                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleReferralConfirmation}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition-colors"
+                disabled={loading}
+              >
+                {loading ? (
+                  <div className="animate-spin h-5 w-5 border-4 text-gray-100 rounded-full border-t-transparent mx-auto" />
+                ) : (
+                  "Continue"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Success Popup Dialog */}
       {showSuccessPopup && (

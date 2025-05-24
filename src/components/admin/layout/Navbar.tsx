@@ -1,14 +1,8 @@
 // components/Layout/Navbar.tsx
 import { useState } from "react";
 import Link from "next/link";
-import {
-  FiMenu,
-  FiBell,
-  FiUsers,
-  FiDatabase,
-  FiUpload,
-  FiEye,
-} from "react-icons/fi";
+import { FiMenu, FiUsers, FiDatabase, FiUpload, FiEye } from "react-icons/fi";
+import { FaRegUser } from "react-icons/fa6";
 
 const Navbar: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -30,16 +24,16 @@ const Navbar: React.FC = () => {
               >
                 <FiMenu className="h-6 w-6" />
               </button>
-              <span className="ml-4 font-semibold text-xl">
+              <span className="sm:ml-4 ml-1 font-semibold md:text-xl text-sm">
                 Admin Dashboard
               </span>
             </div>
             <div>
               <Link
-                href="/admin"
-                className="p-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                href="/customer/dashboards"
+                className="horizontal gap-3 p-2 font-semibold md:text-lg text-sm rounded-md bg-white text-blue-700 hover:text-blue-900 hover:bg-gray-200 transition-colors duration-500"
               >
-                <FiBell className="h-6 w-6" />
+                <FaRegUser className="h-6 w-6" /> <span>My account</span>
               </Link>
             </div>
           </div>
