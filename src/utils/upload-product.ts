@@ -165,10 +165,6 @@ export function validateFile(file: File): {
     "image/png",
     "image/gif",
     "image/webp",
-    "application/pdf",
-    "text/plain",
-    "application/msword",
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
   ];
 
   if (!allowedTypes.includes(file.type)) {

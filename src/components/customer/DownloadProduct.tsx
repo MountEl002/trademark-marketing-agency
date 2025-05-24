@@ -11,7 +11,6 @@ import {
   cleanupOldFiles,
 } from "@/utils/download-user-files";
 import LoadingScreen from "../common/LoadingScreen";
-import PlaceholderProductImage from "@/assests/PlaceholderProduct.jpg";
 
 interface FileData {
   docId: string;
@@ -47,9 +46,7 @@ function DownloadDialog({ isOpen, onClose, success, message }: DialogProps) {
             {success ? "Download Successful" : "Download Failed"}
           </h3>
         </div>
-
         <p className="text-gray-600 mb-6">{message}</p>
-
         <div className="flex justify-end">
           <button
             onClick={onClose}
@@ -70,119 +67,126 @@ export default function DownloadProduct() {
   const [fileData, setFileData] = useState<FileData | null>(null);
   const [fetchingData, setFetchingData] = useState(true);
   const [localImageUrl, setLocalImageUrl] = useState<string | null>(null);
-  const [downloadingImage, setDownloadingImage] = useState(false);
+  const [downloadingImage, setDownloadingImage] = useState(false); // Tracks overall image processing for display
+  const [isDownloadingFile, setIsDownloadingFile] = useState(false); // Tracks file download action specifically
 
   useEffect(() => {
     async function fetchFileData() {
+      setFetchingData(true);
+      setDownloadingImage(true); // Indicate that we are attempting to get an image
       try {
-        setFetchingData(true);
-
-        // Get the latest product file
         const filesQuery = query(
           collection(db, "productFiles"),
           orderBy("uploadedAt", "desc"),
           limit(1)
         );
-
         const querySnapshot = await getDocs(filesQuery);
 
         if (!querySnapshot.empty) {
           const latestDoc = querySnapshot.docs[0];
           const data = latestDoc.data();
-
-          const fileData = {
+          const newFileData: FileData = {
             docId: latestDoc.id,
             uploadedAt: data.uploadedAt?.toDate() || new Date(),
             fileName: data.fileName || "Unknown",
             fileUrl: data.fileUrl || "",
           };
-
-          setFileData(fileData);
-
-          // Handle image download and local storage
-          await handleImageDownload(fileData);
+          setFileData(newFileData);
+          await handleImageProcessing(newFileData);
         } else {
           console.log("No product files found");
+          setFileData(null);
+          setLocalImageUrl(null);
         }
       } catch (error) {
         console.error("Error fetching file data:", error);
+        setFileData(null);
+        setLocalImageUrl(null);
       } finally {
         setFetchingData(false);
+        setDownloadingImage(false); // Done with initial image attempt
       }
     }
 
     fetchFileData();
   }, []);
 
-  const handleImageDownload = async (fileData: FileData) => {
+  const handleImageProcessing = async (currentFileData: FileData) => {
+    // This function tries to get a local version of the image
+    // If successful, localImageUrl is set. Otherwise, it's set to null.
+    setDownloadingImage(true);
     try {
-      setDownloadingImage(true);
-
-      // Clean up old files from localStorage (files older than 24 hours)
       cleanupOldFiles();
-
-      // Check if image already exists in localStorage
-      const existingImageUrl = getFileFromLocalStorage(fileData.fileUrl);
+      const existingImageUrl = getFileFromLocalStorage(currentFileData.fileUrl);
 
       if (existingImageUrl) {
         setLocalImageUrl(existingImageUrl);
         return;
       }
 
-      // Download and store the image
+      if (!currentFileData.fileUrl) {
+        console.error("No file URL provided in fileData.");
+        setLocalImageUrl(null);
+        return;
+      }
+
       const downloadedImageUrl = await downloadAndStoreFile(
-        fileData.fileUrl,
-        fileData.fileName
+        currentFileData.fileUrl,
+        currentFileData.fileName
       );
 
       if (downloadedImageUrl) {
         setLocalImageUrl(downloadedImageUrl);
       } else {
-        console.error("Failed to download image");
-        // Keep the original URL as fallback
-        setLocalImageUrl(fileData.fileUrl);
+        console.error("Failed to download and store image for local use.");
+        setLocalImageUrl(null);
       }
     } catch (error) {
-      console.error("Error handling image download:", error);
-      // Use original URL as fallback
-      setLocalImageUrl(fileData.fileUrl);
+      console.error("Error processing image for local use:", error);
+      setLocalImageUrl(null);
     } finally {
       setDownloadingImage(false);
     }
   };
 
-  const handleDownload = async () => {
+  const handleActualDownload = async () => {
+    if (!localImageUrl || !fileData) {
+      // Ensure fileData is also available for filename
+      setDialogSuccess(false);
+      setDialogMessage(
+        "No image available to download or file data is missing."
+      );
+      setDialogOpen(true);
+      return;
+    }
+
+    setIsDownloadingFile(true);
     try {
-      setDownloadingImage(true);
-
-      // Determine which image to download
-      let imageUrl: string;
-      let fileName = fileData?.fileName || "download_image";
-
-      // If localImageUrl is not available, use PlaceholderProductImage
-      if (!localImageUrl) {
-        // Handle StaticImageData type from Next.js
-        imageUrl =
-          typeof PlaceholderProductImage === "string"
-            ? PlaceholderProductImage
-            : PlaceholderProductImage.src;
-        fileName = "product_image.png";
-      } else {
-        imageUrl = localImageUrl;
-      }
-
-      if (!imageUrl) {
-        throw new Error("No image available for download");
-      }
-
-      // Create a temporary anchor element to trigger download
-      const response = await fetch(imageUrl);
+      const response = await fetch(localImageUrl);
       const blob = await response.blob();
+
+      let finalFileName = fileData.fileName || "product_image";
+      // Ensure filename has an extension if possible
+      if (!/\.[^/.]+$/.test(finalFileName)) {
+        const type = blob.type; // e.g. "image/jpeg"
+        if (type && type.startsWith("image/")) {
+          const extension = type.split("/")[1];
+          if (extension && !finalFileName.endsWith(`.${extension}`)) {
+            finalFileName = `${finalFileName}.${extension}`;
+          } else if (!extension && !finalFileName.includes(".")) {
+            // if no extension found and no dot present
+            finalFileName = `${finalFileName}.png`; // Fallback extension
+          }
+        } else if (!finalFileName.includes(".")) {
+          // if not an image type and no dot present
+          finalFileName = `${finalFileName}.png`; // Fallback extension
+        }
+      }
 
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = fileName;
+      link.download = finalFileName;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -199,27 +203,29 @@ export default function DownloadProduct() {
       setDialogMessage("Failed to download image. Please try again.");
       setDialogOpen(true);
     } finally {
-      setDownloadingImage(false);
+      setIsDownloadingFile(false);
     }
   };
 
   if (fetchingData) {
-    return <LoadingScreen message="Loading Product" />;
+    return <LoadingScreen message="Loading Product..." />;
   }
 
   return (
     <>
       <div className="mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden max-w-3xl w-full">
-        <div className="vertical gap-8 py-8 text-center">
+        <div className="flex flex-col items-center gap-8 py-8 text-center px-4">
+          {" "}
+          {/* Changed to flex flex-col items-center */}
           <h1 className="text-xl font-bold text-gray-800 mb-2">
             DOWNLOAD THIS IMAGE AND POST ON YOUR STATUS TO EARN WITH VIEWS
           </h1>
           <button
-            onClick={handleDownload}
-            disabled={downloadingImage}
-            className="w-fit horizontal bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={handleActualDownload}
+            disabled={isDownloadingFile || downloadingImage || !localImageUrl}
+            className="w-fit flex items-center justify-center bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {downloadingImage ? (
+            {isDownloadingFile ? (
               <>
                 <FiLoader className="animate-spin mr-2" />
                 DOWNLOADING...
@@ -231,29 +237,29 @@ export default function DownloadProduct() {
               </>
             )}
           </button>
-
-          <div>
-            {localImageUrl ? (
+          <div className="mt-6 w-full">
+            {" "}
+            {/* Added w-full */}
+            {downloadingImage && !localImageUrl ? ( // Show loader while initially trying to get image
+              <div className="vertical w-full h-full flex items-center justify-center min-h-[200px] p-4">
+                <FiLoader className="animate-spin text-4xl text-gray-500" />
+              </div>
+            ) : localImageUrl ? (
               <div className="vertical w-full h-full">
                 <Image
                   src={localImageUrl}
-                  alt="Promotion"
+                  alt={fileData?.fileName || "Promotion"}
                   width={0}
                   height={0}
                   sizes="100vw"
-                  className="w-full h-auto rounded-lg"
+                  className="w-full h-auto rounded-lg max-h-[70vh] object-contain" // Added object-contain
+                  priority
+                  // Consider adding priority if this is LCP (comment on a new line or use {/* ... */})
                 />
               </div>
             ) : (
-              <div className="vertical w-full h-full">
-                <Image
-                  src={PlaceholderProductImage}
-                  alt="Promotion"
-                  width={0}
-                  height={0}
-                  sizes="100vw"
-                  className="w-full h-auto rounded-lg"
-                />
+              <div className="vertical w-full h-full flex items-center justify-center min-h-[200px] bg-gray-50 border border-dashed border-gray-300 rounded-lg p-4">
+                <p className="text-gray-500 text-lg">there is not product</p>
               </div>
             )}
           </div>
