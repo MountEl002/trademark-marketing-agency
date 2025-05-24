@@ -14,6 +14,7 @@ import {
   setDoc,
   serverTimestamp,
   where,
+  getDocs,
 } from "firebase/firestore";
 import Image from "next/image";
 import { getChatUserName } from "@/utils/initialize-chat";
@@ -81,6 +82,36 @@ const Chat = () => {
     null
   );
 
+  // Function to check if user has ever sent a message and send welcome message if not
+  const checkAndSendWelcomeMessage = async (
+    collectionPath: string,
+    docId: string
+  ) => {
+    try {
+      const messagesRef = collection(db, `${collectionPath}/${docId}/messages`);
+      const userMessagesQuery = query(
+        messagesRef,
+        where("sender", "==", "user")
+      );
+      const userMessagesSnapshot = await getDocs(userMessagesQuery);
+
+      // If user has never sent a message, send welcome message
+      if (userMessagesSnapshot.empty) {
+        const welcomeMessage: Message = {
+          text: "Hello, dear customer. I am Anne. Thank you for trusting Trademark Marketing Agency. Feel free to talk to us through this chat window whenever you need help or have questions. Thank you!",
+          sender: "admin",
+          timestamp: Date.now(),
+          userName: "admin", // Admin's identifier
+        };
+
+        await addDoc(messagesRef, welcomeMessage);
+        console.log("Welcome message sent to new user");
+      }
+    } catch (error) {
+      console.error("Error checking/sending welcome message:", error);
+    }
+  };
+
   // Initialize userName and chatDocId
   useEffect(() => {
     let isMounted = true;
@@ -97,6 +128,9 @@ const Chat = () => {
           const docId = currentUser ? currentUser.uid : name; // `name` is guestId for guests
           setChatCollectionPath(collectionPath);
           setChatDocId(docId);
+
+          // Check and send welcome message if needed
+          await checkAndSendWelcomeMessage(collectionPath, docId);
         }
       } catch (error) {
         console.error("Error initializing chat user:", error);
