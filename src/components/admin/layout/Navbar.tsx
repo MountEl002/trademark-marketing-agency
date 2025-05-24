@@ -79,7 +79,7 @@ const Navbar: React.FC = () => {
             </li>
             <li>
               <Link
-                href="/admin/transactions"
+                href="/admin/user-transactions"
                 className="flex items-center p-3 text-gray-700 rounded-md hover:bg-blue-50 hover:text-blue-700 transition-colors"
                 onClick={() => setSidebarOpen(false)}
               >
