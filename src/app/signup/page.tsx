@@ -4,7 +4,6 @@ import { useEffect, useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import LightLogo from "@/components/common/LightLogo";
-import ContinueWith from "@/components/common/login/ContinueWith";
 import {
   IoMdEye,
   IoMdEyeOff,
@@ -13,11 +12,11 @@ import {
 } from "react-icons/io";
 import Link from "next/link";
 import { FirebaseError } from "firebase/app";
-import Chat from "@/components/common/Chat";
 import SearchableSelect from "@/components/customer/SearchableSelect";
 import { countries } from "@/contexts/globalData";
 import { verifyUsername } from "@/contexts/userService";
 import ReferralCodeInput from "@/components/customer/ReferralCodeInput";
+import ContinueWithGoogle from "@/components/common/login/ContinueWithGoogle";
 
 interface FormFieldProps {
   label: string;
@@ -262,7 +261,6 @@ const SignUp = () => {
 
   return (
     <section className="center-content-on-screen">
-      <Chat />
       <div className="centered-content-on-screen">
         <LightLogo />
         <div className="w-full px-4">
@@ -270,7 +268,7 @@ const SignUp = () => {
           <p className="text-center mb-6">
             Create your Trademark Marketing account
           </p>
-          <ContinueWith />
+          <ContinueWithGoogle className="continue-with" />
           <div className="flex flex-row items-center gap-3 my-4">
             <div className="w-full h-0 border-[0.5px] border-gray-200"></div>
             <div className="text-center text-gray-500">or</div>

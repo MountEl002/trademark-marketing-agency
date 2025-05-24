@@ -1,6 +1,5 @@
 "use client";
 
-import Chat from "@/components/common/Chat";
 import LoadingScreen from "@/components/common/LoadingScreen";
 import Navbar from "@/components/layout/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
@@ -61,7 +60,6 @@ export default function CustomerLayout({
     return (
       <>
         <Navbar />
-        <Chat />
         {children}
       </>
     );
@@ -70,7 +68,6 @@ export default function CustomerLayout({
   return (
     <>
       <Navbar />
-      <Chat />
       <div
         className="relative min-h-screen"
         style={{

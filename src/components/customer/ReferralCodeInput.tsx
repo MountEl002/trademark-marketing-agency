@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { IoMdCheckmarkCircle, IoMdCloseCircle } from "react-icons/io";
-import { doc, getDoc, collection, writeBatch } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc, increment } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -29,7 +29,7 @@ const ReferralCodeInput = ({
       : "border-transparent bg-gray-100"
   }`;
 
-  // Verify referral code in real-time
+  // Verify referral code by checking userNames collection
   useEffect(() => {
     const verifyReferralCode = async () => {
       if (!referralCode || referralCode.trim() === "") {
@@ -41,8 +41,9 @@ const ReferralCodeInput = ({
       setIsChecking(true);
       try {
         const normalizedCode = referralCode.trim();
-        const referralDocRef = doc(db, "referrals", normalizedCode);
-        const docSnap = await getDoc(referralDocRef);
+        // Check if username exists in userNames collection
+        const usernameDocRef = doc(db, "userNames", normalizedCode);
+        const docSnap = await getDoc(usernameDocRef);
 
         const valid = docSnap.exists();
         setIsCodeValid(valid);
@@ -70,40 +71,69 @@ const ReferralCodeInput = ({
   const processReferral = async () => {
     if (!username) {
       console.error("Username is required to process referral");
-      return;
+      return false;
     }
 
     try {
-      const batch = writeBatch(db);
-
-      // 1. Always create a document for the current user in referrals collection
+      // Always create a document for the current user in referrals collection
       const userReferralDocRef = doc(db, "referrals", username);
-      batch.set(userReferralDocRef, {
+      await setDoc(userReferralDocRef, {
         userId: user?.uid,
         packages: [],
         createdAt: new Date(),
-        referrals: 0, // Counter for future referrals
+        referrals: 0, // Counter for future referrals this user will make
       });
 
-      // 2. If referral code is valid, create a subcollection entry
+      // If referral code is valid, process the referral
       if (isCodeValid && referralCode) {
-        const referrerDocRef = doc(db, "referrals", referralCode.trim());
-        const referredUserDocRef = doc(
-          collection(referrerDocRef, "referred"),
-          username
-        );
+        const normalizedCode = referralCode.trim();
+        const referrerDocRef = doc(db, "referrals", normalizedCode);
 
-        batch.set(referredUserDocRef, {
-          username: username,
-          referredAt: new Date(),
-          processed: false, // Flag for future reward processing
-        });
+        try {
+          // Check if referrer document exists
+          const referrerDoc = await getDoc(referrerDocRef);
+
+          if (referrerDoc.exists()) {
+            // Document exists, increment referrals count
+            await updateDoc(referrerDocRef, {
+              referrals: increment(1),
+              updatedAt: new Date(),
+            });
+          } else {
+            // Document doesn't exist, create it with referrals: 1
+            await setDoc(referrerDocRef, {
+              userId: "", // We don't have the referrer's userId from userNames collection
+              packages: [],
+              createdAt: new Date(),
+              referrals: 1, // First referral for this user
+            });
+          }
+
+          // Create a subcollection entry to track this specific referral
+          const referredUserDocRef = doc(
+            db,
+            "referrals",
+            normalizedCode,
+            "referred",
+            username
+          );
+
+          await setDoc(referredUserDocRef, {
+            username: username,
+            referredAt: new Date(),
+            processed: true,
+          });
+
+          console.log(`Referral processed successfully for ${normalizedCode}`);
+        } catch (referralError) {
+          console.error("Error processing referral:", referralError);
+          // Don't fail the entire process if referral processing fails
+        }
       }
 
-      await batch.commit();
       return true;
     } catch (error) {
-      console.error("Error processing referral:", error);
+      console.error("Error in processReferral:", error);
       return false;
     }
   };

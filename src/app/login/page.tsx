@@ -8,8 +8,7 @@ import { Tooltip } from "react-tooltip";
 import Link from "next/link";
 import { FirebaseError } from "firebase/app";
 import LightLogo from "@/components/common/LightLogo";
-import ContinueWith from "@/components/common/login/ContinueWith";
-import Chat from "@/components/common/Chat";
+import ContinueWithGoogle from "@/components/common/login/ContinueWithGoogle";
 
 const Login = () => {
   const router = useRouter();
@@ -78,7 +77,6 @@ const Login = () => {
 
   return (
     <section className="center-content-on-screen">
-      <Chat />
       <div className="centered-content-on-screen">
         <LightLogo />
         <div className="w-full px-4">
@@ -86,7 +84,7 @@ const Login = () => {
           <p className="text-center mb-6">
             Sign in to continue to Trademark Marketing
           </p>
-          <ContinueWith />
+          <ContinueWithGoogle className="continue-with" />
           <div className="flex flex-row items-center gap-3 my-4">
             <div className="w-full h-0 border-[0.5px] border-gray-200"></div>
             <div className="text-center text-gray-500">or</div>

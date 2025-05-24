@@ -36,7 +36,7 @@ const Navbar: React.FC = () => {
             </div>
             <div>
               <Link
-                href="/admin/notifications"
+                href="/admin"
                 className="p-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300"
               >
                 <FiBell className="h-6 w-6" />

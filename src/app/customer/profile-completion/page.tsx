@@ -18,7 +18,6 @@ import { db } from "@/lib/firebase";
 import { Tooltip } from "react-tooltip";
 import LightLogo from "@/components/common/LightLogo";
 import { FirebaseError } from "firebase/app";
-import Chat from "@/components/common/Chat";
 import { IoMdCheckmarkCircle, IoMdCloseCircle } from "react-icons/io";
 import SearchableSelect from "@/components/customer/SearchableSelect";
 import ReferralCodeInput from "@/components/customer/ReferralCodeInput";
@@ -28,7 +27,7 @@ const UpdateProfile = () => {
   const { user } = useAuth();
   const [username, setUsername] = useState("");
   const [mobile, setMobile] = useState("");
-  const [country, setCountry] = useState(""); // Fixed: country is a string, not an object
+  const [country, setCountry] = useState("");
   const [usernameExists, setUsernameExists] = useState(false);
   const [usernameChecking, setUsernameChecking] = useState(false);
   const [formValid, setFormValid] = useState(false);
@@ -71,7 +70,7 @@ const UpdateProfile = () => {
 
     setUsernameChecking(true);
     try {
-      // The usernames collection might not exist yet
+      // Check userNames collection for existing username
       const usernameQuery = query(
         collection(db, "userNames"),
         where("username", "==", username)
@@ -127,79 +126,79 @@ const UpdateProfile = () => {
     setError("");
 
     try {
-      // Save username to usernames collection
+      // First update the user document
+      await updateDoc(doc(db, "users", user.uid), {
+        username: username.trim(),
+        mobile: mobile.trim(),
+        country: country,
+        updatedAt: new Date(),
+      });
+
+      // Then handle username in userNames collection
       try {
-        // First update the user document
-        await updateDoc(doc(db, "users", user.uid), {
-          username: username,
-          mobile: mobile,
-          country: country,
-          updatedAt: new Date(),
-        });
+        const usernameRef = doc(db, "userNames", username);
+        const usernameDoc = await getDoc(usernameRef);
 
-        // Then try to add to usernames collection
-        try {
-          // Check if the usernames collection exists and if the document exists
-          const usernameRef = doc(db, "userNames", username);
-          const usernameDoc = await getDoc(usernameRef);
-
-          if (usernameDoc.exists()) {
-            // If it exists, update it
-            await updateDoc(usernameRef, {
-              username: username,
-              userId: user.uid,
-              updatedAt: new Date(),
-            });
-          } else {
-            // If it doesn't exist, set it
-            await setDoc(usernameRef, {
-              username: username,
-              userId: user.uid,
-              createdAt: new Date(),
-            });
-          }
-          await processReferral();
-        } catch (innerError) {
-          // If there's an error with the usernames collection, log it but don't fail the whole operation
-          console.error("Error updating username record:", innerError);
-          // The user's profile has still been updated successfully
-        }
-
-        setSuccess(true);
-        setShowSuccessPopup(true);
-        // Wait 2 seconds before redirecting
-        setTimeout(() => {
-          router.push("/customer/dashboards");
-        }, 2000);
-      } catch (error) {
-        console.error("Error updating profile:", error);
-
-        if (error instanceof FirebaseError) {
-          switch (error.code) {
-            case "not-found":
-              setError("User not found");
-              break;
-            default:
-              setError(error.message);
-          }
+        if (usernameDoc.exists()) {
+          // If it exists, update it
+          await updateDoc(usernameRef, {
+            username: username.trim(),
+            userId: user.uid,
+            updatedAt: new Date(),
+          });
         } else {
-          setError("Failed to update profile. Please try again.");
+          // If it doesn't exist, set it
+          await setDoc(usernameRef, {
+            username: username.trim(),
+            userId: user.uid,
+            createdAt: new Date(),
+          });
         }
-
-        setTimeout(() => {
-          setError("");
-        }, 5000);
-      } finally {
-        setLoading(false);
+      } catch (innerError) {
+        console.error("Error updating username record:", innerError);
+        // The user's profile has still been updated successfully
       }
+
+      // Process referral after successful profile update
+      try {
+        await processReferral();
+      } catch (referralError) {
+        console.error("Error processing referral:", referralError);
+        // Don't fail the entire process if referral processing fails
+      }
+
+      setSuccess(true);
+      setShowSuccessPopup(true);
+
+      // Wait 2 seconds before redirecting
+      setTimeout(() => {
+        router.push("/customer/dashboards");
+      }, 2000);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+
+      if (error instanceof FirebaseError) {
+        switch (error.code) {
+          case "not-found":
+            setError("User not found");
+            break;
+          default:
+            setError(error.message);
+        }
+      } else {
+        setError("Failed to update profile. Please try again.");
+      }
+
+      setTimeout(() => {
+        setError("");
+      }, 5000);
     } finally {
-      router.push("/customer/dashboards");
+      setLoading(false);
     }
   };
 
   return (
     <section className="center-content-on-screen">
-      <Chat />
       <div className="centered-content-on-screen">
         <LightLogo />
         <div className="w-full px-4">

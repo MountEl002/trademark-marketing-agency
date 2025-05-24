@@ -19,7 +19,13 @@ export function ClientLayoutWrapper({
     hideComponentsOn.includes(pathname) || isAdminPage || isCustomerPage;
 
   if (shouldHideComponents) {
-    return <>{children}</>;
+    return (
+      <>
+        <Chat />
+        <ScrollToTop />
+        {children}
+      </>
+    );
   }
 
   return (
