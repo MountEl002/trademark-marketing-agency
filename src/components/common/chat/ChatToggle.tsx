@@ -3,11 +3,13 @@ import { SiGooglemessages } from "react-icons/si";
 
 interface ChatToggleProps {
   onClick?: () => void;
+  unreadCount?: number; // Added prop for unread messages
 }
 
-const ChatToggle: React.FC<ChatToggleProps> = ({ onClick }) => {
+const ChatToggle: React.FC<ChatToggleProps> = ({ onClick, unreadCount }) => {
   const pathname = usePathname();
 
+  // Determine class based on pathname (existing logic)
   const className =
     pathname === "/login" ||
     pathname === "/signup" ||
@@ -20,12 +22,23 @@ const ChatToggle: React.FC<ChatToggleProps> = ({ onClick }) => {
       <button
         type="button"
         onClick={onClick}
-        className="vertical rounded-[50%] bg-white p-1 shadow-xl"
+        className="relative vertical rounded-[50%] bg-white p-1 shadow-xl" // Added `relative` for badge positioning
       >
         <SiGooglemessages
           size={40}
           className="text-blue-600 group-hover:scale-125 transition-all duration-500"
         />
+        {unreadCount && unreadCount > 0 ? (
+          <span
+            className="absolute top-0 right-0 transform translate-x-1/4 -translate-y-1/4 
+                       bg-red-600 text-white text-xs font-semibold 
+                       rounded-full h-5 w-5 min-w-[1.25rem] flex items-center justify-center
+                       border-2 border-white"
+            style={{ lineHeight: "1" }} // Ensures text is centered vertically in small heights
+          >
+            {unreadCount > 99 ? "99+" : unreadCount}
+          </span>
+        ) : null}
       </button>
     </div>
   );

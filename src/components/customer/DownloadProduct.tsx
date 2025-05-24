@@ -259,7 +259,9 @@ export default function DownloadProduct() {
               </div>
             ) : (
               <div className="vertical w-full h-full flex items-center justify-center min-h-[200px] bg-gray-50 border border-dashed border-gray-300 rounded-lg p-4">
-                <p className="text-gray-500 text-lg">there is not product</p>
+                <p className="text-gray-500 text-lg">
+                  There is no product. Please reload or check later
+                </p>
               </div>
             )}
           </div>

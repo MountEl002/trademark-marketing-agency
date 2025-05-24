@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { auth, db } from "@/lib/firebase";
 import {
   collection,
@@ -8,13 +8,19 @@ import {
   query,
   orderBy,
   onSnapshot,
+  doc,
+  getDoc,
+  updateDoc,
+  setDoc,
+  serverTimestamp,
+  where,
 } from "firebase/firestore";
 import Image from "next/image";
 import { getChatUserName } from "@/utils/initialize-chat";
 import { FaUser } from "react-icons/fa";
 import ChatBackground from "@/assests/chatbackgroundResized.png";
 import CustomerCareAgent4 from "@/assests/CustomerCareAgent4.jpg";
-import ChatToggle from "./chat/ChatToggle";
+import ChatToggle from "./chat/ChatToggle"; // Path to your ChatToggle component
 import ChatInput from "./chat/ChatInput";
 import { UploadedFileInfo } from "@/types/fileData";
 import FileDownloadButton from "./FileDownloadButton";
@@ -26,115 +32,233 @@ interface Message {
   text: string;
   sender: "user" | "admin";
   timestamp: number;
-  userName: string;
+  userName: string; // userName of the sender (user's name/ID or 'admin')
   files?: UploadedFileInfo[];
 }
+
+// Helper function for formatting message timestamps (copied from AdminChatWindow)
+const formatMessageTimestamp = (timestamp: number): string => {
+  const messageDate = new Date(timestamp);
+  const now = new Date();
+  const diffMs = now.getTime() - messageDate.getTime();
+  const diffHours = diffMs / (1000 * 60 * 60);
+  const diffDays = diffHours / 24;
+
+  if (diffHours < 24) {
+    return `${messageDate.getHours().toString().padStart(2, "0")}:${messageDate
+      .getMinutes()
+      .toString()
+      .padStart(2, "0")}`;
+  } else if (diffDays < 7) {
+    const dayName = messageDate.toLocaleDateString(undefined, {
+      weekday: "long",
+    });
+    const time = `${messageDate
+      .getHours()
+      .toString()
+      .padStart(2, "0")}:${messageDate
+      .getMinutes()
+      .toString()
+      .padStart(2, "0")}`;
+    return `${dayName}, ${time}`;
+  } else {
+    const day = messageDate.getDate().toString().padStart(2, "0");
+    const month = (messageDate.getMonth() + 1).toString().padStart(2, "0");
+    const year = messageDate.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+};
 
 const Chat = () => {
   const [userName, setUserName] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState<string>("");
-  const [isInitializing, setIsInitializing] = useState(true);
   const [chatOpen, setChatOpen] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(true);
+  const [unreadAdminMessagesCount, setUnreadAdminMessagesCount] = useState(0);
+  const [chatDocId, setChatDocId] = useState<string | null>(null);
+  const [chatCollectionPath, setChatCollectionPath] = useState<string | null>(
+    null
+  );
 
-  const toggleChat = () => {
-    setChatOpen(true);
-
+  // Initialize userName and chatDocId
+  useEffect(() => {
     let isMounted = true;
-    let messageCleanup: (() => void) | undefined;
-
-    // Initialize chat user name
-    const initializeChat = async () => {
+    const initializeUser = async () => {
+      setIsInitializing(true);
       try {
-        if (!userName && isInitializing) {
-          const name = await getChatUserName();
-          if (isMounted) {
-            setUserName(name);
-            setIsInitializing(false);
-            setupMessageListener(name);
-          }
-        } else if (userName) {
-          setupMessageListener(userName);
+        const name = await getChatUserName(); // This should return the user's name/ID
+        if (isMounted) {
+          setUserName(name);
+          const currentUser = auth.currentUser;
+          const collectionPath = currentUser
+            ? "registeredUsersChats"
+            : "unregisteredUsersChats";
+          const docId = currentUser ? currentUser.uid : name; // `name` is guestId for guests
+          setChatCollectionPath(collectionPath);
+          setChatDocId(docId);
         }
       } catch (error) {
-        console.error("Error initializing chat:", error);
+        console.error("Error initializing chat user:", error);
+      } finally {
         if (isMounted) {
           setIsInitializing(false);
         }
       }
     };
+    initializeUser();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
-    // Setup message listener
-    const setupMessageListener = async (currentUserName: string) => {
-      const currentUser = auth.currentUser;
-      const chatCollection = currentUser
-        ? "registeredUsersChats"
-        : "unregisteredUsersChats";
-      const chatDocId = currentUser ? currentUser.uid : currentUserName;
+  // Effect for handling unread messages count when chat is closed
+  useEffect(() => {
+    if (isInitializing || !chatDocId || !chatCollectionPath || chatOpen) {
+      if (!chatOpen) setUnreadAdminMessagesCount(0); // Clear count if becoming closed for other reasons
+      return;
+    }
+
+    let unsubscribe: (() => void) | undefined;
+
+    const listenForUnreadMessages = async () => {
+      const chatDocRef = doc(db, chatCollectionPath, chatDocId);
+      const chatDocSnap = await getDoc(chatDocRef);
+      // Ensure userLastReadTimestamp is initialized if not present
+      if (
+        chatDocSnap.exists() &&
+        chatDocSnap.data()?.userLastReadTimestamp === undefined
+      ) {
+        await updateDoc(chatDocRef, { userLastReadTimestamp: 0 });
+      } else if (!chatDocSnap.exists()) {
+        // This case should ideally be handled by getChatUserName,
+        // but as a fallback, we can create it.
+        // Note: getChatUserName should be the primary source for document creation.
+        await setDoc(chatDocRef, {
+          userName: userName, // or specific logic from getChatUserName
+          createdAt: serverTimestamp(),
+          userLastReadTimestamp: 0,
+        });
+      }
+
+      const userLastRead = chatDocSnap.data()?.userLastReadTimestamp || 0;
 
       const messagesRef = collection(
         db,
-        `${chatCollection}/${chatDocId}/messages`
+        `${chatCollectionPath}/${chatDocId}/messages`
+      );
+      const q = query(
+        messagesRef,
+        where("timestamp", ">", userLastRead),
+        where("sender", "==", "admin")
       );
 
-      const q = query(messagesRef, orderBy("timestamp", "asc"));
-
-      messageCleanup = onSnapshot(q, (snapshot) => {
-        if (!isMounted) return;
-
-        const fetchedMessages = snapshot.docs.map(
-          (doc) =>
-            ({
-              id: doc.id,
-              ...doc.data(),
-            } as Message)
-        );
-
-        setMessages(fetchedMessages);
-      });
+      unsubscribe = onSnapshot(
+        q,
+        (snapshot) => {
+          setUnreadAdminMessagesCount(snapshot.docs.length);
+        },
+        (error) => {
+          console.error("Error listening for unread messages:", error);
+        }
+      );
     };
 
-    initializeChat();
+    listenForUnreadMessages();
 
     return () => {
-      isMounted = false;
-      if (messageCleanup) {
-        messageCleanup();
+      if (unsubscribe) {
+        unsubscribe();
       }
     };
+  }, [isInitializing, chatDocId, chatCollectionPath, chatOpen, userName]); // Added userName
+
+  // Effect for fetching messages when chat is open
+  useEffect(() => {
+    if (isInitializing || !chatDocId || !chatCollectionPath || !chatOpen) {
+      setMessages([]); // Clear messages if chat is closed or not ready
+      return;
+    }
+
+    const messagesRef = collection(
+      db,
+      `${chatCollectionPath}/${chatDocId}/messages`
+    );
+    const q = query(messagesRef, orderBy("timestamp", "asc"));
+
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const fetchedMessages = snapshot.docs.map(
+          (d) => ({ id: d.id, ...d.data() } as Message)
+        );
+        setMessages(fetchedMessages);
+      },
+      (error) => {
+        console.error("Error fetching messages for open chat:", error);
+      }
+    );
+
+    return () => unsubscribe();
+  }, [isInitializing, chatDocId, chatCollectionPath, chatOpen]);
+
+  const handleToggleChat = useCallback(async () => {
+    if (isInitializing || !chatDocId || !chatCollectionPath) return;
+
+    setChatOpen(true);
+    setUnreadAdminMessagesCount(0); // Reset unread count immediately
+
+    try {
+      const chatDocRef = doc(db, chatCollectionPath, chatDocId);
+      await updateDoc(chatDocRef, {
+        userLastReadTimestamp: Date.now(),
+      });
+    } catch (error) {
+      console.error("Error updating userLastReadTimestamp:", error);
+      // Handle case where doc might not exist, though getChatUserName should create it
+      // For robustness, you could use setDoc with merge:true if updateDoc fails with "not-found"
+      const chatDocRef = doc(db, chatCollectionPath, chatDocId);
+      await setDoc(
+        chatDocRef,
+        { userLastReadTimestamp: Date.now() },
+        { merge: true }
+      );
+    }
+  }, [isInitializing, chatDocId, chatCollectionPath]);
+
+  const handleCloseChat = () => {
+    setChatOpen(false);
   };
-  // Send message function
+
   const sendMessage = async (messageData: {
     text: string;
     files?: UploadedFileInfo[];
   }) => {
     if (
-      !messageData.text.trim() &&
-      (!messageData.files || messageData.files.length === 0)
-    )
+      (!messageData.text.trim() &&
+        (!messageData.files || messageData.files.length === 0)) ||
+      !chatDocId ||
+      !chatCollectionPath ||
+      !userName
+    ) {
       return;
-
-    const currentUser = auth.currentUser;
-    const chatCollection = currentUser
-      ? "registeredUsersChats"
-      : "unregisteredUsersChats";
-    const chatDocId = currentUser ? currentUser.uid : userName;
+    }
 
     const message: Message = {
       text: messageData.text,
       sender: "user",
       timestamp: Date.now(),
-      userName: userName as string,
+      userName: userName, // User's actual name or ID
       ...(messageData.files &&
         messageData.files.length > 0 && { files: messageData.files }),
     };
 
     try {
       await addDoc(
-        collection(db, `${chatCollection}/${chatDocId}/messages`),
+        collection(db, `${chatCollectionPath}/${chatDocId}/messages`),
         message
       );
-      setNewMessage("");
+      setNewMessage(""); // ChatInput should handle its own state if passed via props
     } catch (error) {
       console.error("Error sending message:", error);
     }
@@ -153,7 +277,6 @@ const Chat = () => {
               backgroundRepeat: "no-repeat",
             }}
           >
-            {/* Header*/}
             <div className="horizontal-space-between w-full bg-blue-200 p-3">
               <div className="horizontal gap-2">
                 <div className="bg-white p-2 rounded-[50%]">
@@ -163,14 +286,13 @@ const Chat = () => {
               </div>
               <UniversalButton
                 icon={IoMdClose}
-                onClick={() => setChatOpen(false)}
+                onClick={handleCloseChat}
                 text="Close chat"
                 buttonClassName="bg-blue-500 hover:bg-blue-700"
                 iconClassName="bg-blue-400 group-hover:bg-blue-600"
               />
             </div>
 
-            {/* Messages container */}
             <div className="flex-1 flex flex-col-reverse overflow-y-auto overflow-x-hidden chat-scrollbars p-2 mr-1">
               <div className="flex flex-col space-y-2">
                 {messages.map((message) => (
@@ -200,12 +322,11 @@ const Chat = () => {
                           : "bg-green-600 text-white"
                       }`}
                     >
-                      {/* Render files if present */}
                       {message.files && message.files.length > 0 && (
                         <div className="mb-2 space-y-1">
-                          {message.files.map((file) => (
+                          {message.files.map((file, index) => (
                             <div
-                              key={file.id}
+                              key={file.id || file.fileKey || index}
                               className="flex items-center gap-2 bg-white/10 rounded p-1"
                             >
                               <span className="text-xs truncate flex-1">
@@ -224,7 +345,7 @@ const Chat = () => {
                         {message.text}
                       </p>
                       <p className="text-xs mt-1 opacity-75">
-                        {new Date(message.timestamp).toLocaleTimeString()}
+                        {formatMessageTimestamp(message.timestamp)}
                       </p>
                       {message.sender === "admin" ? (
                         <div className="chat-blue-pointer" />
@@ -236,18 +357,19 @@ const Chat = () => {
                 ))}
               </div>
             </div>
-
-            {/* Input area - fixed height */}
             <ChatInput
               newMessage={newMessage}
-              setNewMessage={setNewMessage}
+              setNewMessage={setNewMessage} // Assuming ChatInput needs setNewMessage
               sendMessage={sendMessage}
             />
           </div>
         </div>
       ) : (
         <div>
-          <ChatToggle onClick={toggleChat} />
+          <ChatToggle
+            onClick={handleToggleChat}
+            unreadCount={unreadAdminMessagesCount}
+          />
         </div>
       )}
     </>
