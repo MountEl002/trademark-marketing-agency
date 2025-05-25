@@ -12,11 +12,17 @@ export function ClientLayoutWrapper({
 }) {
   const pathname = usePathname();
   const hideComponentsOn = ["/login", "/signup", "/forgot-password"];
-
-  const isCustomerPage = pathname?.startsWith("/customer");
   const isAdminPage = pathname?.startsWith("/admin");
-  const shouldHideComponents =
-    hideComponentsOn.includes(pathname) || isAdminPage || isCustomerPage;
+  const shouldHideComponents = hideComponentsOn.includes(pathname);
+
+  if (isAdminPage) {
+    return (
+      <>
+        <ScrollToTop />
+        {children}
+      </>
+    );
+  }
 
   if (shouldHideComponents) {
     return (

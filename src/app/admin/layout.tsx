@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import LoadingScreen from "@/components/common/LoadingScreen";
 import AdminChatWindow from "@/components/admin/chats/AdminChatWindow";
 import Navbar from "@/components/admin/layout/Navbar";
+import Chat from "@/components/common/Chat";
 
 export default function AdminLayout({
   children,
@@ -41,7 +42,12 @@ export default function AdminLayout({
   }
 
   if (!user && pathname === "/admin/login") {
-    return <>{children}</>;
+    return (
+      <>
+        <Chat />
+        {children}
+      </>
+    );
   }
   if (user && isAdmin && pathname !== "/admin/login") {
     return (
