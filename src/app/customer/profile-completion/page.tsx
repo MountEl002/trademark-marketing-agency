@@ -43,10 +43,6 @@ const UpdateProfile = () => {
   const [mobileFieldActive, setMobileFieldActive] = useState(false);
   const [countryFieldActive, setCountryFieldActive] = useState(false);
 
-  const { component: referralComponent, processReferral } = ReferralCodeInput({
-    username,
-  });
-
   // Dynamic border styles based on field focus
   const usernameBorder = `transition-all duration-500 border ${
     usernameFieldActive
@@ -163,7 +159,6 @@ const UpdateProfile = () => {
 
       // Process referral after successful profile update
       try {
-        await processReferral();
       } catch (referralError) {
         console.error("Error processing referral:", referralError);
         // Don't fail the entire process if referral processing fails

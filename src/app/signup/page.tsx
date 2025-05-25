@@ -17,7 +17,7 @@ import SearchableSelect from "@/components/customer/SearchableSelect";
 import { countries } from "@/contexts/globalData";
 import { verifyUsername } from "@/contexts/userService";
 import ContinueWithGoogle from "@/components/common/login/ContinueWithGoogle";
-import ReferralCodeInput from "@/components/customer/ReferralCodeInput"; // Update this path
+import ReferralCodeInput from "@/components/customer/ReferralCodeInput";
 import LoadingAnimantion from "@/components/common/LoadingAnimantion";
 
 // Password validation interface
@@ -245,22 +245,14 @@ const SignUp = () => {
   const [usernameExists, setUsernameExists] = useState<boolean>(false);
   const [usernameChecking, setUsernameChecking] = useState<boolean>(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState<boolean>(false);
-
-  const [isReferralCodeValid, setIsReferralCodeValid] =
-    useState<boolean>(false);
   const [showReferralConfirmation, setShowReferralConfirmation] =
     useState<boolean>(false);
 
+  const [referralCode, setReferralCode] = useState<string>("");
+  const [isCodeValid, setIsCodeValid] = useState<boolean | null>(null);
+
   // Single state object to track focus state of all fields
   const [focusedField, setFocusedField] = useState<string | null>(null);
-
-  // Initialize the ReferralCodeInput component
-  const referralCodeInput = ReferralCodeInput({
-    username: formData.username,
-    onValidationChange: (isValid: boolean) => {
-      setIsReferralCodeValid(isValid);
-    },
-  });
 
   useEffect(() => {
     setPasswordsMatch(formData.password === formData.repeatPassword);
@@ -353,26 +345,17 @@ const SignUp = () => {
         formData.password,
         formData.mobile,
         formData.username,
-        formData.country
+        formData.country,
+        referralCode,
+        isCodeValid
       );
-
-      // Process referral using the ReferralCodeInput component's function
-      if (isReferralCodeValid) {
-        try {
-          await referralCodeInput.processReferral();
-          console.log("Referral processed successfully");
-        } catch (referralError) {
-          console.error("Error processing referral:", referralError);
-          // Don't fail the entire signup process if referral processing fails
-        }
-      }
 
       setShowSuccessPopup(true);
 
       // Wait 2 seconds before redirecting
       setTimeout(() => {
         router.push("/customer/dashboards");
-      }, 2000);
+      }, 5000);
     } catch (error) {
       console.error("Signup error:", error);
       if (error instanceof FirebaseError) {
@@ -408,7 +391,7 @@ const SignUp = () => {
     }
 
     // If referral code is provided and valid, show confirmation
-    if (isReferralCodeValid && referralCodeInput.isCodeValid) {
+    if (isCodeValid && referralCode) {
       setShowReferralConfirmation(true);
     } else {
       // No referral code or invalid, proceed directly
@@ -463,7 +446,6 @@ const SignUp = () => {
               handleFocus={() => handleFocus("email")}
               handleBlur={handleBlur}
             />
-
             <FormField
               label="Mobile"
               type="text"
@@ -474,7 +456,6 @@ const SignUp = () => {
               handleFocus={() => handleFocus("mobile")}
               handleBlur={handleBlur}
             />
-
             <FormField
               label="Username"
               type="text"
@@ -488,7 +469,6 @@ const SignUp = () => {
               usernameExists={usernameExists}
               usernameChecking={usernameChecking}
             />
-
             <div className="mb-4">
               <label className="label-email-password">Country</label>
               <SearchableSelect
@@ -499,10 +479,11 @@ const SignUp = () => {
                 required={true}
               />
             </div>
-
             {/* Use the ReferralCodeInput component */}
-            {referralCodeInput.component}
-
+            <ReferralCodeInput
+              onIsCodeValid={setIsCodeValid}
+              onReferralCode={setReferralCode}
+            />
             <FormField
               label="Password"
               type="password"
@@ -521,7 +502,6 @@ const SignUp = () => {
                 (formData.password.length > 0 && !passwordValidation.isValid)
               }
             />
-
             <FormField
               label="Repeat password"
               type="password"
@@ -535,7 +515,6 @@ const SignUp = () => {
               showPassword={showPassword}
               toggleShowPassword={toggleShowPassword}
             />
-
             <p
               className={
                 passwordsMatch
@@ -545,7 +524,6 @@ const SignUp = () => {
             >
               Passwords do not match
             </p>
-
             <div className="horizontal mt-5">
               <button
                 type="submit"

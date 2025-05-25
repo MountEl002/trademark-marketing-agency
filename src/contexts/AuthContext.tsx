@@ -19,7 +19,10 @@ import { useRouter, usePathname } from "next/navigation";
 import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import { AuthContextType } from "@/types/transaction";
-import { initializeUserDocuments } from "@/contexts/userService";
+import {
+  initializeUserDocuments,
+  processReferral,
+} from "@/contexts/userService";
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
@@ -144,7 +147,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     password: string,
     mobile: string,
     usernameInput: string,
-    country: string
+    country: string,
+    referralCode: string | null,
+    isCodeValid: boolean | null
   ) => {
     const userCredential = await createUserWithEmailAndPassword(
       auth,
@@ -161,6 +166,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       country
     );
     setUsername(usernameInput);
+
+    await processReferral(
+      authUser.uid,
+      usernameInput,
+      referralCode,
+      isCodeValid
+    );
+
     // Only redirect if not on a route with custom redirection logic
     if (!routesWithCustomRedirection.includes(pathname)) {
       router.push("/customer/dashboards");
@@ -175,14 +188,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     );
     const authUser = userCredential.user;
 
-    // Only redirect if not on a route with custom redirection logic
-    if (!routesWithCustomRedirection.includes(pathname)) {
-      const userDoc = await getDoc(doc(db, "users", authUser.uid));
-      if (userDoc.exists() && userDoc.data()?.username) {
-        router.push("/customer/dashboards");
-      } else {
-        router.push("/customer/profile-completion");
-      }
+    const userDoc = await getDoc(doc(db, "users", authUser.uid));
+    if (userDoc.exists() && userDoc.data()?.username) {
+      router.push("/customer/dashboards");
+    } else {
+      router.push("/customer/profile-completion");
     }
   };
 

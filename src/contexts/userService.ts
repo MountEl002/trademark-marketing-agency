@@ -7,6 +7,9 @@ import {
   collection,
   getDocs,
   query,
+  setDoc,
+  updateDoc,
+  increment,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
@@ -17,6 +20,15 @@ export async function verifyUsername(username: string): Promise<boolean> {
   const normalizedUsername = username.toLowerCase();
   const usernameDocRef = doc(db, "userNames", normalizedUsername);
   const docSnap = await getDoc(usernameDocRef);
+  return docSnap.exists();
+}
+
+export async function verifyReferralCode(
+  referralCode: string
+): Promise<boolean> {
+  const normalizedReferralCode = referralCode;
+  const referralCodeDocRef = doc(db, "userNames", normalizedReferralCode);
+  const docSnap = await getDoc(referralCodeDocRef);
   return docSnap.exists();
 }
 
@@ -190,5 +202,77 @@ export async function getUserPackageValue(userId: string): Promise<number> {
   } catch (error) {
     console.error("Error calculating package value for userId:", userId, error);
     return 0;
+  }
+}
+
+export async function processReferral(
+  currentUserId: string | undefined,
+  currentUserUsername: string | null,
+  referralCode: string | null,
+  isCodeValid: boolean | null
+) {
+  if (!currentUserUsername) {
+    console.error("Username is required to process referral");
+    return false;
+  }
+
+  try {
+    // Always create a document for the current user in referrals collection
+    const userReferralDocRef = doc(db, "referrals", currentUserUsername);
+    await setDoc(userReferralDocRef, {
+      userId: currentUserId,
+      packages: [],
+      createdAt: new Date(),
+      referrals: 0,
+    });
+
+    if (isCodeValid && referralCode) {
+      const normalizedCode = referralCode.trim();
+      const referrerDocRef = doc(db, "referrals", normalizedCode);
+      try {
+        const referrerDoc = await getDoc(referrerDocRef);
+
+        if (referrerDoc.exists()) {
+          await updateDoc(referrerDocRef, {
+            referrals: increment(1),
+            updatedAt: new Date(),
+          });
+        } else {
+          await setDoc(referrerDocRef, {
+            userId: "",
+            packages: [],
+            createdAt: new Date(),
+            referrals: 1,
+          });
+        }
+
+        const referredUserDocRef = doc(
+          db,
+          "referrals",
+          normalizedCode,
+          "referred",
+          currentUserUsername
+        );
+
+        await setDoc(referredUserDocRef, {
+          username: currentUserUsername,
+          referredAt: new Date(),
+          processed: false,
+        });
+
+        window.alert(
+          `Referral processed successfully for ${normalizedCode}. Thank you for believing in us!`
+        );
+      } catch (referralError) {
+        window.alert(
+          `Error processing referral: ${referralError}. Please contact the admin through the chat to fix the issue.`
+        );
+      }
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error in processReferral:", error);
+    return false;
   }
 }

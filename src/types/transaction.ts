@@ -10,7 +10,9 @@ export interface AuthContextType {
     password: string,
     mobile: string,
     username: string,
-    country: string
+    country: string,
+    referralCode: string | null,
+    isCodeValid: boolean | null
   ) => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
