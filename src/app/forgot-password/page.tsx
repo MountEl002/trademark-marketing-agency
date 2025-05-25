@@ -68,7 +68,7 @@ const ForgotPassword = () => {
   return (
     <>
       <section className="center-content-on-screen">
-        <div className="centered-content-on-screen-rp">
+        <div className="centered-content-on-screen-rp !h-fit">
           <LightLogo />
           <div>
             <h3 className="text-center">Reset Your Password</h3>
