@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
-import { auth, db } from "@/lib/firebase";
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { db } from "@/lib/firebase";
 import {
   collection,
   addDoc,
@@ -15,29 +15,30 @@ import {
   serverTimestamp,
   where,
   getDocs,
+  limit,
 } from "firebase/firestore";
 import Image from "next/image";
 import { getChatUserName } from "@/utils/initialize-chat";
 import { FaUser } from "react-icons/fa";
 import ChatBackground from "@/assests/chatbackgroundResized.png";
 import CustomerCareAgent4 from "@/assests/CustomerCareAgent4.jpg";
-import ChatToggle from "./chat/ChatToggle"; // Path to your ChatToggle component
+import ChatToggle from "./chat/ChatToggle";
 import ChatInput from "./chat/ChatInput";
 import { UploadedFileInfo } from "@/types/fileData";
 import FileDownloadButton from "./FileDownloadButton";
 import UniversalButton from "./UniversalButton";
 import { IoMdClose } from "react-icons/io";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface Message {
   id?: string;
   text: string;
   sender: "user" | "admin";
   timestamp: number;
-  userName: string; // userName of the sender (user's name/ID or 'admin')
+  userName: string;
   files?: UploadedFileInfo[];
 }
 
-// Helper function for formatting message timestamps (copied from AdminChatWindow)
 const formatMessageTimestamp = (timestamp: number): string => {
   const messageDate = new Date(timestamp);
   const now = new Date();
@@ -81,136 +82,149 @@ const Chat = () => {
   const [chatCollectionPath, setChatCollectionPath] = useState<string | null>(
     null
   );
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { user: authUser, username: authContextUsername } = useAuth();
 
-  // Function to check if user has ever sent a message and send welcome message if not
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
   const checkAndSendWelcomeMessage = async (
     collectionPath: string,
     docId: string
   ) => {
+    if (!collectionPath || !docId) return;
     try {
       const messagesRef = collection(db, `${collectionPath}/${docId}/messages`);
-      const userMessagesQuery = query(
-        messagesRef,
-        where("sender", "==", "user")
-      );
-      const userMessagesSnapshot = await getDocs(userMessagesQuery);
+      const q = query(messagesRef, limit(1));
+      const messagesSnapshot = await getDocs(q);
 
-      // If user has never sent a message, send welcome message
-      if (userMessagesSnapshot.empty) {
+      if (messagesSnapshot.empty) {
         const welcomeMessage: Message = {
           text: "Hello, dear customer. I am Anne. Thank you for trusting Trademark Marketing Agency. Feel free to talk to us through this chat window whenever you need help or have questions. Thank you!",
           sender: "admin",
           timestamp: Date.now(),
-          userName: "admin", // Admin's identifier
+          userName: "admin",
         };
-
         await addDoc(messagesRef, welcomeMessage);
-        console.log("Welcome message sent to new user");
       }
     } catch (error) {
       console.error("Error checking/sending welcome message:", error);
     }
   };
 
-  // Initialize userName and chatDocId
   useEffect(() => {
-    let isMounted = true;
-    const initializeUser = async () => {
+    const initializeOrUpdateChatUser = async () => {
       setIsInitializing(true);
-      try {
-        const name = await getChatUserName(); // This should return the user's name/ID
-        if (isMounted) {
-          setUserName(name);
-          const currentUser = auth.currentUser;
-          const collectionPath = currentUser
-            ? "registeredUsersChats"
-            : "unregisteredUsersChats";
-          const docId = currentUser ? currentUser.uid : name; // `name` is guestId for guests
-          setChatCollectionPath(collectionPath);
-          setChatDocId(docId);
+      setMessages([]);
 
-          // Check and send welcome message if needed
-          await checkAndSendWelcomeMessage(collectionPath, docId);
+      if (authUser) {
+        const resolvedChatUsername =
+          authContextUsername || (await getChatUserName());
+        setUserName(resolvedChatUsername);
+        setChatCollectionPath("registeredUsersChats");
+        setChatDocId(authUser.uid);
+
+        if (!authContextUsername) {
+          console.error(
+            "AuthContext username not yet available, relying on getChatUserName for name and doc creation."
+          );
+        } else {
+          await getChatUserName();
         }
-      } catch (error) {
-        console.error("Error initializing chat user:", error);
-      } finally {
-        if (isMounted) {
-          setIsInitializing(false);
-        }
+        await checkAndSendWelcomeMessage("registeredUsersChats", authUser.uid);
+      } else {
+        // User is unauthenticated
+        console.error("AuthContext: User unauthenticated");
+        const guestName = await getChatUserName();
+        setUserName(guestName);
+        setChatCollectionPath("unregisteredUsersChats");
+        setChatDocId(guestName);
+        await checkAndSendWelcomeMessage("unregisteredUsersChats", guestName);
       }
+      setIsInitializing(false);
     };
-    initializeUser();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
 
-  // Effect for handling unread messages count when chat is closed
+    initializeOrUpdateChatUser();
+  }, [authUser, authContextUsername]);
+
   useEffect(() => {
     if (isInitializing || !chatDocId || !chatCollectionPath || chatOpen) {
-      if (!chatOpen) setUnreadAdminMessagesCount(0); // Clear count if becoming closed for other reasons
+      if (chatOpen) setUnreadAdminMessagesCount(0);
+      else if (!chatDocId && !isInitializing) setUnreadAdminMessagesCount(0);
       return;
     }
 
-    let unsubscribe: (() => void) | undefined;
+    let unsubscribeFromUnread: (() => void) | undefined;
 
     const listenForUnreadMessages = async () => {
-      const chatDocRef = doc(db, chatCollectionPath, chatDocId);
-      const chatDocSnap = await getDoc(chatDocRef);
-      // Ensure userLastReadTimestamp is initialized if not present
-      if (
-        chatDocSnap.exists() &&
-        chatDocSnap.data()?.userLastReadTimestamp === undefined
-      ) {
-        await updateDoc(chatDocRef, { userLastReadTimestamp: 0 });
-      } else if (!chatDocSnap.exists()) {
-        // This case should ideally be handled by getChatUserName,
-        // but as a fallback, we can create it.
-        // Note: getChatUserName should be the primary source for document creation.
-        await setDoc(chatDocRef, {
-          userName: userName, // or specific logic from getChatUserName
-          createdAt: serverTimestamp(),
-          userLastReadTimestamp: 0,
-        });
-      }
+      try {
+        const chatDocRef = doc(db, chatCollectionPath, chatDocId);
+        const chatDocSnap = await getDoc(chatDocRef);
 
-      const userLastRead = chatDocSnap.data()?.userLastReadTimestamp || 0;
-
-      const messagesRef = collection(
-        db,
-        `${chatCollectionPath}/${chatDocId}/messages`
-      );
-      const q = query(
-        messagesRef,
-        where("timestamp", ">", userLastRead),
-        where("sender", "==", "admin")
-      );
-
-      unsubscribe = onSnapshot(
-        q,
-        (snapshot) => {
-          setUnreadAdminMessagesCount(snapshot.docs.length);
-        },
-        (error) => {
-          console.error("Error listening for unread messages:", error);
+        if (!chatDocSnap.exists()) {
+          console.warn(
+            `Chat document ${chatCollectionPath}/${chatDocId} does not exist. Cannot listen for unread messages.`
+          );
+          await setDoc(
+            chatDocRef,
+            {
+              userName:
+                userName ||
+                (chatCollectionPath === "registeredUsersChats"
+                  ? "RegisteredUser"
+                  : "Guest"),
+              createdAt: serverTimestamp(),
+              userLastReadTimestamp: 0,
+            },
+            { merge: true }
+          );
         }
-      );
+
+        const userLastRead = chatDocSnap.data()?.userLastReadTimestamp || 0;
+
+        const messagesRef = collection(
+          db,
+          `${chatCollectionPath}/${chatDocId}/messages`
+        );
+        const q = query(
+          messagesRef,
+          where("timestamp", ">", userLastRead),
+          where("sender", "==", "admin")
+        );
+
+        unsubscribeFromUnread = onSnapshot(
+          q,
+          (snapshot) => {
+            if (!chatOpen) {
+              // Only update if chat is closed
+              setUnreadAdminMessagesCount(snapshot.docs.length);
+            }
+          },
+          (error) => {
+            console.error("Error listening for unread messages:", error);
+          }
+        );
+      } catch (error) {
+        console.error("Error in listenForUnreadMessages setup:", error);
+      }
     };
 
     listenForUnreadMessages();
 
     return () => {
-      if (unsubscribe) {
-        unsubscribe();
+      if (unsubscribeFromUnread) {
+        unsubscribeFromUnread();
       }
     };
-  }, [isInitializing, chatDocId, chatCollectionPath, chatOpen, userName]); // Added userName
+  }, [isInitializing, chatDocId, chatCollectionPath, chatOpen, userName]);
 
   // Effect for fetching messages when chat is open
   useEffect(() => {
     if (isInitializing || !chatDocId || !chatCollectionPath || !chatOpen) {
-      setMessages([]); // Clear messages if chat is closed or not ready
+      if (!chatOpen) setMessages([]); // Clear messages if chat is closed or not ready
       return;
     }
 
@@ -220,7 +234,7 @@ const Chat = () => {
     );
     const q = query(messagesRef, orderBy("timestamp", "asc"));
 
-    const unsubscribe = onSnapshot(
+    const unsubscribeFromMessages = onSnapshot(
       q,
       (snapshot) => {
         const fetchedMessages = snapshot.docs.map(
@@ -230,35 +244,62 @@ const Chat = () => {
       },
       (error) => {
         console.error("Error fetching messages for open chat:", error);
+        setMessages([]); // Clear messages on error
       }
     );
 
-    return () => unsubscribe();
+    return () => unsubscribeFromMessages();
   }, [isInitializing, chatDocId, chatCollectionPath, chatOpen]);
 
   const handleToggleChat = useCallback(async () => {
-    if (isInitializing || !chatDocId || !chatCollectionPath) return;
+    if (isInitializing || !chatDocId || !chatCollectionPath) {
+      console.warn("Cannot open chat: chat not fully initialized.");
+      return;
+    }
 
     setChatOpen(true);
-    setUnreadAdminMessagesCount(0); // Reset unread count immediately
+    setUnreadAdminMessagesCount(0);
 
     try {
       const chatDocRef = doc(db, chatCollectionPath, chatDocId);
-      await updateDoc(chatDocRef, {
-        userLastReadTimestamp: Date.now(),
-      });
+      // Ensure the document exists before trying to update it.
+      // getChatUserName should have created it. If not, setDoc with merge.
+      const docSnap = await getDoc(chatDocRef);
+      if (docSnap.exists()) {
+        await updateDoc(chatDocRef, {
+          userLastReadTimestamp: Date.now(),
+        });
+      } else {
+        // This case should ideally be rare if getChatUserName works correctly.
+        await setDoc(
+          chatDocRef,
+          {
+            userName: userName, // Or derive from auth state again
+            createdAt: serverTimestamp(),
+            userLastReadTimestamp: Date.now(),
+          },
+          { merge: true }
+        );
+        console.log("Chat document created on toggle (was missing).");
+      }
     } catch (error) {
       console.error("Error updating userLastReadTimestamp:", error);
-      // Handle case where doc might not exist, though getChatUserName should create it
-      // For robustness, you could use setDoc with merge:true if updateDoc fails with "not-found"
-      const chatDocRef = doc(db, chatCollectionPath, chatDocId);
-      await setDoc(
-        chatDocRef,
-        { userLastReadTimestamp: Date.now() },
-        { merge: true }
-      );
+      // Fallback for robustness, though ideally not needed if above logic is sound.
+      try {
+        const chatDocRef = doc(db, chatCollectionPath, chatDocId);
+        await setDoc(
+          chatDocRef,
+          { userLastReadTimestamp: Date.now() },
+          { merge: true }
+        );
+      } catch (setError) {
+        console.error(
+          "Error setting userLastReadTimestamp with merge:",
+          setError
+        );
+      }
     }
-  }, [isInitializing, chatDocId, chatCollectionPath]);
+  }, [isInitializing, chatDocId, chatCollectionPath, userName]); // Added userName
 
   const handleCloseChat = () => {
     setChatOpen(false);
@@ -275,6 +316,12 @@ const Chat = () => {
       !chatCollectionPath ||
       !userName
     ) {
+      console.warn("Cannot send message: missing data", {
+        chatDocId,
+        chatCollectionPath,
+        userName,
+        messageData,
+      });
       return;
     }
 
@@ -282,7 +329,7 @@ const Chat = () => {
       text: messageData.text,
       sender: "user",
       timestamp: Date.now(),
-      userName: userName, // User's actual name or ID
+      userName: userName,
       ...(messageData.files &&
         messageData.files.length > 0 && { files: messageData.files }),
     };
@@ -292,11 +339,21 @@ const Chat = () => {
         collection(db, `${chatCollectionPath}/${chatDocId}/messages`),
         message
       );
-      setNewMessage(""); // ChatInput should handle its own state if passed via props
+      // setNewMessage(""); // ChatInput handles its own state.
     } catch (error) {
       console.error("Error sending message:", error);
     }
   };
+
+  if (isInitializing && !chatDocId) {
+    // Show a more generic loading state until chatDocId is resolved
+    return (
+      <div>
+        <ChatToggle onClick={() => {}} unreadCount={0} />
+        {/* Optionally, a small loading indicator instead of the full chat window if trying to open */}
+      </div>
+    );
+  }
 
   return (
     <>
@@ -316,7 +373,9 @@ const Chat = () => {
                 <div className="bg-white p-2 rounded-[50%]">
                   <FaUser />
                 </div>
-                <p className="font-semibold">{userName || "Loading..."}</p>
+                <p className="font-semibold">
+                  {isInitializing ? "Loading..." : userName || "User"}
+                </p>
               </div>
               <UniversalButton
                 icon={IoMdClose}
@@ -328,15 +387,16 @@ const Chat = () => {
             </div>
 
             <div className="flex-1 flex flex-col-reverse overflow-y-auto overflow-x-hidden chat-scrollbars p-2 mr-1">
-              <div className="flex flex-col space-y-2">
+              {/* This div is for the messages content, and an empty div at the bottom for scrolling */}
+              <div>
                 {messages.map((message) => (
                   <div
-                    key={message.id}
+                    key={message.id || message.timestamp} // Ensure key is unique
                     className={`flex ${
                       message.sender === "admin"
                         ? "flex-row"
                         : "flex-row-reverse justify-start"
-                    } h-fit gap-2`}
+                    } h-fit gap-2 mb-2`} // Added mb-2 for spacing
                   >
                     {message.sender === "admin" ? (
                       <Image
@@ -389,11 +449,12 @@ const Chat = () => {
                     </div>
                   </div>
                 ))}
+                <div ref={messagesEndRef} /> {/* Element to scroll to */}
               </div>
             </div>
             <ChatInput
-              newMessage={newMessage}
-              setNewMessage={setNewMessage} // Assuming ChatInput needs setNewMessage
+              newMessage={newMessage} // ChatInput should manage its own input state
+              setNewMessage={setNewMessage}
               sendMessage={sendMessage}
             />
           </div>

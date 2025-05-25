@@ -22,14 +22,6 @@ const Login = () => {
   const [emialFieldActive, setEmailFieldActive] = useState(false);
   const [passwordFieldActive, setPasswordFieldActive] = useState(false);
 
-  const user = useAuth();
-
-  useEffect(() => {
-    if (user) {
-      router.push("/customer/dashboards");
-    }
-  }, [router, user]);
-
   const emialFieldBorder = `transition-all duration-500 border ${
     emialFieldActive
       ? "border-blue-500 bg-gray-50"
