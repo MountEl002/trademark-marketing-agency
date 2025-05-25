@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext"; // Adjust path to your AuthContext
 import { MdEmail, MdCheckCircle, MdError } from "react-icons/md";
 import LightLogo from "@/components/common/LightLogo";
+import { useRouter } from "next/router";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -13,6 +14,15 @@ const ForgotPassword = () => {
   const [messageType, setMessageType] = useState<"success" | "error" | "">("");
 
   const { resetPassword } = useAuth(); // Use the auth context
+
+  const user = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user) {
+      router.push("/customer/dashboards");
+    }
+  }, [router, user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

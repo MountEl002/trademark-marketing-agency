@@ -21,10 +21,12 @@ import { FirebaseError } from "firebase/app";
 import { IoMdCheckmarkCircle, IoMdCloseCircle } from "react-icons/io";
 import SearchableSelect from "@/components/customer/SearchableSelect";
 import ReferralCodeInput from "@/components/customer/ReferralCodeInput";
+import LoadingAnimantion from "@/components/common/LoadingAnimantion";
+import Link from "next/link";
 
 const UpdateProfile = () => {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, username: savedUsername } = useAuth();
   const [username, setUsername] = useState("");
   const [mobile, setMobile] = useState("");
   const [country, setCountry] = useState("");
@@ -173,7 +175,7 @@ const UpdateProfile = () => {
       // Wait 2 seconds before redirecting
       setTimeout(() => {
         router.push("/customer/dashboards");
-      }, 2000);
+      }, 200000);
     } catch (error) {
       console.error("Error updating profile:", error);
 
@@ -213,10 +215,33 @@ const UpdateProfile = () => {
             </div>
           )}
 
-          {success && !showSuccessPopup && (
-            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-lg relative mb-4">
-              Profile updated successfully! Redirecting...
+          {(success && !showSuccessPopup) || savedUsername ? (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg p-6 max-w-md mx-4 shadow-xl">
+                <div className="flex justify-center mb-4">
+                  <div className="bg-green-100 p-3 rounded-full">
+                    <IoMdCheckmarkCircle size={40} className="text-green-500" />
+                  </div>
+                </div>
+                <h3 className="text-xl font-semibold text-center mb-2">
+                  Thank You for Joining!
+                </h3>
+                <p className="text-gray-600 text-center mb-6">
+                  Your Trademark Marketing account has been updated
+                  successfully. Welcome aboard!
+                </p>
+                <div className="flex justify-center">
+                  <Link
+                    href="/customer/dashboards"
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition-colors"
+                  >
+                    Continue to Dashboard
+                  </Link>
+                </div>
+              </div>
             </div>
+          ) : (
+            ""
           )}
 
           <form onSubmit={handleSubmit}>
@@ -316,18 +341,14 @@ const UpdateProfile = () => {
             <div className="horizontal">
               <button
                 type="submit"
-                disabled={!formValid || loading}
+                disabled={!formValid || loading || !!savedUsername}
                 className={`button-blue w-full ${
                   !formValid || loading
                     ? "opacity-50 !cursor-not-allowed"
                     : "cursor-pointer"
                 }`}
               >
-                {loading ? (
-                  <div className="animate-spin h-5 w-5 border-4 text-gray-100 rounded-[50%] border-t-transparent mx-auto" />
-                ) : (
-                  <span>Update Profile</span>
-                )}
+                {loading ? <LoadingAnimantion /> : <span>Update Profile</span>}
               </button>
             </div>
           </form>

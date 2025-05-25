@@ -15,7 +15,7 @@ import {
   signInWithPopup,
   UserCredential,
 } from "firebase/auth";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import { AuthContextType } from "@/types/transaction";
@@ -29,6 +29,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
+
+  const pathname = usePathname();
+
+  // Routes that should handle their own redirections
+  const routesWithCustomRedirection = [
+    "/signup",
+    "/customer/profile-completion",
+  ];
 
   // Combined auth state monitoring effect
   useEffect(() => {
@@ -99,18 +107,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const userDoc = await getDoc(doc(db, "users", authUser.uid));
 
-      if (!userDoc.exists()) {
-        await initializeUserDocuments(
-          authUser.uid,
-          authUser.email,
-          null,
-          null,
-          null
-        );
-        router.push("/customer/profile-completion");
+      if (!routesWithCustomRedirection.includes(pathname)) {
+        if (!userDoc.exists()) {
+          await initializeUserDocuments(
+            authUser.uid,
+            authUser.email,
+            null,
+            null,
+            null
+          );
+          router.push("/customer/profile-completion");
+        } else {
+          // Existing user
+          router.push("/customer/dashboards");
+        }
       } else {
-        // Existing user
-        router.push("/customer/dashboards");
+        // Initialize user documents if they don't exist, but don't redirect
+        if (!userDoc.exists()) {
+          await initializeUserDocuments(
+            authUser.uid,
+            authUser.email,
+            null,
+            null,
+            null
+          );
+        }
       }
     } catch (error) {
       console.error("Error signing in with Google:", error);
@@ -140,7 +161,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       country
     );
     setUsername(usernameInput);
-    router.push("/customer/dashboards");
+    // Only redirect if not on a route with custom redirection logic
+    if (!routesWithCustomRedirection.includes(pathname)) {
+      router.push("/customer/dashboards");
+    }
   };
 
   const login = async (email: string, password: string) => {
@@ -151,11 +175,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     );
     const authUser = userCredential.user;
 
-    const userDoc = await getDoc(doc(db, "users", authUser.uid));
-    if (userDoc.exists() && userDoc.data()?.username) {
-      router.push("/customer/dashboards");
-    } else {
-      router.push("/customer/profile-completion");
+    // Only redirect if not on a route with custom redirection logic
+    if (!routesWithCustomRedirection.includes(pathname)) {
+      const userDoc = await getDoc(doc(db, "users", authUser.uid));
+      if (userDoc.exists() && userDoc.data()?.username) {
+        router.push("/customer/dashboards");
+      } else {
+        router.push("/customer/profile-completion");
+      }
     }
   };
 

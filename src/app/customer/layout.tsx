@@ -26,11 +26,8 @@ export default function CustomerLayout({
       return;
     }
 
-    // Handle routing based on profile completion status
-    if (pathname.startsWith("/customer")) {
-      if (username && pathname === "/customer/profile-completion") {
-        router.push("/customer/dashboards");
-      } else if (!username && pathname !== "/customer/profile-completion") {
+    if (user) {
+      if (!username && pathname !== "/customer/profile-completion") {
         router.push("/customer/profile-completion");
       }
     }
@@ -44,11 +41,10 @@ export default function CustomerLayout({
 
   // Show loading during redirects
   if (
-    (user &&
-      !username &&
-      pathname.startsWith("/customer") &&
-      pathname !== "/customer/profile-completion") ||
-    (user && username && pathname === "/customer/profile-completion")
+    user &&
+    !username &&
+    pathname.startsWith("/customer") &&
+    pathname !== "/customer/profile-completion"
   ) {
     return <LoadingScreen />;
   }

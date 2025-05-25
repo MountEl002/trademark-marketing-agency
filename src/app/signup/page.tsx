@@ -18,6 +18,7 @@ import { countries } from "@/contexts/globalData";
 import { verifyUsername } from "@/contexts/userService";
 import ContinueWithGoogle from "@/components/common/login/ContinueWithGoogle";
 import ReferralCodeInput from "@/components/customer/ReferralCodeInput"; // Update this path
+import LoadingAnimantion from "@/components/common/LoadingAnimantion";
 
 // Password validation interface
 interface PasswordValidation {
@@ -217,7 +218,7 @@ interface FormData {
 
 const SignUp = () => {
   const router = useRouter();
-  const { signup } = useAuth();
+  const { signup, username: savedUsername } = useAuth();
   const [formData, setFormData] = useState<FormData>({
     email: "",
     mobile: "",
@@ -610,13 +611,9 @@ const SignUp = () => {
               <button
                 onClick={handleReferralConfirmation}
                 className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition-colors"
-                disabled={loading}
+                disabled={loading || !!savedUsername}
               >
-                {loading ? (
-                  <div className="animate-spin h-5 w-5 border-4 text-gray-100 rounded-full border-t-transparent mx-auto" />
-                ) : (
-                  "Continue"
-                )}
+                {loading ? <LoadingAnimantion /> : "Continue"}
               </button>
             </div>
           </div>
@@ -624,7 +621,7 @@ const SignUp = () => {
       )}
 
       {/* Success Popup Dialog */}
-      {showSuccessPopup && (
+      {showSuccessPopup || savedUsername ? (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md mx-4 shadow-xl">
             <div className="flex justify-center mb-4">
@@ -649,6 +646,8 @@ const SignUp = () => {
             </div>
           </div>
         </div>
+      ) : (
+        ""
       )}
     </section>
   );

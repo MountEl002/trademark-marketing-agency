@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
@@ -21,6 +21,14 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [emialFieldActive, setEmailFieldActive] = useState(false);
   const [passwordFieldActive, setPasswordFieldActive] = useState(false);
+
+  const user = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      router.push("/customer/dashboards");
+    }
+  }, [router, user]);
 
   const emialFieldBorder = `transition-all duration-500 border ${
     emialFieldActive
