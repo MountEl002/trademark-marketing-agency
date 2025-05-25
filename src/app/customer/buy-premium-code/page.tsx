@@ -36,7 +36,7 @@ const pricingPlansData: PricingPlan[] = [
     features: [
       "Advertise With us",
       "Cashback",
-      "Cashback Ksh 1350",
+      "Cashback Ksh 1,200",
       "Whatsapp Earning (ksh 50 per view)",
     ],
     bgColor: "bg-gradient-to-r from-yellow-300 via-amber-500 to-yellow-600",
@@ -250,12 +250,15 @@ const PricingCard: React.FC<{ plan: PricingPlan }> = ({ plan }) => {
               <p className="text-gray-700 mb-4">
                 You are about to purchase the{" "}
                 <span className="font-semibold">{plan.title}</span> package for{" "}
-                <span className="font-semibold">Ksh {plan.price}</span>.
+                <span className="font-semibold">
+                  Ksh {plan.price.toLocaleString()}
+                </span>
+                .
               </p>
               <p className="text-gray-700 mb-6">
                 Your current balance:{" "}
                 <span className="font-semibold">
-                  Ksh {userBalance.toFixed(2)}
+                  Ksh {userBalance.toLocaleString()}
                 </span>
               </p>
 

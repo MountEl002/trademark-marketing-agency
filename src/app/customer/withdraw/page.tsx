@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   collection,
   addDoc,
@@ -12,6 +12,7 @@ import {
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
+import { getUserBalance, getUserPayments } from "@/contexts/userService";
 
 interface WithdrawalDialogProps {
   amount: number;
@@ -107,7 +108,23 @@ export default function WithdrawComponent() {
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  const [userBalance, setUserBalance] = useState<number>(0);
+  const [userPayments, setUserPayments] = useState<number>(0);
+
   const { user } = useAuth();
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (user?.uid) {
+        const balance = await getUserBalance(user.uid);
+        setUserBalance(balance);
+        // Fetch the user's payments
+        const payments = await getUserPayments(user.uid);
+        setUserPayments(payments);
+      }
+    };
+    fetchUserData();
+  }, [user?.uid]);
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^0-9]/g, "");
@@ -186,13 +203,23 @@ export default function WithdrawComponent() {
       <div className="bg-gray-100 p-6 rounded-lg shadow-sm w-full max-w-3xl mx-auto mb-12">
         {/* Balance and Logs Section */}
         <div className="flex justify-between items-center mb-12">
-          <div className="bg-white p-4 rounded-lg shadow-sm">
-            <h2 className="text-xl font-semibold">Ksh0.00</h2>
-            <p className="text-gray-500 text-sm">Balance</p>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="bg-white p-4 rounded-lg shadow-sm">
+              <p className="text-xl font-semibold">
+                Ksh {userBalance.toLocaleString()}
+              </p>
+              <p className="text-gray-500 text-sm">Balance</p>
+            </div>
+            <div className="bg-white p-4 rounded-lg shadow-sm">
+              <p className="text-xl font-semibold">
+                Ksh {userPayments.toLocaleString()}
+              </p>
+              <p className="text-gray-500 text-sm">Payments</p>
+            </div>
           </div>
 
           <Link
-            href="/customer/transactions"
+            href="/customer/all-transactions"
             className="bg-green-500 text-white px-6 py-2 rounded-lg shadow-sm hover:bg-green-600 transition-all duration-500"
           >
             Logs
@@ -202,7 +229,7 @@ export default function WithdrawComponent() {
         {/* Withdrawal Form Section */}
         <div className="mb-4">
           <p className="text-gray-600 mb-2">
-            Payments(subjected to withdrawal charges with normal tariff)
+            Withdrawal charges apply per the normal tariffs
           </p>
 
           <div className="mb-4">

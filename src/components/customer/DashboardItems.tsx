@@ -6,7 +6,6 @@ import WhatsappImage from "@/assests/WhatsappLogo.png";
 import WhatsappWithdrawalsImage from "@/assests/WithdrawalsOne.png";
 import WithdrawalsImage from "@/assests/WithdrawalsTwo.png";
 import PackagesImage from "@/assests/MyPackages.png";
-import DepositImage from "@/assests/Deposit.png";
 import CashbackImage from "@/assests/Cashback.png";
 import BalanceImage from "@/assests/Balance.png";
 import DashboardsTemplate from "./DashboardsTemplate";
@@ -89,6 +88,8 @@ const DashboardItems = () => {
     fetchUserData();
   }, [user?.uid]);
 
+  const doubleCashback = userCashback * 2;
+
   const items: DashboardItemTemplate[] = [
     {
       title: "Whatsapp Earnings",
@@ -104,20 +105,13 @@ const DashboardItems = () => {
     },
     {
       title: "My Packages",
-      // Assuming we're updating the DashboardItemTemplate type to accept string or string[]
       packages: formattedPackagesString,
       repImage: PackagesImage,
       repImageAlt: "Hand holding a wallet",
     },
     {
-      title: "Deposit",
-      amount: 0,
-      repImage: DepositImage,
-      repImageAlt: "open safe with cash",
-    },
-    {
       title: "Cashback",
-      amount: userCashback,
+      amount: doubleCashback,
       repImage: CashbackImage,
       repImageAlt: "Stacked coins with an arrow",
     },

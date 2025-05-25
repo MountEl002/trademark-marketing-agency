@@ -49,7 +49,7 @@ const pricingPlansData: PricingPlan[] = [
     features: [
       "Advertise With us",
       "Cashback",
-      "Cashback Ksh 1700",
+      "Cashback Ksh 1,700",
       "Whatsapp Earning (ksh 25 per view)",
     ],
     bgColor: "bg-gradient-to-r from-yellow-600 via-orange-700 to-amber-800 p-8",
@@ -61,7 +61,7 @@ const pricingPlansData: PricingPlan[] = [
     features: [
       "Advertise With us",
       "Cashback",
-      "Cashback Ksh 3500",
+      "Cashback Ksh 3,500",
       "Whatsapp Earning (ksh 50 per view)",
     ],
     bgColor: "bg-gradient-to-r from-slate-300 via-gray-400 to-slate-500",
@@ -73,7 +73,7 @@ const pricingPlansData: PricingPlan[] = [
     features: [
       "Advertise With us",
       "Cashback",
-      "Cashback Ksh 6000",
+      "Cashback Ksh 6,000",
       "Whatsapp Earning (ksh 100 per view)",
     ],
     bgColor: "bg-gradient-to-r from-yellow-300 via-amber-500 to-yellow-600",
@@ -241,7 +241,9 @@ const PricingCard: React.FC<{ plan: PricingPlan }> = ({ plan }) => {
             {plan.title}
           </h3>
           <div className="text-center mb-6">
-            <span className="text-3xl font-bold">Ksh {plan.price}</span>
+            <span className="text-xl font-bold">
+              Ksh {plan.price.toLocaleString()}
+            </span>
             <span className="text-sm opacity-80 ml-1 text-blue-300">
               /FOREVER
             </span>
@@ -300,12 +302,15 @@ const PricingCard: React.FC<{ plan: PricingPlan }> = ({ plan }) => {
               <p className="text-gray-700 mb-4">
                 You are about to purchase the{" "}
                 <span className="font-semibold">{plan.title}</span> package for{" "}
-                <span className="font-semibold">Ksh {plan.price}</span>.
+                <span className="font-semibold">
+                  Ksh {plan.price.toLocaleString()}
+                </span>
+                .
               </p>
               <p className="text-gray-700 mb-6">
                 Your current balance:{" "}
                 <span className="font-semibold">
-                  Ksh {userBalance.toFixed(2)}
+                  Ksh {userBalance.toLocaleString()}
                 </span>
               </p>
 

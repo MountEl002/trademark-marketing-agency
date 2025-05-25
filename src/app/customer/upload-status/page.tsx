@@ -28,6 +28,8 @@ const WhatsappStatusUpload: React.FC = () => {
     Bronze: 25,
     Silver: 50,
     Gold: 100,
+    "Early Payment": 40,
+    "Premium Code": 50,
   };
 
   // Fetch user balance, payments, and packages on component mount
@@ -157,13 +159,13 @@ const WhatsappStatusUpload: React.FC = () => {
           <div className="horizontal gap-4">
             <div className="border-dashed border rounded-md p-4 mx-2">
               <p className="text-2xl font-bold text-gray-800">
-                Ksh {balance.toFixed(2)}
+                Ksh {balance.toLocaleString()}
               </p>
               <p className="text-gray-500">Deposit Balance</p>
             </div>
             <div className="border-dashed border rounded-md p-4 mx-2">
               <p className="text-2xl font-bold text-gray-800">
-                Ksh {userPayments}
+                Ksh {userPayments.toLocaleString()}
               </p>
               <p className="text-gray-500">Payments</p>
             </div>
@@ -232,11 +234,17 @@ const WhatsappStatusUpload: React.FC = () => {
                 <p className="text-sm text-gray-600">
                   Calculation:{" "}
                   {userPackages
-                    .map((pkg) => `${views} × ${PACKAGE_RATES[pkg]} (${pkg})`)
+                    .map(
+                      (pkg) =>
+                        `${views.toLocaleString()} × ${
+                          PACKAGE_RATES[pkg]
+                        } (${pkg})`
+                    )
                     .join(" + ")}
                 </p>
                 <p className="text-sm font-semibold text-green-600">
-                  Estimated payment: Ksh {calculateAmount(views).toFixed(2)}
+                  Estimated payment: Ksh{" "}
+                  {calculateAmount(views).toLocaleString()}
                 </p>
               </div>
             )}

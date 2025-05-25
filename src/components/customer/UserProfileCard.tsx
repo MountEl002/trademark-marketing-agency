@@ -163,7 +163,9 @@ export default function UserProfileCard({ userId }: UserProfileCardProps) {
           </div>
           <div>
             <p className="text-gray-600">Balance: </p>
-            <p className="font-medium">Ksh {userData.balance}</p>
+            <p className="font-medium">
+              Ksh {userData.balance.toLocaleString()}
+            </p>
           </div>
         </div>
       </div>
