@@ -15,5 +15,5 @@ export interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   signInWithGoogle: () => Promise<void>;
-  signInWithFacebook?: () => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
 }

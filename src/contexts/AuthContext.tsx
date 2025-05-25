@@ -8,10 +8,10 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import {
   GoogleAuthProvider,
-  FacebookAuthProvider,
   signInWithPopup,
   UserCredential,
 } from "firebase/auth";
@@ -118,35 +118,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const signInWithFacebook = async () => {
-    try {
-      const provider = new FacebookAuthProvider();
-      const userCredential: UserCredential = await signInWithPopup(
-        auth,
-        provider
-      );
-      const authUser = userCredential.user;
-
-      const userDoc = await getDoc(doc(db, "users", authUser.uid));
-
-      if (!userDoc.exists()) {
-        await initializeUserDocuments(
-          authUser.uid,
-          authUser.email,
-          null,
-          null,
-          null
-        );
-        router.push("/customer/profile-completion");
-      } else {
-        router.push("/customer/dashboards");
-      }
-    } catch (error) {
-      console.error("Error signing in with Facebook:", error);
-      throw error;
-    }
-  };
-
   const signup = async (
     email: string,
     password: string,
@@ -194,18 +165,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     router.push("/login");
   };
 
+  const resetPassword = async (email: string) => {
+    return await sendPasswordResetEmail(auth, email);
+  };
+
   return (
     <AuthContext.Provider
       value={{
         user,
         isAdmin,
+        resetPassword,
         username,
         loading,
         signup,
         login,
         logout,
         signInWithGoogle,
-        signInWithFacebook,
       }}
     >
       {children}
