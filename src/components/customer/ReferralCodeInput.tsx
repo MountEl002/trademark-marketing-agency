@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { IoMdCheckmarkCircle, IoMdCloseCircle } from "react-icons/io";
 import { doc, getDoc, setDoc, updateDoc, increment } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -20,7 +20,23 @@ const ReferralCodeInput = ({
   const [isChecking, setIsChecking] = useState<boolean>(false);
   const [fieldActive, setFieldActive] = useState<boolean>(false);
 
+  // Add ref to track if component is mounted
+  const isMountedRef = useRef(true);
+
   const { user } = useAuth();
+
+  const onValidationChangeRef = useRef(onValidationChange);
+
+  useEffect(() => {
+    onValidationChangeRef.current = onValidationChange;
+  }, [onValidationChange]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   // Dynamic border styles based on field focus
   const fieldBorder = `transition-all duration-500 border ${
@@ -33,41 +49,52 @@ const ReferralCodeInput = ({
   useEffect(() => {
     const verifyReferralCode = async () => {
       if (!referralCode || referralCode.trim() === "") {
-        setIsCodeValid(null);
-        if (onValidationChange) onValidationChange(false);
+        if (isMountedRef.current) {
+          setIsCodeValid(null);
+          if (onValidationChangeRef.current)
+            onValidationChangeRef.current(false);
+        }
         return;
       }
 
-      setIsChecking(true);
+      if (isMountedRef.current) {
+        setIsChecking(true);
+      }
+
       try {
         const normalizedCode = referralCode.trim();
-        // Check if username exists in userNames collection
         const usernameDocRef = doc(db, "userNames", normalizedCode);
         const docSnap = await getDoc(usernameDocRef);
 
         const valid = docSnap.exists();
-        setIsCodeValid(valid);
-        if (onValidationChange) onValidationChange(valid);
+
+        if (isMountedRef.current) {
+          setIsCodeValid(valid);
+          if (onValidationChangeRef.current)
+            onValidationChangeRef.current(valid);
+        }
       } catch (error) {
         console.error("Error verifying referral code:", error);
-        setIsCodeValid(false);
-        if (onValidationChange) onValidationChange(false);
+        if (isMountedRef.current) {
+          setIsCodeValid(false);
+          if (onValidationChangeRef.current)
+            onValidationChangeRef.current(false);
+        }
       } finally {
-        setIsChecking(false);
+        if (isMountedRef.current) {
+          setIsChecking(false);
+        }
       }
     };
 
-    // Add debounce to prevent too many Firestore reads
     const timer = setTimeout(() => {
-      if (referralCode) {
-        verifyReferralCode();
-      }
+      verifyReferralCode();
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [referralCode, onValidationChange]);
+  }, [referralCode]); // Only depend on referralCode
 
-  // Process referral during form submission
+  // Rest of your component code remains the same...
   const processReferral = async () => {
     if (!username) {
       console.error("Username is required to process referral");
