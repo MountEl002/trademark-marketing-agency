@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   collection,
   addDoc,
@@ -14,15 +14,28 @@ import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
 import TransactionVerification from "@/components/customer/TransactionVerification";
 import PaymentDialog from "@/components/customer/PaymentDialog";
+import { getUserBalance } from "@/contexts/userService";
 
 export default function DepositComponent() {
   const [amount, setAmount] = useState(0);
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
   const [showVerificationDialog, setShowVerificationDialog] = useState(false);
+  const [userBalance, setUserBalance] = useState<number>(0);
+
   const [transactionId, setTransactionId] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const { user } = useAuth();
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (user?.uid) {
+        const balance = await getUserBalance(user.uid);
+        setUserBalance(balance);
+      }
+    };
+    fetchUserData();
+  }, [user?.uid]);
 
   const handleAmountChange = (e: { target: { value: string } }) => {
     const value = e.target.value.replace(/[^0-9]/g, "");
@@ -88,17 +101,19 @@ export default function DepositComponent() {
     <div className="min-h-screen min-w-full vertical">
       <div className="bg-gray-100 p-6 rounded-lg shadow-sm w-full max-w-3xl mx-auto">
         {/* Balance and Completion Section */}
-        <div className="flex justify-between items-center mb-12">
+        <div className="flex min-[450px]:justify-between flex-col min-[450px]:flex-row justify-start items-start min-[450px]:items-center mb-12">
           <div className="bg-white p-4 rounded-lg shadow-sm">
-            <h2 className="text-xl font-semibold">Ksh0.00</h2>
+            <p className="text-xl font-semibold min-[450px]:mb-0 mb-2">
+              Ksh {userBalance.toLocaleString()}
+            </p>
             <p className="text-gray-500 text-sm">Balance</p>
           </div>
 
           <Link
             href="/customer/all-transactions"
-            className="bg-green-500 text-white px-6 py-2 rounded-lg shadow-sm hover:bg-green-600 transition-all duration-500"
+            className="bg-green-500 text-white px-6 py-2 min-[450px]:mt-0 mt-6 rounded-lg shadow-sm hover:bg-green-600 transition-all duration-500"
           >
-            Logs
+            Logs/Very pending transactions
           </Link>
         </div>
 
