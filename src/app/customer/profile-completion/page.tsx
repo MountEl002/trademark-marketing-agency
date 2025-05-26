@@ -193,7 +193,7 @@ const UpdateProfile = () => {
 
   const handleReferralConfirmation = () => {
     setShowReferralConfirmation(false);
-    // Continue with signup process
+    handleActualSubmit();
   };
 
   return (
