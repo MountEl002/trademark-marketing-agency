@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext"; // Adjust path to your AuthContext
 import { MdEmail, MdCheckCircle, MdError } from "react-icons/md";
 import LightLogo from "@/components/common/LightLogo";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
