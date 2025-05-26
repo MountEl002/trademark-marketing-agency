@@ -1,19 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { countries } from "@/contexts/globalData";
-import {
-  doc,
-  getDoc,
-  setDoc,
-  updateDoc,
-  collection,
-  query,
-  where,
-  getDocs,
-} from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Tooltip } from "react-tooltip";
 import LightLogo from "@/components/common/LightLogo";
@@ -23,10 +14,11 @@ import SearchableSelect from "@/components/customer/SearchableSelect";
 import ReferralCodeInput from "@/components/customer/ReferralCodeInput";
 import LoadingAnimantion from "@/components/common/LoadingAnimantion";
 import Link from "next/link";
+import { processReferral, verifyUsername } from "@/contexts/userService";
 
 const UpdateProfile = () => {
   const router = useRouter();
-  const { user, username: savedUsername } = useAuth();
+  const { user: authUser, username: savedUsername } = useAuth();
   const [username, setUsername] = useState("");
   const [mobile, setMobile] = useState("");
   const [country, setCountry] = useState("");
@@ -37,6 +29,11 @@ const UpdateProfile = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+
+  const [showReferralConfirmation, setShowReferralConfirmation] =
+    useState<boolean>(false);
+  const [referralCode, setReferralCode] = useState<string>("");
+  const [isCodeValid, setIsCodeValid] = useState<boolean | null>(null);
 
   // Field focus states
   const [usernameFieldActive, setUsernameFieldActive] = useState(false);
@@ -63,37 +60,24 @@ const UpdateProfile = () => {
   }`;
 
   // Check if username exists in database
-  const verifyUsername = async (username: string) => {
-    if (!username || username.length < 3) return;
-
-    setUsernameChecking(true);
-    try {
-      // Check userNames collection for existing username
-      const usernameQuery = query(
-        collection(db, "userNames"),
-        where("username", "==", username)
-      );
-
-      const querySnapshot = await getDocs(usernameQuery);
-
-      // If any documents are found with this username
-      setUsernameExists(querySnapshot.size > 0);
-    } catch (error) {
-      // If the collection doesn't exist or there's another error,
-      // we can assume the username is available
-      console.error("Error checking username:", error);
-      setUsernameExists(false);
-    } finally {
-      setUsernameChecking(false);
-    }
-  };
-
-  // Debounce the username check
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (username && username.length >= 3) {
-        verifyUsername(username);
+    const checkUsername = async () => {
+      if (username.length >= 3) {
+        setUsernameChecking(true);
+        try {
+          const exists = await verifyUsername(username);
+          setUsernameExists(exists);
+        } catch (error) {
+          console.error("Error checking username:", error);
+          setUsernameExists(false);
+        } finally {
+          setUsernameChecking(false);
+        }
       }
+    };
+
+    const timer = setTimeout(() => {
+      checkUsername();
     }, 500);
 
     return () => clearTimeout(timer);
@@ -110,22 +94,30 @@ const UpdateProfile = () => {
     );
   }, [username, mobile, country, usernameExists, usernameChecking]);
 
-  const handleSubmit = async (e: { preventDefault: () => void }) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (!formValid) return;
 
-    if (!user) {
+    if (isCodeValid && referralCode) {
+      setShowReferralConfirmation(true);
+    } else {
+      // No referral code or invalid, proceed directly
+      handleActualSubmit();
+    }
+  };
+
+  const handleActualSubmit = async () => {
+    if (!authUser) {
       setError("You must be logged in to update your profile");
       return;
     }
-
-    if (!formValid) return;
 
     setLoading(true);
     setError("");
 
     try {
       // First update the user document
-      await updateDoc(doc(db, "users", user.uid), {
+      await updateDoc(doc(db, "users", authUser.uid), {
         username: username.trim(),
         mobile: mobile.trim(),
         country: country,
@@ -141,24 +133,29 @@ const UpdateProfile = () => {
           // If it exists, update it
           await updateDoc(usernameRef, {
             username: username.trim(),
-            userId: user.uid,
+            userId: authUser.uid,
             updatedAt: new Date(),
           });
         } else {
           // If it doesn't exist, set it
           await setDoc(usernameRef, {
             username: username.trim(),
-            userId: user.uid,
+            userId: authUser.uid,
             createdAt: new Date(),
           });
         }
       } catch (innerError) {
         console.error("Error updating username record:", innerError);
-        // The user's profile has still been updated successfully
       }
 
       // Process referral after successful profile update
       try {
+        await processReferral(
+          authUser?.uid,
+          username.trim(),
+          referralCode,
+          isCodeValid
+        );
       } catch (referralError) {
         console.error("Error processing referral:", referralError);
         // Don't fail the entire process if referral processing fails
@@ -170,7 +167,7 @@ const UpdateProfile = () => {
       // Wait 2 seconds before redirecting
       setTimeout(() => {
         router.push("/customer/dashboards");
-      }, 200000);
+      }, 5000);
     } catch (error) {
       console.error("Error updating profile:", error);
 
@@ -192,6 +189,11 @@ const UpdateProfile = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleReferralConfirmation = () => {
+    setShowReferralConfirmation(false);
+    // Continue with signup process
   };
 
   return (
@@ -237,6 +239,40 @@ const UpdateProfile = () => {
             </div>
           ) : (
             ""
+          )}
+          {/* Referral Confirmation Popup */}
+          {showReferralConfirmation && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg p-6 max-w-md mx-4 shadow-xl">
+                <div className="flex justify-center mb-4">
+                  <div className="bg-blue-100 p-3 rounded-full">
+                    <IoMdCheckmarkCircle size={40} className="text-blue-500" />
+                  </div>
+                </div>
+                <h3 className="text-xl font-semibold text-center mb-2">
+                  Referral Code Valid!
+                </h3>
+                <p className="text-gray-600 text-center mb-6">
+                  You have a valid referral code. Click continue to complete
+                  your registration with this referral.
+                </p>
+                <div className="flex justify-center gap-3">
+                  <button
+                    onClick={() => setShowReferralConfirmation(false)}
+                    className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleReferralConfirmation}
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition-colors"
+                    disabled={loading || !!savedUsername}
+                  >
+                    {loading ? <LoadingAnimantion /> : "Continue"}
+                  </button>
+                </div>
+              </div>
+            </div>
           )}
 
           <form onSubmit={handleSubmit}>
@@ -332,7 +368,11 @@ const UpdateProfile = () => {
                 />
               </div>
             </div>
-            {referralComponent}
+            {/* Use the ReferralCodeInput component */}
+            <ReferralCodeInput
+              onIsCodeValid={setIsCodeValid}
+              onReferralCode={setReferralCode}
+            />
             <div className="horizontal">
               <button
                 type="submit"

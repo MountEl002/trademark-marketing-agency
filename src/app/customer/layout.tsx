@@ -27,9 +27,13 @@ export default function CustomerLayout({
     }
 
     if (user) {
-      if (!username && pathname !== "/customer/profile-completion") {
+      if (!username) {
         router.push("/customer/profile-completion");
       }
+    }
+
+    if (user && username && pathname === "/customer/profile-completion") {
+      router.push("/customer/dashboards");
     }
   }, [user, username, loading, router, pathname]);
 
