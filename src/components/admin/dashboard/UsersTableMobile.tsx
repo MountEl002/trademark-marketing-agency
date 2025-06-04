@@ -32,7 +32,7 @@ function UserCard({ user }: UserCardProps) {
   const handleClick = () => {
     if (expanded) {
       // If already expanded, navigate to user detail page
-      router.push(`/admin/users/${user.username}`);
+      router.push(`/admin/users/${user.userId}`);
     } else {
       // If collapsed, just expand first
       setExpanded(true);
@@ -104,7 +104,7 @@ function UserCard({ user }: UserCardProps) {
             className="mt-2 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
             onClick={(e) => {
               e.stopPropagation();
-              router.push(`/admin/users/${user.username}`);
+              router.push(`/admin/users/${user.userId}`);
             }}
           >
             View Details

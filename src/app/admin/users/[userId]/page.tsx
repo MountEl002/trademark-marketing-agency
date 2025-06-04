@@ -3,17 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import React from "react"; // Import React for React.use()
-import {
-  doc,
-  getDoc,
-  collection,
-  query,
-  where,
-  getDocs,
-  updateDoc,
-  Timestamp, // Import Timestamp type from Firebase
-} from "firebase/firestore";
+import React from "react";
+import { doc, getDoc, updateDoc, Timestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import {
   FiUser,
@@ -24,6 +15,7 @@ import {
   FiCheck,
   FiX,
 } from "react-icons/fi";
+import DeleteUserAccount from "@/components/customer/DeleteUserAccount";
 
 interface UserData {
   userId: string;
@@ -33,7 +25,7 @@ interface UserData {
   country: string;
   balance: number;
   payments: number;
-  createdAt?: Timestamp; // Use Firebase Timestamp type instead of any
+  createdAt?: Timestamp;
 }
 
 interface ConfirmDialogProps {
@@ -111,11 +103,11 @@ function AlertDialog({
 export default function UserDetailPage({
   params,
 }: {
-  params: Promise<{ username: string }>;
+  params: Promise<{ userId: string }>;
 }) {
   // Unwrap the params Promise using React.use()
   const resolvedParams = React.use(params);
-  const username = resolvedParams.username;
+  const userId = resolvedParams.userId;
 
   const { user, isAdmin, loading } = useAuth();
   const router = useRouter();
@@ -141,21 +133,6 @@ export default function UserDetailPage({
     async function fetchUserData() {
       try {
         setFetchingData(true);
-        // First try to find the user by username
-        const userNameQuery = query(
-          collection(db, "userNames"),
-          where("__name__", "==", username)
-        );
-        const userNameSnap = await getDocs(userNameQuery);
-
-        if (userNameSnap.empty) {
-          // Username not found
-          console.error("Username not found:", username);
-          router.push("/admin/users");
-          return;
-        }
-
-        const userId = userNameSnap.docs[0].data().userId;
         const userDocRef = doc(db, "users", userId);
         const userDocSnap = await getDoc(userDocRef);
 
@@ -179,7 +156,7 @@ export default function UserDetailPage({
     if (!loading && user && isAdmin) {
       fetchUserData();
     }
-  }, [loading, user, isAdmin, username, router]);
+  }, [loading, user, isAdmin, userId, router]);
 
   const handleSave = () => {
     if (!userData) return;
@@ -254,20 +231,7 @@ export default function UserDetailPage({
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <div className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            <h1 className="text-xl font-bold text-blue-600">Admin Dashboard</h1>
-            <div className="flex items-center">
-              <span className="text-sm text-gray-500 mr-4">
-                Signed in as Admin
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <main className="max-w-7xl mt-16 mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="mb-6">
           <button
             onClick={() => router.push("/admin")}
@@ -400,6 +364,12 @@ export default function UserDetailPage({
                   </div>
                 )}
               </div>
+            </div>
+            <div className="mt-12">
+              <DeleteUserAccount
+                userId={userData.userId}
+                username={userData.username}
+              />
             </div>
           </div>
         </div>

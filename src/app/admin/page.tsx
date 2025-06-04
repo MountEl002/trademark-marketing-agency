@@ -29,21 +29,8 @@ export default function AdminUsersPage() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <div className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            <h1 className="text-xl font-bold text-blue-600">Admin Dashboard</h1>
-            <div className="flex items-center">
-              <span className="text-sm text-gray-500 mr-4">
-                Signed in as Admin
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+      <main className="max-w-7xl mt-16 mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="rounded-lg shadow p-4 sm:p-6">
           <UsersTable />
         </div>
       </main>

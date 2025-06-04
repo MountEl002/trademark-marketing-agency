@@ -139,7 +139,7 @@ export default function UsersTable() {
                   <tr
                     key={user.userId}
                     className="hover:bg-gray-50 cursor-pointer"
-                    onClick={() => router.push(`/admin/users/${user.username}`)}
+                    onClick={() => router.push(`/admin/users/${user.userId}`)}
                   >
                     <td className="px-4 py-3 whitespace-nowrap">
                       <div className="text-sm font-medium text-blue-600 hover:underline">
