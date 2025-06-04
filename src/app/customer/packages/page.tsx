@@ -33,35 +33,23 @@ const pricingPlansData: PricingPlan[] = [
   {
     id: "Basic",
     title: "Basic",
-    price: 350,
+    price: 450,
     features: [
       "Advertise With us",
       "Cashback",
-      "Cashback Ksh 700",
+      "Cashback Ksh 900",
       "Whatsapp Earning (ksh 15 per view)",
     ],
     bgColor: "bg-gradient-to-r from-orange-400 via-amber-600 to-orange-700",
   },
   {
-    id: "Bronze",
-    title: "Bronze",
-    price: 850,
-    features: [
-      "Advertise With us",
-      "Cashback",
-      "Cashback Ksh 1,700",
-      "Whatsapp Earning (ksh 25 per view)",
-    ],
-    bgColor: "bg-gradient-to-r from-yellow-600 via-orange-700 to-amber-800 p-8",
-  },
-  {
     id: "Silver",
     title: "Silver",
-    price: 1750,
+    price: 1350,
     features: [
       "Advertise With us",
       "Cashback",
-      "Cashback Ksh 3,500",
+      "Cashback Ksh 2,700",
       "Whatsapp Earning (ksh 50 per view)",
     ],
     bgColor: "bg-gradient-to-r from-slate-300 via-gray-400 to-slate-500",
@@ -380,7 +368,7 @@ const PricingSectionPage: React.FC = () => {
   return (
     <div className="min-h-screen mx-auto bg-slate-100 flex items-center justify-center p-4 sm:p-8 ">
       <div className="container max-w-6xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {pricingPlansData.map((plan) => (
             <PricingCard key={plan.id} plan={plan} />
           ))}

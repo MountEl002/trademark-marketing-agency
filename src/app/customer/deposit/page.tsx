@@ -113,7 +113,7 @@ export default function DepositComponent() {
             href="/customer/all-transactions"
             className="bg-green-500 text-white px-6 py-2 min-[450px]:mt-0 mt-6 rounded-lg shadow-sm hover:bg-green-600 transition-all duration-500"
           >
-            Logs/Very pending transactions
+            Logs/Verify pending transactions
           </Link>
         </div>
 

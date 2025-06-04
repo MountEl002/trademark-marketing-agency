@@ -166,6 +166,45 @@ export async function getUserPackageNames(userId: string): Promise<string[]> {
   }
 }
 
+export async function getUserSpecialPackageNames(
+  userId: string
+): Promise<string[]> {
+  if (!userId) {
+    console.error("getUserSpecialPackageNames: userId is required.");
+    return [];
+  }
+
+  try {
+    // Reference to the extra packages subcollection of the specific user
+    const packagesCollectionRef = collection(
+      db,
+      "users",
+      userId,
+      "extraPackages"
+    );
+    const packagesQuery = query(packagesCollectionRef);
+    const querySnapshot = await getDocs(packagesQuery);
+
+    // Extract packageName from each document
+    const packageNames: string[] = [];
+    querySnapshot.forEach((doc) => {
+      const packageData = doc.data();
+      if (packageData.packageName) {
+        packageNames.push(packageData.packageName);
+      }
+    });
+
+    return packageNames;
+  } catch (error) {
+    console.error(
+      "Error fetching special package names for userId:",
+      userId,
+      error
+    );
+    return [];
+  }
+}
+
 // Package values
 const PACKAGE_VALUES: { [key: string]: number } = {
   "Premium Code": 600,

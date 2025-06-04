@@ -16,6 +16,8 @@ import {
   FiX,
 } from "react-icons/fi";
 import DeleteUserAccount from "@/components/customer/DeleteUserAccount";
+import PackagesManager from "@/components/admin/dashboard/PackagesManager";
+import ExtraPackagesManager from "@/components/admin/dashboard/ExtraPackagesManager";
 
 interface UserData {
   userId: string;
@@ -243,14 +245,14 @@ export default function UserDetailPage({
 
         <div className="bg-white rounded-lg shadow overflow-hidden">
           <div className="p-6">
-            <div className="flex justify-between items-center mb-6">
+            <div className="vertical-start mb-6">
               <h2 className="text-2xl font-bold text-gray-800">User Details</h2>
               {!isEditing ? (
                 <button
                   onClick={() => setIsEditing(true)}
                   className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
-                  <FiEdit className="mr-2" /> Edit User
+                  <FiEdit className="mr-2" /> Edit balances
                 </button>
               ) : (
                 <div className="flex space-x-2">
@@ -364,6 +366,12 @@ export default function UserDetailPage({
                   </div>
                 )}
               </div>
+            </div>
+            <div className="mt-12">
+              <PackagesManager userId={userData.userId} />
+            </div>
+            <div className="mt-12">
+              <ExtraPackagesManager userId={userData.userId} />
             </div>
             <div className="mt-12">
               <DeleteUserAccount

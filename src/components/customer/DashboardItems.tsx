@@ -8,12 +8,14 @@ import WithdrawalsImage from "@/assests/WithdrawalsTwo.png";
 import PackagesImage from "@/assests/MyPackages.png";
 import CashbackImage from "@/assests/Cashback.png";
 import BalanceImage from "@/assests/Balance.png";
+import Specialpackages from "@/assests/SpecialPackages.png";
 import DashboardsTemplate from "./DashboardsTemplate";
 import {
   getUserBalance,
   getUserPackageNames,
   getUserPackageValue,
   getUserPayments,
+  getUserSpecialPackageNames,
 } from "@/contexts/userService";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -23,6 +25,8 @@ const DashboardItems = () => {
   const [userPayments, setUserPayments] = useState<number>(0);
   const [userCashback, setUserCashback] = useState<number>(0);
   const [formattedPackagesString, setFormattedPackagesString] =
+    useState<string>("Inactive");
+  const [formattedSpecialPackagesString, setFormattedSpecialPackagesString] =
     useState<string>("Inactive");
 
   // Format package names to a grammatically correct string with counts
@@ -78,11 +82,22 @@ const DashboardItems = () => {
         if (packageNames.length > 0) {
           setFormattedPackagesString(formatPackagesToString(packageNames));
         } else {
-          setFormattedPackagesString("Inactive");
+          setFormattedPackagesString("You have no packages");
+        }
+
+        const specialPackageNames = await getUserSpecialPackageNames(user.uid);
+        // Format the spcial packages into a string for display
+        if (specialPackageNames.length > 0) {
+          setFormattedSpecialPackagesString(
+            formatPackagesToString(specialPackageNames)
+          );
+        } else {
+          setFormattedSpecialPackagesString("You have no special packages");
         }
       } else {
         setUserBalance(0);
-        setFormattedPackagesString("Inactive");
+        setFormattedPackagesString("You have no packages");
+        setFormattedSpecialPackagesString("You have no special packages");
       }
     };
     fetchUserData();
@@ -107,6 +122,12 @@ const DashboardItems = () => {
       title: "My Packages",
       packages: formattedPackagesString,
       repImage: PackagesImage,
+      repImageAlt: "Hand holding a wallet",
+    },
+    {
+      title: "My Special Packages",
+      packages: formattedSpecialPackagesString,
+      repImage: Specialpackages,
       repImageAlt: "Hand holding a wallet",
     },
     {

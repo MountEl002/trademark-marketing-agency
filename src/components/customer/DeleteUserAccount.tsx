@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { doc, writeBatch } from "firebase/firestore";
-import { deleteUser } from "firebase/auth";
-import { auth, db } from "@/lib/firebase";
+import { db } from "@/lib/firebase";
 import { FiTrash2 } from "react-icons/fi";
 import LoadingAnimantion from "../common/LoadingAnimantion";
 import { useRouter } from "next/navigation";
@@ -45,12 +44,6 @@ export default function DeleteUserAccount({
 
       // Commit batch delete from Firestore
       await batch.commit();
-
-      // Delete user from Firebase Authentication
-      const userToDelete = auth.currentUser;
-      if (userToDelete && userToDelete.uid === userId) {
-        await deleteUser(userToDelete);
-      }
 
       window.alert(
         `Successfully deleted ${username}'s account and all associated data.`

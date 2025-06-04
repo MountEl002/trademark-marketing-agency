@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { FaCheck } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import {
   collection,
@@ -24,7 +23,6 @@ interface PricingPlan {
   id: string;
   title: string;
   price: number;
-  features: string[];
   bgColor: string;
 }
 
@@ -32,13 +30,7 @@ const pricingPlansData: PricingPlan[] = [
   {
     id: "Premium Code",
     title: "Premium Code",
-    price: 600,
-    features: [
-      "Advertise With us",
-      "Cashback",
-      "Cashback Ksh 1,200",
-      "Whatsapp Earning (ksh 50 per view)",
-    ],
+    price: 800,
     bgColor: "bg-gradient-to-r from-yellow-300 via-amber-500 to-yellow-600",
   },
 ];
@@ -118,13 +110,12 @@ const PricingCard: React.FC<{ plan: PricingPlan }> = ({ plan }) => {
       });
 
       // 2. Add package to user's packages collection
-      const packagesCollectionRef = collection(userDocRef, "packages");
+      const packagesCollectionRef = collection(userDocRef, "extraPackages");
       await setDoc(doc(packagesCollectionRef), {
         packageId: plan.id,
         packageName: plan.title,
         packagePrice: plan.price,
         purchasedAt: serverTimestamp(),
-        features: plan.features,
         status: "active",
       });
 
@@ -196,15 +187,6 @@ const PricingCard: React.FC<{ plan: PricingPlan }> = ({ plan }) => {
               /FOREVER
             </span>
           </div>
-          <hr className="border-t-2 border-dashed border-emerald-300 opacity-70 my-6" />
-          <ul className="space-y-3 mb-8">
-            {plan.features.map((feature, index) => (
-              <li key={index} className="flex items-center">
-                <FaCheck className="text-emerald-200 w-5 h-5 mr-3 flex-shrink-0" />
-                <span>{feature}</span>
-              </li>
-            ))}
-          </ul>
         </div>
         <button
           onClick={handleGetStarted}
