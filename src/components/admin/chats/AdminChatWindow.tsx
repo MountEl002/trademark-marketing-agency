@@ -65,6 +65,8 @@ interface ChatPreview {
   unreadCount: number;
   adminLastReadTimestamp?: number; // Timestamp when admin last "cleared" unreads for this chat
   chatType: "registered" | "unregistered"; // To determine collection path easily
+  messageCount: number;
+  hasOnlyAdminMessage: boolean;
 }
 
 interface Message {
@@ -172,6 +174,10 @@ const AdminChatWindow = () => {
           (docSnapshot) => docSnapshot.data() as Omit<Message, "id">
         );
 
+        const messageCount = allMessagesForChat.length;
+        const hasOnlyAdminMessage =
+          messageCount === 1 && allMessagesForChat[0].sender === "admin";
+
         if (allMessagesForChat.length === 0) {
           return null;
         }
@@ -195,6 +201,8 @@ const AdminChatWindow = () => {
           unreadCount: unreadCount,
           adminLastReadTimestamp: firebaseAdminLastRead,
           chatType: chatDoc.type,
+          messageCount,
+          hasOnlyAdminMessage,
         } as ChatPreview;
       });
 
@@ -202,9 +210,14 @@ const AdminChatWindow = () => {
         (preview) => preview !== null
       ) as ChatPreview[];
 
-      resolvedPreviews.sort(
-        (a, b) => b.lastMessageTimestamp - a.lastMessageTimestamp
-      );
+      resolvedPreviews.sort((a, b) => {
+        // Chats with only admin messages go to bottom
+        if (a.hasOnlyAdminMessage && !b.hasOnlyAdminMessage) return 1;
+        if (!a.hasOnlyAdminMessage && b.hasOnlyAdminMessage) return -1;
+
+        // Within same category, sort by latest message timestamp
+        return b.lastMessageTimestamp - a.lastMessageTimestamp;
+      });
 
       setChats(resolvedPreviews);
     } catch (err) {
@@ -361,7 +374,7 @@ const AdminChatWindow = () => {
               backgroundRepeat: "no-repeat",
             }}
           >
-            <div className="horizontal-space-between w-full bg-blue-200 p-3">
+            <div className="horizontal-space-between w-full bg-cyan-200 p-3">
               {selectedChat ? (
                 <>
                   <div className="horizontal gap-2">
@@ -369,8 +382,10 @@ const AdminChatWindow = () => {
                       <FaUser />
                     </div>
                     <div>
-                      <p className="font-semibold">{currentUsername}</p>
-                      <p className="text-sm text-gray-600">
+                      <p className="font-semibold max-[400px]:text-xs">
+                        {currentUsername}
+                      </p>
+                      <p className="text-sm text-gray-600 max-[400px]:text-xs">
                         {isRegisteredUser ? "Registered User" : "Guest User"}
                       </p>
                     </div>
@@ -391,10 +406,16 @@ const AdminChatWindow = () => {
               <UniversalButton
                 icon={IoMdClose}
                 onClick={() => setChatOpen(false)}
-                text="Close chat"
-                buttonClassName="bg-blue-500 hover:bg-blue-700"
+                text="Close"
+                buttonClassName="!pr-3 bg-blue-500 hover:bg-blue-700 max-[400px]:hidden"
                 iconClassName="bg-blue-400 group-hover:bg-blue-600"
               />
+              <button
+                onClick={() => setChatOpen(false)}
+                className="min-[401px]:hidden rounded-md bg-gray-50 hover:bg-white p-1 sm:p-2 hover:scale-110 transition-all duration-500 cursor-pointer"
+              >
+                <IoMdClose size={20} />
+              </button>
             </div>
 
             {error && showChats && (
@@ -422,8 +443,8 @@ const AdminChatWindow = () => {
                           key={chat.id}
                           className={`block p-3 border rounded-lg transition duration-150 cursor-pointer ${
                             chat.unreadCount > 0
-                              ? "bg-blue-100 hover:bg-blue-200"
-                              : "bg-gray-100 hover:bg-gray-50"
+                              ? "bg-blue-200 hover:bg-blue-300"
+                              : "bg-gray-50 hover:bg-white"
                           }`}
                           onClick={() => handleChatClick(chat)}
                         >
