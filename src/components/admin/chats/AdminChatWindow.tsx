@@ -24,6 +24,8 @@ import { UploadedFileInfo } from "@/types/fileData";
 import FileDownloadButton from "@/components/common/FileDownloadButton";
 import UniversalButton from "@/components/common/UniversalButton";
 import { IoMdClose } from "react-icons/io";
+import { SlOptionsVertical } from "react-icons/sl";
+import { deleteDoc } from "firebase/firestore";
 
 const formatMessageTimestamp = (timestamp: number): string => {
   const messageDate = new Date(timestamp);
@@ -90,6 +92,15 @@ const AdminChatWindow = () => {
   const [selectedChat, setSelectedChat] = useState<ChatPreview | null>(null);
   const [showChats, setShowChats] = useState(true);
   const [totalUnreadCount, setTotalUnreadCount] = useState(0);
+
+  const [showOptions, setShowOptions] = useState<string | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(
+    null
+  );
+  const [deleteMessage, setDeleteMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
 
   const isRegisteredUser = selectedChat
     ? selectedChat.chatType === "registered"
@@ -417,6 +428,17 @@ const AdminChatWindow = () => {
   }, [chatId, selectedChat]); // selectedChat dependency ensures effect reruns if type/id changes
   // and its properties are available for updateDoc logic.
 
+  useEffect(() => {
+    const handleClickOutside = () => {
+      setShowOptions(null);
+    };
+
+    if (showOptions) {
+      document.addEventListener("click", handleClickOutside);
+      return () => document.removeEventListener("click", handleClickOutside);
+    }
+  }, [showOptions]);
+
   const sendMessage = async (messageData: {
     text: string;
     files?: Omit<UploadedFileInfo, "file">[];
@@ -477,6 +499,36 @@ const AdminChatWindow = () => {
     } catch (error) {
       console.error("Error sending message:", error);
     }
+  };
+
+  const deleteChat = async (
+    chatId: string,
+    chatType: "registered" | "unregistered"
+  ) => {
+    try {
+      const collectionPath =
+        chatType === "registered"
+          ? "registeredUsersChats"
+          : "unregisteredUsersChats";
+      await deleteDoc(doc(db, collectionPath, chatId));
+
+      setChats((prevChats) => prevChats.filter((chat) => chat.id !== chatId));
+      setDeleteMessage({ type: "success", text: "Chat deleted successfully" });
+      setShowDeleteConfirm(null);
+      setShowOptions(null);
+
+      // Clear selected chat if it was deleted
+      if (selectedChat?.id === chatId) {
+        setSelectedChat(null);
+        setShowChats(true);
+      }
+    } catch (error) {
+      setDeleteMessage({ type: "error", text: "Failed to delete chat" });
+      console.error("Error deleting chat:", error);
+    }
+
+    // Clear message after 3 seconds
+    setTimeout(() => setDeleteMessage(null), 3000);
   };
 
   if (error && !chatOpen) {
@@ -568,41 +620,116 @@ const AdminChatWindow = () => {
                       {chats.map((chat) => (
                         <div
                           key={chat.id}
-                          className={`block p-3 border rounded-lg transition duration-150 cursor-pointer ${
+                          className={`relative p-3 border rounded-lg transition duration-150 ${
                             chat.unreadCount > 0
                               ? "bg-blue-200 hover:bg-blue-300"
                               : "bg-gray-50 hover:bg-white"
                           }`}
-                          onClick={() => handleChatClick(chat)}
                         >
-                          <div className="flex justify-between items-start">
-                            <div className="flex-grow min-w-0">
-                              <span className="font-medium text-gray-800 block truncate">
-                                {chat.username}
-                              </span>
-                              {chat.lastMessageText && (
-                                <p className="text-sm text-gray-600 truncate mt-1">
-                                  {chat.lastMessageText}
-                                </p>
-                              )}
-                            </div>
-                            <div className="flex flex-col items-end ml-2 flex-shrink-0">
-                              {chat.lastMessageTimestamp && (
-                                <span className="text-xs text-gray-500 mb-1">
-                                  {formatMessageTimestamp(
-                                    chat.lastMessageTimestamp
-                                  )}
+                          <div
+                            className="cursor-pointer"
+                            onClick={() => handleChatClick(chat)}
+                          >
+                            <div className="flex justify-between items-start pr-8">
+                              <div className="flex-grow min-w-0">
+                                <span className="font-medium text-gray-800 block truncate">
+                                  {chat.username}
                                 </span>
-                              )}
-                              {chat.unreadCount > 0 && (
-                                <span className="bg-red-500 text-white text-xs font-bold rounded-full px-2 py-0.5">
-                                  {chat.unreadCount}
-                                </span>
-                              )}
+                                {chat.lastMessageText && (
+                                  <p className="text-sm text-gray-600 truncate mt-1">
+                                    {chat.lastMessageText}
+                                  </p>
+                                )}
+                              </div>
+                              <div className="flex flex-col items-end ml-2 flex-shrink-0">
+                                {chat.lastMessageTimestamp && (
+                                  <span className="text-xs text-gray-500 mb-1">
+                                    {formatMessageTimestamp(
+                                      chat.lastMessageTimestamp
+                                    )}
+                                  </span>
+                                )}
+                                {chat.unreadCount > 0 && (
+                                  <span className="bg-red-500 text-white text-xs font-bold rounded-full px-2 py-0.5">
+                                    {chat.unreadCount}
+                                  </span>
+                                )}
+                              </div>
                             </div>
                           </div>
+
+                          {/* Options Button */}
+                          <button
+                            className="absolute bottom-1/2 translate-y-1/2 right-1 p-2 hover:bg-gray-200 rounded-md"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setShowOptions(
+                                showOptions === chat.id ? null : chat.id
+                              );
+                            }}
+                          >
+                            <SlOptionsVertical size={20} />
+                          </button>
+
+                          {/* Options Dropdown */}
+                          {showOptions === chat.id && (
+                            <div className="absolute top-10 right-0 bg-white rounded-lg shadow-lg z-10">
+                              <button
+                                className="w-full px-4 py-2 text-left text-red-600 hover:bg-red-500 hover:text-gray-100 transition-all duration-500 rounded-lg"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setShowDeleteConfirm(chat.id);
+                                  setShowOptions(null);
+                                }}
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          )}
+
+                          {/* Delete Confirmation */}
+                          {showDeleteConfirm === chat.id && (
+                            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                              <div className="bg-white p-6 rounded-lg max-w-sm w-full mx-4">
+                                <h3 className="text-lg font-semibold mb-2">
+                                  Delete Chat
+                                </h3>
+                                <p className="text-gray-600 mb-4">
+                                  Are you sure you want to delete this chat with{" "}
+                                  {chat.username}? This action cannot be undone.
+                                </p>
+                                <div className="flex justify-end gap-2">
+                                  <button
+                                    className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded"
+                                    onClick={() => setShowDeleteConfirm(null)}
+                                  >
+                                    Cancel
+                                  </button>
+                                  <button
+                                    className="px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded"
+                                    onClick={() =>
+                                      deleteChat(chat.id, chat.chatType)
+                                    }
+                                  >
+                                    Delete
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       ))}
+                      {deleteMessage && (
+                        <div
+                          className={`fixed top-4 right-4 p-3 rounded-lg z-[110] ${
+                            deleteMessage.type === "success"
+                              ? "bg-green-500 text-white"
+                              : "bg-red-500 text-white"
+                          }`}
+                        >
+                          {deleteMessage.text}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
