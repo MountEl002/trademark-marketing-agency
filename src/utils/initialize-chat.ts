@@ -1,5 +1,3 @@
-//initialize-chat.ts
-
 import { auth, db } from "@/lib/firebase";
 import { doc, getDoc, setDoc, runTransaction } from "firebase/firestore";
 
@@ -11,46 +9,64 @@ interface AnonymousUser {
   createdAt: number;
 }
 
+interface UserClassification {
+  isRegistered: boolean;
+  chatId: string;
+  userName: string;
+  collectionPath: string;
+}
+
 export const getChatUserName = async (): Promise<string> => {
-  // Check if user is authenticated
+  const classification = await classifyUser();
+  return classification.userName;
+};
+
+export const classifyUser = async (): Promise<UserClassification> => {
   const currentUser = auth.currentUser;
 
   if (currentUser) {
-    return await handleAuthenticatedUser(currentUser.uid);
-  } else {
-    return await handleUnauthenticatedUser();
+    // Check if user has a username
+    const userDocRef = doc(db, "users", currentUser.uid);
+    const userDoc = await getDoc(userDocRef);
+
+    const hasUsername = userDoc.exists() && userDoc.data().username;
+
+    if (hasUsername) {
+      // Registered user: authenticated + has username
+      return await handleRegisteredUser(
+        currentUser.uid,
+        userDoc.data().username
+      );
+    }
   }
+
+  // Unregistered user: either unauthenticated OR authenticated without username
+  return await handleUnregisteredUser();
 };
 
-const handleAuthenticatedUser = async (userId: string): Promise<string> => {
-  // Check if user already has a chat document
+const handleRegisteredUser = async (
+  userId: string,
+  username: string
+): Promise<UserClassification> => {
   const chatDocRef = doc(db, "registeredUsersChats", userId);
   const chatDoc = await getDoc(chatDocRef);
 
-  if (chatDoc.exists()) {
-    return chatDoc.data().userName;
+  if (!chatDoc.exists()) {
+    await setDoc(chatDocRef, {
+      userName: username,
+      createdAt: Date.now(),
+    });
   }
 
-  // Get user's username from users collection
-  const userDocRef = doc(db, "users", userId);
-  const userDoc = await getDoc(userDocRef);
-
-  if (!userDoc.exists()) {
-    throw new Error("User document not found");
-  }
-
-  const userName = userDoc.data().username || `User_${userId.substring(0, 5)}`;
-
-  // Create chat document
-  await setDoc(chatDocRef, {
-    userName,
-    createdAt: Date.now(),
-  });
-
-  return userName;
+  return {
+    isRegistered: true,
+    chatId: userId,
+    userName: username,
+    collectionPath: "registeredUsersChats",
+  };
 };
 
-const handleUnauthenticatedUser = async (): Promise<string> => {
+const handleUnregisteredUser = async (): Promise<UserClassification> => {
   try {
     // Check localStorage for existing anonymous user
     const savedUser = localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -58,7 +74,6 @@ const handleUnauthenticatedUser = async (): Promise<string> => {
       try {
         const anonymousUser: AnonymousUser = JSON.parse(savedUser);
 
-        // Add validation for the parsed data
         if (!anonymousUser.name || !anonymousUser.createdAt) {
           throw new Error("Invalid stored user data");
         }
@@ -72,10 +87,14 @@ const handleUnauthenticatedUser = async (): Promise<string> => {
         const chatDoc = await getDoc(chatDocRef);
 
         if (chatDoc.exists()) {
-          return anonymousUser.name;
+          return {
+            isRegistered: false,
+            chatId: anonymousUser.name,
+            userName: anonymousUser.name,
+            collectionPath: "unregisteredUsersChats",
+          };
         }
       } catch (error) {
-        // Clear invalid or expired data
         console.error(error);
         localStorage.removeItem(LOCAL_STORAGE_KEY);
       }
@@ -84,7 +103,7 @@ const handleUnauthenticatedUser = async (): Promise<string> => {
     // Get new guest username
     const guestName = await getNextGuestUserName();
 
-    // Create chat document with expiration
+    // Create chat document
     await setDoc(doc(db, "unregisteredUsersChats", guestName), {
       createdAt: Date.now(),
     });
@@ -96,9 +115,14 @@ const handleUnauthenticatedUser = async (): Promise<string> => {
     };
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(anonymousUser));
 
-    return guestName;
+    return {
+      isRegistered: false,
+      chatId: guestName,
+      userName: guestName,
+      collectionPath: "unregisteredUsersChats",
+    };
   } catch (error) {
-    console.error("Error handling unauthenticated user:", error);
+    console.error("Error handling unregistered user:", error);
     throw error;
   }
 };

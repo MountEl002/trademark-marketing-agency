@@ -18,7 +18,7 @@ import {
   limit,
 } from "firebase/firestore";
 import Image from "next/image";
-import { getChatUserName } from "@/utils/initialize-chat";
+import { classifyUser } from "@/utils/initialize-chat";
 import { FaUser } from "react-icons/fa";
 import ChatBackground from "@/assests/chatbackgroundResized.png";
 import CustomerCareAgent4 from "@/assests/CustomerCareAgent4.jpg";
@@ -91,64 +91,60 @@ const Chat = () => {
     }
   }, [messages]);
 
-  const checkAndSendWelcomeMessage = async (
-    collectionPath: string,
-    docId: string
-  ) => {
-    if (!collectionPath || !docId) return;
-    try {
-      const messagesRef = collection(db, `${collectionPath}/${docId}/messages`);
-      const q = query(messagesRef, limit(1));
-      const messagesSnapshot = await getDocs(q);
+  const initializeChat = useCallback(async () => {
+    setIsInitializing(true);
+    setMessages([]);
 
-      if (messagesSnapshot.empty) {
-        const welcomeMessage: Message = {
-          text: "Hello, dear customer. I am Anne. Thank you for trusting Trademark Marketing Agency. Feel free to talk to us through this chat window whenever you need help or have questions. Thank you!",
-          sender: "admin",
-          timestamp: Date.now(),
-          userName: "admin",
-        };
-        await addDoc(messagesRef, welcomeMessage);
-      }
-    } catch (error) {
-      console.error("Error checking/sending welcome message:", error);
-    }
-  };
+    // Moved checkAndSendWelcomeMessage inside useCallback
+    const checkAndSendWelcomeMessage = async (
+      collectionPath: string,
+      docId: string
+    ) => {
+      if (!collectionPath || !docId) return;
+      try {
+        const messagesRef = collection(
+          db,
+          `${collectionPath}/${docId}/messages`
+        );
+        const q = query(messagesRef, limit(1));
+        const messagesSnapshot = await getDocs(q);
 
-  useEffect(() => {
-    const initializeOrUpdateChatUser = async () => {
-      setIsInitializing(true);
-      setMessages([]);
-
-      if (authUser) {
-        const resolvedChatUsername =
-          authContextUsername || (await getChatUserName());
-        setUserName(resolvedChatUsername);
-        setChatCollectionPath("registeredUsersChats");
-        setChatDocId(authUser.uid);
-
-        if (!authContextUsername) {
-          console.error(
-            "AuthContext username not yet available, relying on getChatUserName for name and doc creation."
-          );
-        } else {
-          await getChatUserName();
+        if (messagesSnapshot.empty) {
+          const welcomeMessage: Message = {
+            text: "Hello, dear customer. I am Anne. Thank you for trusting Trademark Marketing Agency. Feel free to talk to us through this chat window whenever you need help or have questions. Thank you!",
+            sender: "admin",
+            timestamp: Date.now(),
+            userName: "admin",
+          };
+          await addDoc(messagesRef, welcomeMessage);
         }
-        await checkAndSendWelcomeMessage("registeredUsersChats", authUser.uid);
-      } else {
-        // User is unauthenticated
-        console.error("AuthContext: User unauthenticated");
-        const guestName = await getChatUserName();
-        setUserName(guestName);
-        setChatCollectionPath("unregisteredUsersChats");
-        setChatDocId(guestName);
-        await checkAndSendWelcomeMessage("unregisteredUsersChats", guestName);
+      } catch (error) {
+        console.error("Error checking/sending welcome message:", error);
       }
-      setIsInitializing(false);
     };
 
-    initializeOrUpdateChatUser();
-  }, [authUser, authContextUsername]);
+    try {
+      const classification = await classifyUser();
+
+      setUserName(classification.userName);
+      setChatDocId(classification.chatId);
+      setChatCollectionPath(classification.collectionPath);
+
+      await checkAndSendWelcomeMessage(
+        classification.collectionPath,
+        classification.chatId
+      );
+    } catch (error) {
+      console.error("Error initializing chat:", error);
+    } finally {
+      setIsInitializing(false);
+    }
+  }, []);
+
+  // Initialize chat on mount and when auth status changes
+  useEffect(() => {
+    initializeChat();
+  }, [authUser, authContextUsername, initializeChat]);
 
   useEffect(() => {
     if (isInitializing || !chatDocId || !chatCollectionPath || chatOpen) {
@@ -171,11 +167,7 @@ const Chat = () => {
           await setDoc(
             chatDocRef,
             {
-              userName:
-                userName ||
-                (chatCollectionPath === "registeredUsersChats"
-                  ? "RegisteredUser"
-                  : "Guest"),
+              userName: userName || "User",
               createdAt: serverTimestamp(),
               userLastReadTimestamp: 0,
             },
@@ -199,7 +191,6 @@ const Chat = () => {
           q,
           (snapshot) => {
             if (!chatOpen) {
-              // Only update if chat is closed
               setUnreadAdminMessagesCount(snapshot.docs.length);
             }
           },
@@ -221,10 +212,9 @@ const Chat = () => {
     };
   }, [isInitializing, chatDocId, chatCollectionPath, chatOpen, userName]);
 
-  // Effect for fetching messages when chat is open
   useEffect(() => {
     if (isInitializing || !chatDocId || !chatCollectionPath || !chatOpen) {
-      if (!chatOpen) setMessages([]); // Clear messages if chat is closed or not ready
+      if (!chatOpen) setMessages([]);
       return;
     }
 
@@ -244,7 +234,7 @@ const Chat = () => {
       },
       (error) => {
         console.error("Error fetching messages for open chat:", error);
-        setMessages([]); // Clear messages on error
+        setMessages([]);
       }
     );
 
@@ -262,29 +252,24 @@ const Chat = () => {
 
     try {
       const chatDocRef = doc(db, chatCollectionPath, chatDocId);
-      // Ensure the document exists before trying to update it.
-      // getChatUserName should have created it. If not, setDoc with merge.
       const docSnap = await getDoc(chatDocRef);
       if (docSnap.exists()) {
         await updateDoc(chatDocRef, {
           userLastReadTimestamp: Date.now(),
         });
       } else {
-        // This case should ideally be rare if getChatUserName works correctly.
         await setDoc(
           chatDocRef,
           {
-            userName: userName, // Or derive from auth state again
+            userName: userName,
             createdAt: serverTimestamp(),
             userLastReadTimestamp: Date.now(),
           },
           { merge: true }
         );
-        console.log("Chat document created on toggle (was missing).");
       }
     } catch (error) {
       console.error("Error updating userLastReadTimestamp:", error);
-      // Fallback for robustness, though ideally not needed if above logic is sound.
       try {
         const chatDocRef = doc(db, chatCollectionPath, chatDocId);
         await setDoc(
@@ -299,7 +284,7 @@ const Chat = () => {
         );
       }
     }
-  }, [isInitializing, chatDocId, chatCollectionPath, userName]); // Added userName
+  }, [isInitializing, chatDocId, chatCollectionPath, userName]);
 
   const handleCloseChat = () => {
     setChatOpen(false);
@@ -339,18 +324,15 @@ const Chat = () => {
         collection(db, `${chatCollectionPath}/${chatDocId}/messages`),
         message
       );
-      // setNewMessage(""); // ChatInput handles its own state.
     } catch (error) {
       console.error("Error sending message:", error);
     }
   };
 
   if (isInitializing && !chatDocId) {
-    // Show a more generic loading state until chatDocId is resolved
     return (
       <div>
         <ChatToggle onClick={() => {}} unreadCount={0} />
-        {/* Optionally, a small loading indicator instead of the full chat window if trying to open */}
       </div>
     );
   }
@@ -387,16 +369,15 @@ const Chat = () => {
             </div>
 
             <div className="flex-1 flex flex-col-reverse overflow-y-auto overflow-x-hidden chat-scrollbars p-2 mr-1">
-              {/* This div is for the messages content, and an empty div at the bottom for scrolling */}
               <div>
                 {messages.map((message) => (
                   <div
-                    key={message.id || message.timestamp} // Ensure key is unique
+                    key={message.id || message.timestamp}
                     className={`flex ${
                       message.sender === "admin"
                         ? "flex-row"
                         : "flex-row-reverse justify-start"
-                    } h-fit gap-2 mb-2`} // Added mb-2 for spacing
+                    } h-fit gap-2 mb-2`}
                   >
                     {message.sender === "admin" ? (
                       <Image
@@ -449,11 +430,11 @@ const Chat = () => {
                     </div>
                   </div>
                 ))}
-                <div ref={messagesEndRef} /> {/* Element to scroll to */}
+                <div ref={messagesEndRef} />
               </div>
             </div>
             <ChatInput
-              newMessage={newMessage} // ChatInput should manage its own input state
+              newMessage={newMessage}
               setNewMessage={setNewMessage}
               sendMessage={sendMessage}
             />
