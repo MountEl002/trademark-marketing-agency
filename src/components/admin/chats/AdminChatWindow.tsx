@@ -89,6 +89,7 @@ const AdminChatWindow = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedChat, setSelectedChat] = useState<ChatPreview | null>(null);
   const [showChats, setShowChats] = useState(true);
+  const [totalUnreadCount, setTotalUnreadCount] = useState(0);
 
   const isRegisteredUser = selectedChat
     ? selectedChat.chatType === "registered"
@@ -227,6 +228,132 @@ const AdminChatWindow = () => {
       setLoadingChats(false);
     }
   }
+
+  // Real-time listener for unread count
+  useEffect(() => {
+    const unsubscribers: (() => void)[] = [];
+
+    const setupRealtimeListeners = async () => {
+      try {
+        // Get all chat documents
+        const registeredChatsCol = collection(db, "registeredUsersChats");
+        const unregisteredChatsCol = collection(db, "unregisteredUsersChats");
+
+        const [registeredDocsSnap, unregisteredDocsSnap] = await Promise.all([
+          getDocs(registeredChatsCol),
+          getDocs(unregisteredChatsCol),
+        ]);
+
+        const allChatDocs = [
+          ...registeredDocsSnap.docs.map((d) => ({
+            id: d.id,
+            data: d.data(),
+            type: "registered" as const,
+          })),
+          ...unregisteredDocsSnap.docs.map((d) => ({
+            id: d.id,
+            data: d.data(),
+            type: "unregistered" as const,
+          })),
+        ];
+
+        // Set up real-time listeners for each chat's messages
+        allChatDocs.forEach((chatDoc) => {
+          const chatCollectionPath =
+            chatDoc.type === "registered"
+              ? "registeredUsersChats"
+              : "unregisteredUsersChats";
+          const messagesRef = collection(
+            db,
+            `${chatCollectionPath}/${chatDoc.id}/messages`
+          );
+          const messagesQuery = query(
+            messagesRef,
+            orderBy("timestamp", "desc")
+          );
+
+          const unsubscribe = onSnapshot(messagesQuery, (snapshot) => {
+            const allMessagesForChat = snapshot.docs.map(
+              (docSnapshot) => docSnapshot.data() as Omit<Message, "id">
+            );
+
+            if (allMessagesForChat.length === 0) return;
+
+            const firebaseAdminLastRead =
+              chatDoc.data.adminLastReadTimestamp || 0;
+            const unreadCount = allMessagesForChat.filter(
+              (m) => m.sender === "user" && m.timestamp > firebaseAdminLastRead
+            ).length;
+
+            // Update the specific chat in the chats array
+            setChats((prevChats) => {
+              const existingChatIndex = prevChats.findIndex(
+                (c) => c.id === chatDoc.id
+              );
+
+              if (existingChatIndex >= 0) {
+                const updatedChats = [...prevChats];
+                updatedChats[existingChatIndex] = {
+                  ...updatedChats[existingChatIndex],
+                  unreadCount,
+                };
+                return updatedChats;
+              } else {
+                // New chat - add it to the list
+                const lastMessage = allMessagesForChat[0];
+                const messageCount = allMessagesForChat.length;
+                const hasOnlyAdminMessage =
+                  messageCount === 1 &&
+                  allMessagesForChat[0].sender === "admin";
+
+                const newChat: ChatPreview = {
+                  id: chatDoc.id,
+                  username:
+                    chatDoc.type === "registered"
+                      ? chatDoc.data.userName
+                      : chatDoc.id,
+                  lastMessageText:
+                    lastMessage.text ||
+                    (lastMessage.files && lastMessage.files.length > 0
+                      ? `${lastMessage.files.length} attachment(s)`
+                      : "Attachment(s)"),
+                  lastMessageTimestamp: lastMessage.timestamp,
+                  unreadCount,
+                  adminLastReadTimestamp: firebaseAdminLastRead,
+                  chatType: chatDoc.type,
+                  messageCount,
+                  hasOnlyAdminMessage,
+                };
+
+                return [...prevChats, newChat].sort((a, b) => {
+                  if (a.hasOnlyAdminMessage && !b.hasOnlyAdminMessage) return 1;
+                  if (!a.hasOnlyAdminMessage && b.hasOnlyAdminMessage)
+                    return -1;
+                  return b.lastMessageTimestamp - a.lastMessageTimestamp;
+                });
+              }
+            });
+          });
+
+          unsubscribers.push(unsubscribe);
+        });
+      } catch (err) {
+        console.error("Error setting up real-time listeners:", err);
+      }
+    };
+
+    setupRealtimeListeners();
+
+    return () => {
+      unsubscribers.forEach((unsubscribe) => unsubscribe());
+    };
+  }, []);
+
+  // Calculate total unread count whenever chats change
+  useEffect(() => {
+    const total = chats.reduce((sum, chat) => sum + chat.unreadCount, 0);
+    setTotalUnreadCount(total);
+  }, [chats]);
 
   useEffect(() => {
     if (!chatId || !selectedChat) {
@@ -571,7 +698,7 @@ const AdminChatWindow = () => {
         </div>
       ) : (
         <div>
-          <ChatToggle onClick={toggleChat} />
+          <ChatToggle onClick={toggleChat} unreadCount={totalUnreadCount} />
         </div>
       )}
     </>
