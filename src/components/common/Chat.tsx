@@ -369,7 +369,9 @@ const Chat = () => {
               <button
                 onClick={() => setChatOpen(false)}
                 className="min-[401px]:hidden rounded-md bg-gray-50 hover:bg-white p-1 sm:p-2 hover:scale-110 transition-all duration-500 cursor-pointer"
-              ></button>
+              >
+                <IoMdClose size={20} />
+              </button>
             </div>
 
             <div className="flex-1 flex flex-col-reverse overflow-y-auto overflow-x-hidden chat-scrollbars p-2 mr-1">
