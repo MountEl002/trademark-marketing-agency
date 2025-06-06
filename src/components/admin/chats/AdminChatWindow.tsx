@@ -135,8 +135,7 @@ const AdminChatWindow = () => {
   const handleChatsToggle = () => {
     setShowChats(true);
     setSelectedChat(null);
-    // Optionally, re-fetch chats if live updates are needed when returning to the list
-    // fetchChats(); // Uncomment if you want the list to refresh counts when toggled.
+    fetchChats();
   };
 
   const toggleChat = () => {
@@ -368,7 +367,6 @@ const AdminChatWindow = () => {
 
   useEffect(() => {
     if (!chatId || !selectedChat) {
-      // Added !selectedChat check
       setMessages([]);
       setLoadingMessages(false);
       return;
