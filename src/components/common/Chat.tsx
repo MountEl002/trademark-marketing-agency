@@ -355,7 +355,7 @@ const Chat = () => {
                 <div className="bg-white p-2 rounded-[50%]">
                   <FaUser />
                 </div>
-                <p className="font-semibold">
+                <p className="font-semibold max-[400px]:text-sm">
                   {isInitializing ? "Loading..." : userName || "User"}
                 </p>
               </div>
@@ -363,9 +363,13 @@ const Chat = () => {
                 icon={IoMdClose}
                 onClick={handleCloseChat}
                 text="Close chat"
-                buttonClassName="bg-blue-500 hover:bg-blue-700"
+                buttonClassName="bg-blue-500 hover:bg-blue-700 max-[400px]:hidden"
                 iconClassName="bg-blue-400 group-hover:bg-blue-600"
               />
+              <button
+                onClick={() => setChatOpen(false)}
+                className="min-[401px]:hidden rounded-md bg-gray-50 hover:bg-white p-1 sm:p-2 hover:scale-110 transition-all duration-500 cursor-pointer"
+              ></button>
             </div>
 
             <div className="flex-1 flex flex-col-reverse overflow-y-auto overflow-x-hidden chat-scrollbars p-2 mr-1">
