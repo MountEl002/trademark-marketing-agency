@@ -13,9 +13,8 @@ const ForgotPassword = () => {
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState<"success" | "error" | "">("");
 
-  const { resetPassword } = useAuth(); // Use the auth context
+  const { resetPassword, user } = useAuth();
 
-  const user = useAuth();
   const router = useRouter();
 
   useEffect(() => {
