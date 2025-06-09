@@ -137,9 +137,11 @@ export default function TransactionList() {
     return idMatch || typeMatch || statusMatch;
   });
 
-  // Check if any transaction has pending status
-  const hasPendingTransactions = filteredTransactions.some(
-    (transaction) => (transaction.status || "").toLowerCase() === "pending"
+  // Check if any transaction has both Deposit type and pending status
+  const hasDepositPendingTransactions = filteredTransactions.some(
+    (transaction) =>
+      (transaction.type || "").toLowerCase() === "deposit" &&
+      (transaction.status || "").toLowerCase() === "pending"
   );
 
   const handleExport = (format: string) => {
@@ -298,7 +300,7 @@ export default function TransactionList() {
                   <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Status
                   </th>
-                  {hasPendingTransactions && (
+                  {hasDepositPendingTransactions && (
                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Actions
                     </th>
@@ -309,7 +311,7 @@ export default function TransactionList() {
                 {loading ? (
                   <tr>
                     <td
-                      colSpan={hasPendingTransactions ? 5 : 4}
+                      colSpan={hasDepositPendingTransactions ? 5 : 4}
                       className="text-center py-4 text-sm"
                     >
                       Loading transactions...
@@ -318,7 +320,7 @@ export default function TransactionList() {
                 ) : filteredTransactions.length === 0 ? (
                   <tr>
                     <td
-                      colSpan={hasPendingTransactions ? 5 : 4}
+                      colSpan={hasDepositPendingTransactions ? 5 : 4}
                       className="text-center py-4 text-sm"
                     >
                       No entries found
@@ -328,7 +330,8 @@ export default function TransactionList() {
                   filteredTransactions
                     .slice(0, entriesPerPage)
                     .map((transaction) => {
-                      const isPending =
+                      const isDepositPending =
+                        (transaction.type || "").toLowerCase() === "deposit" &&
                         (transaction.status || "").toLowerCase() === "pending";
 
                       return (
@@ -349,18 +352,21 @@ export default function TransactionList() {
                           >
                             {transaction.status || "N/A"}
                           </td>
-                          {hasPendingTransactions && (
+                          {hasDepositPendingTransactions && (
                             <td className="px-3 py-2 text-xs sm:text-sm whitespace-nowrap">
-                              {isPending && transaction.TransactionId && (
-                                <button
-                                  onClick={() =>
-                                    handleVerifyClick(transaction.TransactionId)
-                                  }
-                                  className="bg-blue-500 text-white text-xs px-2 py-1 rounded hover:bg-blue-600"
-                                >
-                                  Verify
-                                </button>
-                              )}
+                              {isDepositPending &&
+                                transaction.TransactionId && (
+                                  <button
+                                    onClick={() =>
+                                      handleVerifyClick(
+                                        transaction.TransactionId
+                                      )
+                                    }
+                                    className="bg-blue-500 text-white text-xs px-2 py-1 rounded hover:bg-blue-600"
+                                  >
+                                    Verify
+                                  </button>
+                                )}
                             </td>
                           )}
                         </tr>
