@@ -33,11 +33,11 @@ const pricingPlansData: PricingPlan[] = [
   {
     id: "Basic",
     title: "Basic",
-    price: 450,
+    price: 350,
     features: [
       "Advertise With us",
       "Cashback",
-      "Cashback Ksh 900",
+      "Cashback Ksh 700",
       "Whatsapp Earning (ksh 15 per view)",
     ],
     bgColor: "bg-gradient-to-r from-orange-400 via-amber-600 to-orange-700",
