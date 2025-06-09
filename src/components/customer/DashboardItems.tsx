@@ -12,6 +12,8 @@ import Specialpackages from "@/assests/SpecialPackages.png";
 import DashboardsTemplate from "./DashboardsTemplate";
 import {
   getUserBalance,
+  getUserEarningWithdrawals,
+  getUserMyWithdrawals,
   getUserPackageNames,
   getUserPackageValue,
   getUserPayments,
@@ -23,6 +25,8 @@ const DashboardItems = () => {
   const { user } = useAuth();
   const [userBalance, setUserBalance] = useState<number>(0);
   const [userPayments, setUserPayments] = useState<number>(0);
+  const [myWithdrawals, setMyWithdrawals] = useState<number>(0);
+  const [earningWithdrawals, setEarningWithdrawals] = useState<number>(0);
   const [userCashback, setUserCashback] = useState<number>(0);
   const [formattedPackagesString, setFormattedPackagesString] =
     useState<string>("Inactive");
@@ -73,6 +77,14 @@ const DashboardItems = () => {
         const payments = await getUserPayments(user.uid);
         setUserPayments(payments);
 
+        // Fetch the user's earning withdrawals
+        const earningWithdrawals = await getUserEarningWithdrawals(user.uid);
+        setEarningWithdrawals(earningWithdrawals);
+
+        // Fetch the user's payments
+        const userWithdrawals = await getUserMyWithdrawals(user.uid);
+        setMyWithdrawals(userWithdrawals);
+
         const cashback = await getUserPackageValue(user.uid);
         setUserCashback(cashback);
 
@@ -113,8 +125,14 @@ const DashboardItems = () => {
       repImageAlt: "Whatsapp logo",
     },
     {
+      title: "My Withdrawals",
+      amount: myWithdrawals,
+      repImage: WithdrawalsImage,
+      repImageAlt: "Hand holding dedit card",
+    },
+    {
       title: "Earning Withdrawals",
-      amount: 0,
+      amount: earningWithdrawals,
       repImage: WhatsappWithdrawalsImage,
       repImageAlt: "Hand holding dedit card",
     },
@@ -141,12 +159,6 @@ const DashboardItems = () => {
       amount: userBalance,
       repImage: BalanceImage,
       repImageAlt: "Wallet with cash",
-    },
-    {
-      title: "My Withdrawals",
-      amount: 0,
-      repImage: WithdrawalsImage,
-      repImageAlt: "Hand holding dedit card",
     },
   ];
 

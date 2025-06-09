@@ -138,6 +138,68 @@ export async function getUserPayments(userId: string): Promise<number> {
   }
 }
 
+export async function getUserEarningWithdrawals(
+  userId: string
+): Promise<number> {
+  if (!userId) {
+    console.error("getUserEarningWithdrawals: userId is required.");
+    return 0;
+  }
+
+  const userDocRef = doc(db, "users", userId);
+  try {
+    const docSnap = await getDoc(userDocRef);
+
+    if (docSnap.exists()) {
+      const userData = docSnap.data();
+      const earningWithdrawalsValue =
+        typeof userData.EarningWithdrawals === "number"
+          ? userData.EarningWithdrawals
+          : 0;
+      return parseFloat(earningWithdrawalsValue.toFixed(2));
+    } else {
+      console.warn(
+        `User document not found for userId: ${userId}. Returning 0.00 EarningWithdrawals.`
+      );
+      return 0;
+    }
+  } catch (error) {
+    console.error(
+      "Error fetching user EarningWithdrawals for userId:",
+      userId,
+      error
+    );
+    return 0;
+  }
+}
+
+export async function getUserMyWithdrawals(userId: string): Promise<number> {
+  if (!userId) {
+    console.error("getUserMyWithdrawals: userId is required.");
+    return 0;
+  }
+
+  const userDocRef = doc(db, "users", userId);
+  try {
+    const docSnap = await getDoc(userDocRef);
+
+    if (docSnap.exists()) {
+      const userData = docSnap.data();
+      const myWithdrawalsValue =
+        typeof userData.MyWithdrawals === "number" ? userData.MyWithdrawals : 0;
+      return parseFloat(myWithdrawalsValue.toFixed(2));
+    } else {
+      console.warn(
+        `User document not found for userId: ${userId}. Returning 0.00 payments.`
+      );
+      return 0;
+    }
+  } catch (error) {
+    console.error("Error fetching user payments for userId:", userId, error);
+    return 0;
+  }
+}
+
 export async function getUserPackageNames(userId: string): Promise<string[]> {
   if (!userId) {
     console.error("getUserPackageNames: userId is required.");
