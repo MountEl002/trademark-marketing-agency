@@ -2,7 +2,7 @@
 
 import React, { FC } from "react";
 import Image from "next/image";
-import GoogleLogo from "@/assests/googleLogo.png";
+import GoogleLogo from "@/assets/googleLogo.png";
 import { Tooltip } from "react-tooltip";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePathname } from "next/navigation";

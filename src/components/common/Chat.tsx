@@ -20,8 +20,8 @@ import {
 import Image from "next/image";
 import { classifyUser } from "@/utils/initialize-chat";
 import { FaUser } from "react-icons/fa";
-import ChatBackground from "@/assests/chatbackgroundResized.png";
-import CustomerCareAgent4 from "@/assests/CustomerCareAgent4.jpg";
+import ChatBackground from "@/assets/chatbackgroundResized.png";
+import CustomerCareAgent4 from "@/assets/CustomerCareAgent4.jpg";
 import ChatToggle from "./chat/ChatToggle";
 import ChatInput from "./chat/ChatInput";
 import { UploadedFileInfo } from "@/types/fileData";

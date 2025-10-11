@@ -2,13 +2,13 @@
 
 import React, { useEffect, useState } from "react";
 import { DashboardItemTemplate } from "@/types/trademark";
-import WhatsappImage from "@/assests/WhatsappLogo.png";
-import WhatsappWithdrawalsImage from "@/assests/WithdrawalsOne.png";
-import WithdrawalsImage from "@/assests/WithdrawalsTwo.png";
-import PackagesImage from "@/assests/MyPackages.png";
-import CashbackImage from "@/assests/Cashback.png";
-import BalanceImage from "@/assests/Balance.png";
-import Specialpackages from "@/assests/SpecialPackages.png";
+import WhatsappImage from "@/assets/WhatsappLogo.png";
+import WhatsappWithdrawalsImage from "@/assets/WithdrawalsOne.png";
+import WithdrawalsImage from "@/assets/WithdrawalsTwo.png";
+import PackagesImage from "@/assets/MyPackages.png";
+import CashbackImage from "@/assets/Cashback.png";
+import BalanceImage from "@/assets/Balance.png";
+import Specialpackages from "@/assets/SpecialPackages.png";
 import DashboardsTemplate from "./DashboardsTemplate";
 import {
   getUserBalance,

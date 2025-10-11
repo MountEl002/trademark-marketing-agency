@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import LogoImage from "@/assests/LogoImage.jpg";
+import LogoImage from "@/assets/LogoImage.jpg";
 import { useAuth } from "@/contexts/AuthContext";
 
 const LightLogo: React.FC = () => {

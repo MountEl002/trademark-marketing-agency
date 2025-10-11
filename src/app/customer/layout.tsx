@@ -5,7 +5,7 @@ import Navbar from "@/components/layout/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
-import HeroSectionImage1 from "@/assests/HeroSectionImage1.png";
+import HeroSectionImage1 from "@/assets/HeroSectionImage1.png";
 import NotificationCarousel from "@/components/common/NotificationCarousel";
 import { notifications } from "@/contexts/globalData";
 

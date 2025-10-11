@@ -14,8 +14,8 @@ import {
 } from "firebase/firestore";
 import Image from "next/image";
 import { FaUser } from "react-icons/fa";
-import ChatBackground from "@/assests/chatbackgroundResized.png";
-import CustomerCareAgent4 from "@/assests/CustomerCareAgent4.jpg";
+import ChatBackground from "@/assets/chatbackgroundResized.png";
+import CustomerCareAgent4 from "@/assets/CustomerCareAgent4.jpg";
 import LoadingAnimantion from "@/components/common/LoadingAnimantion";
 import ChatToggle from "@/components/common/chat/ChatToggle";
 import ChatInput from "@/components/common/chat/ChatInput";
