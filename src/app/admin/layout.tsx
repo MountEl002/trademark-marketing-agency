@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import LoadingScreen from "@/components/common/LoadingScreen";
-import AdminChatWindow from "@/components/admin/chats/AdminChatWindow";
+import AdminChatWindow from "@/components/common/AdminChatWindow";
 import Navbar from "@/components/admin/layout/Navbar";
 import Chat from "@/components/common/Chat";
 

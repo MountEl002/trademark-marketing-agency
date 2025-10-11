@@ -1,17 +1,22 @@
 import { GrAttachment } from "react-icons/gr";
 import { IoSend } from "react-icons/io5";
-import { MdClose } from "react-icons/md";
-import { useAuth } from "@/contexts/AuthContext";
-import { validateFile } from "@/utils/s3-upload";
-import { uploadChatImageToS3 } from "@/utils/s3-upload";
-import { UploadedFileInfo } from "@/types/fileData";
-import { customAlphabet } from "nanoid";
-import { useCallback, useEffect, useRef, useState } from "react";
-import LoadingAnimantion from "../LoadingAnimantion";
 import { VscFileSymlinkFile } from "react-icons/vsc";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { useAuth } from "@/contexts/AuthContext";
+import { customAlphabet } from "nanoid";
+import { useCallback, useRef, useState } from "react";
+import LoadingAnimantion from "../LoadingAnimantion";
+import FileUploadProgress, {
+  FileProgressInfo,
+} from "../../fileHandler/FileUploadProgress";
+import { saveToIndexedDB } from "@/utils/client-indexeddb";
+import {
+  COMMON_CONSTANTS,
+  DB_NAMES,
+  FIREBASE_COLLECTIONS,
+} from "@/lib/constants";
+import { UploadedFileInfo } from "@/types/globalTypes";
+import { validateFiles } from "@/lib/cleint-side-s3-upload";
 
-// Generate unique IDs for files
 const generateId = customAlphabet("0123456789abcdefghijklmnopqrstuvwxyz", 10);
 
 interface ChatInputProps {
@@ -19,85 +24,163 @@ interface ChatInputProps {
   setNewMessage: (message: string) => void;
   sendMessage: (messageData: {
     text: string;
-    files?: Omit<UploadedFileInfo, "file">[];
+    files?: UploadedFileInfo[];
   }) => void;
 }
 
-const ChatInput: React.FC<ChatInputProps> = ({
+export default function ChatInput({
   newMessage,
   setNewMessage,
   sendMessage,
-}) => {
+}: ChatInputProps) {
   const { user, isAdmin } = useAuth();
-  const [adminAuthStatus, setAdminAuthStatus] = useState({
-    isAdmin: false,
-    adminUid: null as string | null,
-  });
   const [dropBoxActive, setDropBoxActive] = useState(false);
-  const [uploadingFile, setUploadingFile] = useState<UploadedFileInfo | null>(
-    null
-  );
+  const [uploadingFiles, setUploadingFiles] = useState<FileProgressInfo[]>([]);
   const [uploadError, setUploadError] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [sendingMessage, setSendingMessage] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
-  useEffect(() => {
-    const auth = getAuth();
+  const uploadFileToServer = async (
+    file: File,
+    fileId: string,
+    userId: string
+  ): Promise<UploadedFileInfo | null> => {
+    try {
+      const formData = new FormData();
+      formData.append(COMMON_CONSTANTS.FILE, file);
+      formData.append(COMMON_CONSTANTS.USER_ID, userId);
+      formData.append(
+        COMMON_CONSTANTS.FIREBASE_COLLECTION,
+        FIREBASE_COLLECTIONS.CHAT_FILES
+      );
 
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
-        setAdminAuthStatus({
-          isAdmin: isAdmin,
-          adminUid: isAdmin ? firebaseUser.uid : null,
-        });
-      } else {
-        setAdminAuthStatus({
-          isAdmin: false,
-          adminUid: null,
-        });
+      const response = await fetch("/api/files-upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Upload failed");
       }
-    });
 
-    return () => unsubscribe();
-  }, [isAdmin]);
+      const reader = response.body?.getReader();
+      if (!reader) throw new Error("No response stream");
+
+      const decoder = new TextDecoder();
+      let buffer = "";
+      let finalFileInfo: UploadedFileInfo | null = null;
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || "";
+
+        for (const line of lines) {
+          if (line.startsWith("data: ")) {
+            try {
+              const data = JSON.parse(line.slice(6));
+
+              // Update progress for the specific file
+              setUploadingFiles((prev) =>
+                prev.map((f) =>
+                  f.fileId === fileId
+                    ? {
+                        ...f,
+                        progress: data.progress,
+                        status: data.status,
+                        error: data.error,
+                      }
+                    : f
+                )
+              );
+
+              // If completed, prepare file info and save to IndexedDB
+              if (data.status === "completed") {
+                finalFileInfo = {
+                  id: fileId,
+                  fileKey: data.fileKey,
+                  fileName: data.fileName,
+                  fileUrl: data.fileUrl,
+                  progress: 100,
+                  status: "completed",
+                  uploadedBy: userId,
+                  uploadedAt: new Date().toISOString(),
+                };
+
+                // Save to IndexedDB in background - don't block the upload
+                const fileBuffer = await file.arrayBuffer();
+                saveToIndexedDB({
+                  dbName: DB_NAMES.CHAT_FILES,
+                  fileKey: data.fileKey,
+                  fileName: data.fileName,
+                  fileUrl: data.fileUrl,
+                  fileBuffer,
+                }).catch((error) => {
+                  // Log IndexedDB errors but don't show to user
+                  console.error("IndexedDB save error:", error);
+                });
+              }
+            } catch (e) {
+              console.error("Error parsing progress data:", e);
+            }
+          }
+        }
+      }
+
+      return finalFileInfo;
+    } catch (error) {
+      console.error("Upload error:", error);
+      setUploadingFiles((prev) =>
+        prev.map((f) =>
+          f.fileId === fileId
+            ? {
+                ...f,
+                status: "error" as const,
+                error: "Upload failed",
+              }
+            : f
+        )
+      );
+      throw error;
+    }
+  };
 
   const handleFileChange = useCallback(
     (files: FileList | null) => {
-      if (!files || files.length === 0 || (!user && !adminAuthStatus.isAdmin))
-        return;
+      if (!files || (!user && !isAdmin)) return;
 
-      // Only take the first file since we only allow single file upload
-      const file = files[0];
-
-      // Validate single file
-      const validation = validateFile(file);
+      const validation = validateFiles(Array.from(files), {
+        maxSizeInMB: 200,
+        maxFiles: 100,
+      });
 
       if (!validation.valid) {
         setUploadError(validation.errors.join(", "));
         return;
       }
 
-      // Create file object with upload status (for chat files, use fileId instead of workId)
-      const newFile: UploadedFileInfo = {
-        id: generateId(),
-        file,
+      // Store actual File objects - APPEND to existing files
+      const filesArray = Array.from(files);
+      setSelectedFiles((prev) => [...prev, ...filesArray]);
+
+      // Create preview files for UI - APPEND to existing files
+      const newFiles: FileProgressInfo[] = filesArray.map((file) => ({
+        fileId: generateId(),
         fileName: file.name,
-        fileKey: "",
         progress: 0,
         status: "pending",
-        uploadedBy: user?.uid || "admin",
-        uploadedAt: new Date().toISOString(),
-        fileId: generateId(), // Generate fileId for chat files
-      };
+      }));
 
-      setUploadingFile(newFile);
+      setUploadingFiles((prev) => [...prev, ...newFiles]);
       setUploadError("");
     },
-    [adminAuthStatus.isAdmin, user]
+    [isAdmin, user]
   );
-
-  // Handle drag and drop events
   const handleFileDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     setDropBoxActive(true);
@@ -105,7 +188,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
 
   const handleDragLeave = (e: React.DragEvent) => {
     e.preventDefault();
-    // Only deactivate if leaving the container
     if (
       containerRef.current &&
       e.relatedTarget &&
@@ -128,80 +210,83 @@ const ChatInput: React.FC<ChatInputProps> = ({
     [handleFileChange]
   );
 
-  // Remove file before upload
-  const removeFile = useCallback(() => {
-    setUploadingFile(null);
-  }, []);
+  const removeFile = useCallback(
+    (fileId: string) => {
+      setUploadingFiles((prev) =>
+        prev.filter((file) => file.fileId !== fileId)
+      );
+      // Also remove from selected files by finding the index
+      setSelectedFiles((prev) => {
+        const fileIndex = uploadingFiles.findIndex((f) => f.fileId === fileId);
+        if (fileIndex !== -1) {
+          return prev.filter((_, index) => index !== fileIndex);
+        }
+        return prev;
+      });
+    },
+    [uploadingFiles]
+  );
 
   const handleSendMessage = useCallback(async () => {
+    if (!newMessage.trim() && selectedFiles.length === 0) return;
+
     try {
       setSendingMessage(true);
 
-      // If there's a file to upload
-      if (uploadingFile && uploadingFile.file) {
-        if (!user && !adminAuthStatus.isAdmin) {
-          setUploadError("User is not authenticated.");
-          return;
-        }
+      // If there are files selected, upload them
+      if (selectedFiles.length > 0) {
+        const userId = isAdmin ? `admin_${user?.uid}` : user!.uid;
 
-        const uploaderId = adminAuthStatus.isAdmin
-          ? `admin_${adminAuthStatus.adminUid}`
-          : user!.uid;
+        const uploadPromises = selectedFiles.map((file, index) => {
+          const fileInfo = uploadingFiles[index];
+          return uploadFileToServer(file, fileInfo.fileId, userId);
+        });
 
         try {
-          // Use the new chat-specific upload function
-          const result = await uploadChatImageToS3(
-            uploadingFile.file,
-            uploaderId
+          const uploadedFiles = await Promise.all(uploadPromises);
+          const validFiles = uploadedFiles.filter(
+            (file): file is UploadedFileInfo => file !== null
           );
-          const uploadResult = {
-            fileKey: result.fileKey,
-            fileName: result.fileName,
-            fileUrl: result.fileUrl,
-            progress: 100,
-            status: "completed" as const,
-            id: generateId(),
-            uploadedBy: uploaderId,
-            uploadedAt: new Date().toISOString(),
-            fileId: result.fileId!, // Chat files have fileId instead of workId
-          };
 
-          // Send message with file
-          sendMessage({
-            text: newMessage.trim(),
-            files: [uploadResult],
-          });
-        } catch (error) {
-          console.error("Error uploading file:", error);
-          setUploadError("Failed to upload file. Please try again.");
+          if (validFiles.length > 0) {
+            sendMessage({
+              text: newMessage.trim(),
+              files: validFiles,
+            });
+          } else {
+            throw new Error("No files were uploaded successfully");
+          }
+        } catch (uploadError) {
+          console.error("File upload failed:", uploadError);
+          setUploadError("Failed to upload files. Please try again.");
           return;
         }
-      } else {
+      } else if (newMessage.trim()) {
         // Send text-only message
-        if (newMessage.trim()) {
-          sendMessage({ text: newMessage });
-        }
+        sendMessage({ text: newMessage });
       }
 
-      // Clear state after successful send
-      setUploadingFile(null);
+      // Clear state
       setNewMessage("");
+      setUploadingFiles([]);
+      setSelectedFiles([]);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     } catch (error) {
       console.error("Error sending message:", error);
-      setUploadError(
-        "Failed to send message. Please check your internet connection and try again."
-      );
+      setUploadError("Failed to send message. Please try again.");
     } finally {
       setSendingMessage(false);
     }
   }, [
-    uploadingFile,
     newMessage,
-    setNewMessage,
+    selectedFiles,
+    uploadingFiles,
     user,
-    adminAuthStatus.isAdmin,
-    adminAuthStatus.adminUid,
+    isAdmin,
     sendMessage,
+    setNewMessage,
   ]);
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -226,44 +311,25 @@ const ChatInput: React.FC<ChatInputProps> = ({
             <VscFileSymlinkFile size={20} className="text-white" />
           </div>
         )}
-        <div className="w-[90%] h-full border border-blue-500 rounded-lg p-1">
-          {/* File upload preview area */}
-          {uploadingFile && (
-            <div className="absolute bottom-[105%] right-1/2 translate-x-1/2 w-[95%] rounded-lg bg-gray-100">
-              <div
-                className={`flex h-20 p-2 m-2 ${
-                  sendingMessage
-                    ? "justify-center items-center"
-                    : "flex-wrap gap-2 overflow-y-auto chat-scrollbars"
-                }`}
-              >
-                {uploadError && (
-                  <div className="absolute bg-red-500 bottom-[102%] w-fit right-1/2 translate-x-1/2 text-white text-sm p-2 rounded-md">
-                    {uploadError}
-                  </div>
-                )}
 
-                {sendingMessage ? (
-                  <div className="vertical gap-2">
-                    <LoadingAnimantion />
-                    <p>Sending file...</p>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2 bg-white rounded-md p-2 text-sm h-fit">
-                    <span className="truncate max-w-[150px]">
-                      {uploadingFile.fileName}
-                    </span>
-                    <button
-                      onClick={removeFile}
-                      className="text-red-500 hover:text-red-700"
-                    >
-                      <MdClose />
-                    </button>
-                  </div>
-                )}
-              </div>
+        <div className="w-[90%] h-full border border-blue-500 rounded-lg p-1">
+          {/* File upload progress */}
+          {uploadingFiles.length > 0 && (
+            <div className="absolute bottom-[105%] right-1/2 translate-x-1/2 w-[95%]">
+              <FileUploadProgress
+                files={uploadingFiles}
+                onRemoveFile={removeFile}
+                showRemoveButton={!sendingMessage}
+              />
+
+              {uploadError && (
+                <div className="mt-2 bg-red-500 text-white text-sm p-2 rounded-md">
+                  {uploadError}
+                </div>
+              )}
             </div>
           )}
+
           <textarea
             name="message"
             id="message"
@@ -274,35 +340,38 @@ const ChatInput: React.FC<ChatInputProps> = ({
             className="w-full h-full p-2 bg-transparent outline-none resize-none chat-scrollbars text-sm whitespace-normal overflow-x-auto"
           />
         </div>
+
         <div className="vertical gap-1 w-[10%] h-full bg-transparent">
           <input
             type="file"
             ref={fileInputRef}
             onChange={(e) => handleFileChange(e.target.files)}
+            multiple
             className="hidden"
-            accept="image/*"
           />
+
           <button
             className={`group bg-transparent rounded-[50%] transition-all duration-500 p-2 ${
-              (user || adminAuthStatus.isAdmin) && !sendingMessage
+              (user || isAdmin) && !sendingMessage
                 ? "hover:bg-blue-600 cursor-pointer"
                 : "opacity-50 cursor-not-allowed"
             }`}
             onClick={() => fileInputRef.current?.click()}
-            disabled={(!user && !adminAuthStatus.isAdmin) || sendingMessage}
+            disabled={(!user && !isAdmin) || sendingMessage}
             title={
-              user || adminAuthStatus.isAdmin
-                ? "Attach image"
-                : "Please login or signup to attach images"
+              user || isAdmin
+                ? "Attach files"
+                : "Please login or signup to attach files"
             }
           >
             <GrAttachment className="text-blue-600 group-hover:text-white transition-all duration-500" />
           </button>
+
           {sendingMessage ? (
             <LoadingAnimantion />
           ) : (
             <button
-              onClick={() => handleSendMessage()}
+              onClick={handleSendMessage}
               className="group bg-transparent hover:bg-blue-600 rounded-[50%] transition-all duration-500 p-2"
               title="Send message"
             >
@@ -313,6 +382,4 @@ const ChatInput: React.FC<ChatInputProps> = ({
       </div>
     </>
   );
-};
-
-export default ChatInput;
+}

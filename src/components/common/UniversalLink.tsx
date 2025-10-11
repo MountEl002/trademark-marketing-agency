@@ -1,11 +1,17 @@
-import { ButtonColor, colorClasses, iconColorClasses } from "@/lib/constants";
+import {
+  ButtonColor,
+  colorClasses,
+  CommonRoute,
+  iconColorClasses,
+} from "@/lib/constants";
+import Link from "next/link";
 import { IconType } from "react-icons";
 
-interface ButtonProps {
+interface UniversalLinkProps {
   icon: IconType;
   iconSize?: number;
   text: string;
-  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  href: CommonRoute | string;
   buttonClassName?: string;
   iconClassName?: string;
   disabled?: boolean;
@@ -13,28 +19,21 @@ interface ButtonProps {
   color?: ButtonColor;
 }
 
-export default function UniversalButton({
+export default function UniversalLink({
   icon: Icon,
   iconSize = 20,
   text,
-  onClick,
   buttonClassName = "",
   iconClassName = "",
   toolTipMessage,
-  disabled = false,
   color = "blue",
-}: ButtonProps) {
+  href,
+}: UniversalLinkProps) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
+    <Link
+      href={href}
       title={toolTipMessage}
-      className={`horizontal-start group gap-3 pr-5 min-[550px]:pr-10 text-sm min-[550px]:text-base text-white font-semibold rounded-md transition-all duration-500 ${
-        colorClasses[color]
-      } ${buttonClassName} ${
-        disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"
-      }`}
+      className={`horizontal-start group gap-3 pr-5 min-[550px]:pr-10 text-sm min-[550px]:text-base text-white font-semibold rounded-md transition-all duration-500 w-fit ${colorClasses[color]} ${buttonClassName}`}
     >
       <div
         className={`vertical p-1 min-[550px]:p-2 left-1 m-[2px] h-[90%] rounded transition-all duration-500 ${iconColorClasses[color]} ${iconClassName}`}
@@ -42,6 +41,6 @@ export default function UniversalButton({
         <Icon size={iconSize} />
       </div>
       <span className="truncate">{text}</span>
-    </button>
+    </Link>
   );
 }

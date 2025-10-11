@@ -18,19 +18,31 @@ import {
 import { useRouter, usePathname } from "next/navigation";
 import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
-import { AuthContextType } from "@/types/transaction";
+import { AuthContextType, UserDoc } from "@/types/globalTypes";
 import {
   initializeUserDocuments,
   processReferral,
 } from "@/contexts/userService";
+import { FIREBASE_COLLECTIONS } from "@/lib/constants";
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
+  const [userData, setUserData] = useState<UserDoc | null>({
+    userId: "",
+    createdAt: "",
+    currentBalance: 0,
+    email: "",
+    phoneNumber: "",
+    unreadNotifications: 0,
+    username: "",
+  });
+  const [errorFetchingUserData, setErrorFetchingUserData] = useState<
+    string | null
+  >(null);
   const [loading, setLoading] = useState(true);
-  const [username, setUsername] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
   const pathname = usePathname();
@@ -41,25 +53,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     "/customer/profile-completion",
   ];
 
-  // Combined auth state monitoring effect
+  // Consolidated effect for auth state and real-time user data
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
+    let unsubscribeFromUserDoc: (() => void) | undefined;
+    const unsubscribeFromAuth = onAuthStateChanged(auth, async (authUser) => {
+      // Clean up previous user's snapshot listener if it exists
+      if (unsubscribeFromUserDoc) {
+        unsubscribeFromUserDoc();
+      }
+
       if (authUser) {
         setUser(authUser);
 
-        // Get user document data
-        const userDocRef = doc(db, "users", authUser.uid);
-        const userDocSnap = await getDoc(userDocRef);
-        if (userDocSnap.exists()) {
-          const userData = userDocSnap.data();
-          if (userData && userData.username) {
-            setUsername(userData.username);
-          } else {
-            setUsername(null);
+        // Set up real-time listener for the user document
+        const userDocRef = doc(db, FIREBASE_COLLECTIONS.USERS, authUser.uid);
+        unsubscribeFromUserDoc = onSnapshot(
+          userDocRef,
+          (docSnapshot) => {
+            if (docSnapshot.exists()) {
+              setUserData(docSnapshot.data() as UserDoc);
+            } else {
+              setUserData(null);
+              setErrorFetchingUserData(
+                "Error fetching user data: User document does not exist."
+              );
+            }
+          },
+          (error) => {
+            setErrorFetchingUserData(`Error fetching user document: ${error}`);
+            setUserData(null);
           }
-        } else {
-          setUsername(null);
-        }
+        );
 
         // Check for admin claims
         try {
@@ -72,31 +96,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } else {
         // No user is signed in
         setUser(null);
-        setUsername(null);
+        setUserData(null);
         setIsAdmin(false);
       }
-
-      // Only set loading to false after all auth state is resolved
       setLoading(false);
     });
 
-    return () => unsubscribe();
-  }, []);
-
-  // Real-time updates to the user document
-  useEffect(() => {
-    if (user?.uid) {
-      const userDocRef = doc(db, "users", user.uid);
-      const unsubscribe = onSnapshot(userDocRef, (docSnapshot) => {
-        if (docSnapshot.exists()) {
-          const userData = docSnapshot.data();
-          // Update username state when it changes in the database
-          setUsername(userData.username || null);
-        }
-      });
-
-      return () => unsubscribe();
-    }
+    return () => {
+      unsubscribeFromAuth();
+      if (unsubscribeFromUserDoc) {
+        unsubscribeFromUserDoc();
+      }
+    };
   }, [user]);
 
   const signInWithGoogle = async () => {
@@ -165,7 +176,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       usernameInput,
       country
     );
-    setUsername(usernameInput);
 
     await processReferral(
       authUser.uid,
@@ -210,9 +220,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     <AuthContext.Provider
       value={{
         user,
+        userData,
+        username: userData?.username || null,
         isAdmin,
+        errorFetchingUserData,
         resetPassword,
-        username,
         loading,
         signup,
         login,
