@@ -331,7 +331,7 @@ export default function AdminChatWindow() {
         const chatData = docSnap.data();
         const chatDoc: StoredChatDocument = {
           id: docSnap.id,
-          username: chatData.username || docSnap.id,
+          username: chatData.username || chatData.userName || docSnap.id,
           adminLastReadTimestamp: chatData.adminLastReadTimestamp || 0,
           userLastReadTimestamp: chatData.userLastReadTimestamp || 0,
           latestMessage: chatData.latestMessage || "",
@@ -382,7 +382,7 @@ export default function AdminChatWindow() {
           const now = Date.now();
           const chatDoc: StoredChatDocument = {
             id: docSnap.id,
-            username: chatData.username || docSnap.id,
+            username: chatData.username || chatData.userName || docSnap.id,
             adminLastReadTimestamp: chatData.adminLastReadTimestamp || 0,
             userLastReadTimestamp: chatData.userLastReadTimestamp || 0,
             latestMessage: chatData.latestMessage || "",
@@ -446,7 +446,7 @@ export default function AdminChatWindow() {
           const now = Date.now();
           const chatDoc: StoredChatDocument = {
             id: change.doc.id,
-            username: chatData.username || change.doc.id,
+            username: chatData.username || chatData.userName || change.doc.id,
             lastSeenOnline: chatData.lastSeenOnline,
             adminLastReadTimestamp: chatData.adminLastReadTimestamp || 0,
             userLastReadTimestamp: chatData.userLastReadTimestamp || 0,
