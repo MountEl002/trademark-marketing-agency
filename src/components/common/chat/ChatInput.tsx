@@ -152,15 +152,30 @@ export default function ChatInput({
 
   const handleFileChange = useCallback(
     (files: FileList | null) => {
-      if (!files || (!user && !isAdmin)) return;
+      console.log("=== handleFileChange called ===");
+      console.log("files:", files);
+      console.log("files length:", files?.length);
+      console.log("user:", user);
+      console.log("isAdmin:", isAdmin);
+      if (!files || (!user && !isAdmin)) {
+        console.log("EARLY RETURN!");
+        return;
+      }
 
+      console.log("Proceeding with file processing...");
       const validation = validateFiles(Array.from(files), {
         maxSizeInMB: 200,
         maxFiles: 100,
       });
 
       if (!validation.valid) {
-        setUploadError(validation.errors.join(", "));
+        // Show alert to user
+        window.alert(validation.errors.join("\n"));
+
+        // Clear the file input
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
         return;
       }
 

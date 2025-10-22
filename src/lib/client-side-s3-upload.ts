@@ -82,11 +82,7 @@ export function validateFiles(
 
     if (!allowedTypes.includes(file.type)) {
       errors.push(
-        `${
-          file.name
-        } has an unsupported file type. Allowed types: ${allowedTypes.join(
-          ", "
-        )}`
+        `${file.name} is an unsupported file type. Please zip the file and try again or contact support.`
       );
     }
   });
