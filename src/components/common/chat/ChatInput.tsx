@@ -15,7 +15,7 @@ import {
   FIREBASE_COLLECTIONS,
 } from "@/lib/constants";
 import { UploadedFileInfo } from "@/types/globalTypes";
-import { validateFiles } from "@/lib/cleint-side-s3-upload";
+import { validateFiles } from "@/lib/client-side-s3-upload";
 
 const generateId = customAlphabet("0123456789abcdefghijklmnopqrstuvwxyz", 10);
 

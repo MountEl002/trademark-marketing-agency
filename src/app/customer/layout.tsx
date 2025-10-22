@@ -67,8 +67,9 @@ export default function CustomerLayout({
 
   return (
     <>
-      <Navbar />
+      <Navbar key="navbar" />
       <div
+        key="main-content"
         className="relative min-h-screen"
         style={{
           backgroundImage: `url(${HeroSectionImage1.src})`,

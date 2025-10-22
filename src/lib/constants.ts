@@ -14,7 +14,7 @@ export const FIREBASE_COLLECTIONS = {
   CHAT_FILES: "chatFiles",
   REGISTERED_USERS_CHATS: "registeredUsersChats",
   UNREGISTERED_USERS_CHATS: "unregisteredUsersChats",
-  CHAT_MESSAGES: "chatMessages",
+  CHAT_MESSAGES: "messages",
 } as const;
 
 export type FirestoreCollection =

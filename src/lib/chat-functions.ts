@@ -6,7 +6,7 @@ import { DocumentReference, FieldValue, updateDoc } from "firebase/firestore";
 export interface ChatDocument {
   id: string;
   createdAt?: number | FieldValue;
-  userNumber?: string | null;
+  username?: string | null;
   latestMessage?: string;
   latestMessageTimestamp: number;
   adminLastReadTimestamp?: number;
@@ -25,7 +25,7 @@ export interface Message {
   text: string;
   sender: "user" | "admin";
   timestamp: number;
-  userNumber?: string;
+  username?: string;
   isSystemGenerated?: boolean;
   files?: Array<{
     id?: string;

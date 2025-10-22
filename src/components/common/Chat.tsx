@@ -20,8 +20,8 @@ import {
 import Image from "next/image";
 import { classifyUser } from "@/utils/initialize-chat";
 import { FaUser } from "react-icons/fa";
-import ChatBackground from "@/assests/chatbackgroundResized.png";
-import CustomerCareAgent4 from "@/assests/CustomerCareAgent4.jpg";
+import ChatBackground from "@/assets/chatbackgroundResized.png";
+import CustomerCareAgent4 from "@/assets/CustomerCareAgent4.jpg";
 import ChatToggle from "./chat/ChatToggle";
 import ChatInput from "./chat/ChatInput";
 import Download from "../fileHandler/Download";
@@ -50,7 +50,7 @@ import { ChatType, FIREBASE_COLLECTIONS } from "@/lib/constants";
 import { UploadedFileInfo } from "@/types/globalTypes";
 
 export default function Chat() {
-  const [userNumber, setUserNumber] = useState<string | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState<string>("");
   const [chatOpen, setChatOpen] = useState(false);
@@ -172,10 +172,10 @@ export default function Chat() {
           };
           await typedUpdateChatDoc(chatDocRef, {
             createdAt: serverTimestamp(),
-            userNumber: classifiedUserNumber,
+            username: classifiedUserNumber,
             chatType: collectionPath,
             userActive: true,
-            latestMessage: "Hello, dear customer. I am Tutor Nicole...",
+            latestMessage: "Hello, dear customer. I am Anne...",
             latestMessageTimestamp: Date.now(),
             messageCount: 1,
             adminLastReadTimestamp: 0,
@@ -196,7 +196,7 @@ export default function Chat() {
 
     try {
       const classification = await classifyUser();
-      setUserNumber(classification.userName);
+      setUsername(classification.userName);
       setChatDocId(classification.chatId);
       setChatCollectionPath(classification.collectionPath as ChatType);
 
@@ -256,7 +256,7 @@ export default function Chat() {
           await setDoc(
             chatDocRef,
             {
-              userNumber: userNumber || "User",
+              username: username || "User",
               createdAt: serverTimestamp(),
               userLastReadTimestamp: 0,
               userActive: false,
@@ -300,7 +300,7 @@ export default function Chat() {
         unsubscribeFromUnread();
       }
     };
-  }, [isInitializing, chatDocId, chatCollectionPath, chatOpen, userNumber]);
+  }, [isInitializing, chatDocId, chatCollectionPath, chatOpen, username]);
 
   useEffect(() => {
     if (isInitializing || !chatDocId || !chatCollectionPath || !chatOpen) {
@@ -570,12 +570,12 @@ export default function Chat() {
         (!messageData.files || messageData.files.length === 0)) ||
       !chatDocId ||
       !chatCollectionPath ||
-      !userNumber
+      !username
     ) {
       console.warn("Cannot send message: missing data", {
         chatDocId,
         chatCollectionPath,
-        userNumber,
+        username,
         messageData,
       });
       return;
@@ -585,7 +585,7 @@ export default function Chat() {
       text: messageData.text,
       sender: "user",
       timestamp: Date.now(),
-      userNumber: userNumber,
+      username: username,
       ...(messageData.files &&
         messageData.files.length > 0 && { files: messageData.files }),
     };
@@ -628,11 +628,11 @@ export default function Chat() {
       }
 
       // Validate required state
-      if (!chatDocId || !chatCollectionPath || !userNumber) {
+      if (!chatDocId || !chatCollectionPath || !username) {
         console.error("Cannot send system message: chat not initialized", {
           chatDocId,
           chatCollectionPath,
-          userNumber,
+          username,
         });
         return;
       }
@@ -661,7 +661,7 @@ export default function Chat() {
             addDoc(messagesRef, newSystemGeneraatedMessage),
             typedUpdateChatDoc(chatDocRef, {
               createdAt: serverTimestamp(),
-              userNumber: userNumber,
+              username: username,
               chatType: chatCollectionPath,
               userActive: true,
               latestMessage: sgmPreview,
@@ -684,7 +684,7 @@ export default function Chat() {
         setIsProcessingSystemMessage(false);
       }
     },
-    [chatDocId, chatCollectionPath, userNumber, isProcessingSystemMessage]
+    [chatDocId, chatCollectionPath, username, isProcessingSystemMessage]
   );
 
   useEffect(() => {
@@ -706,7 +706,7 @@ export default function Chat() {
   return (
     <>
       {chatOpen && !isInitializing ? (
-        <div className="chat-container">
+        <div className="fixed z-[100] bg-blue-100 top-2 bottom-10 max-[530px]:left-1 right-1 min-[530px]:right-3 w-[98vw] min-[530px]:w-[32rem] rounded-lg shadow-xl overflow-hidden">
           <div
             className="flex flex-col h-full"
             style={{
@@ -722,7 +722,7 @@ export default function Chat() {
                   <FaUser />
                 </div>
                 <p className="font-semibold max-[400px]:text-sm">
-                  {isInitializing ? "Loading..." : userNumber || "User"}
+                  {isInitializing ? "Loading..." : username || "User"}
                 </p>
               </div>
               {closingChat ? (

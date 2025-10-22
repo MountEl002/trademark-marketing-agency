@@ -159,7 +159,7 @@ export default function ChatDeleteButton({
           <div className="bg-white p-6 rounded-lg max-w-sm w-full mx-4">
             <h3 className="text-lg font-semibold mb-2">Delete Chat</h3>
             <p className="text-gray-600 mb-4">
-              Are you sure you want to delete this chat with {chat.userNumber}?
+              Are you sure you want to delete this chat with {chat.username}?
               {chat.chatType === "registeredUsersChats" && (
                 <span className="block mt-2 text-sm text-orange-600">
                   This will also delete all files associated with this chat.

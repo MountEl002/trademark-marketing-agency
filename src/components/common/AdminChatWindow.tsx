@@ -19,8 +19,8 @@ import {
 import Image from "next/image";
 import { FaCheck, FaCheckDouble, FaUser } from "react-icons/fa";
 import { BiSolidDownArrow } from "react-icons/bi";
-import ChatBackground from "@/assests/chatbackgroundResized.png";
-import CustomerCareAgent4 from "@/assests/CustomerCareAgent4.jpg";
+import ChatBackground from "@/assets/chatbackgroundResized.png";
+import CustomerCareAgent4 from "@/assets/CustomerCareAgent4.jpg";
 import LoadingAnimantion from "@/components/common/LoadingAnimantion";
 import ChatToggle from "@/components/common/chat/ChatToggle";
 import ChatInput from "./chat/ChatInput";
@@ -331,7 +331,7 @@ export default function AdminChatWindow() {
         const chatData = docSnap.data();
         const chatDoc: StoredChatDocument = {
           id: docSnap.id,
-          userNumber: chatData.userNumber || docSnap.id,
+          username: chatData.username || docSnap.id,
           adminLastReadTimestamp: chatData.adminLastReadTimestamp || 0,
           userLastReadTimestamp: chatData.userLastReadTimestamp || 0,
           latestMessage: chatData.latestMessage || "",
@@ -382,7 +382,7 @@ export default function AdminChatWindow() {
           const now = Date.now();
           const chatDoc: StoredChatDocument = {
             id: docSnap.id,
-            userNumber: chatData.userNumber || docSnap.id,
+            username: chatData.username || docSnap.id,
             adminLastReadTimestamp: chatData.adminLastReadTimestamp || 0,
             userLastReadTimestamp: chatData.userLastReadTimestamp || 0,
             latestMessage: chatData.latestMessage || "",
@@ -446,7 +446,7 @@ export default function AdminChatWindow() {
           const now = Date.now();
           const chatDoc: StoredChatDocument = {
             id: change.doc.id,
-            userNumber: chatData.userNumber || change.doc.id,
+            username: chatData.username || change.doc.id,
             lastSeenOnline: chatData.lastSeenOnline,
             adminLastReadTimestamp: chatData.adminLastReadTimestamp || 0,
             userLastReadTimestamp: chatData.userLastReadTimestamp || 0,
@@ -662,7 +662,7 @@ export default function AdminChatWindow() {
                       </div>
                       <div>
                         <p className="font-semibold text-xs">
-                          {selectedChat.userNumber}{" "}
+                          {selectedChat.username}{" "}
                         </p>
                       </div>
                     </div>
@@ -743,7 +743,7 @@ export default function AdminChatWindow() {
                               <div className="flex-grow min-w-0">
                                 <div className="flex flex-col min-[530px]:flex-row gap-1 item-start">
                                   <span className="font-semibold text-gray-800">
-                                    {chat.userNumber}
+                                    {chat.username}
                                   </span>{" "}
                                   <span>{userStatusClassifier(chat)}</span>
                                 </div>

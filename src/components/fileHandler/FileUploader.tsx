@@ -15,7 +15,7 @@ import { UploadedFileInfo } from "@/types/globalTypes";
 import { HiOutlineInformationCircle } from "react-icons/hi2";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import UniversalButton from "../common/UniversalButton";
-import { validateFiles } from "@/lib/cleint-side-s3-upload";
+import { validateFiles } from "@/lib/client-side-s3-upload";
 import { useFileSelection } from "@/hooks/useFileSelection";
 
 const generateId = customAlphabet("0123456789abcdefghijklmnopqrstuvwxyz", 10);
