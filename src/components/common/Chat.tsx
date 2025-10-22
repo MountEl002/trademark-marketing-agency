@@ -126,7 +126,7 @@ export default function Chat() {
   // Track if we've ever seen messages for this chat
   const hasSeenMessages = useRef(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { user: authUser, userData } = useAuth();
+  const { userData } = useAuth();
   const authContextUsername = userData?.username;
 
   useEffect(() => {
@@ -138,7 +138,7 @@ export default function Chat() {
   const initializationRef = useRef(false);
 
   const initializeChat = useCallback(async () => {
-    if (initializationRef.current) return;
+    if (initializationRef.current && !authContextUsername) return;
     initializationRef.current = true;
     setIsInitializing(true);
     setMessages([]);
@@ -210,12 +210,12 @@ export default function Chat() {
     } finally {
       setIsInitializing(false);
     }
-  }, []);
+  }, [authContextUsername]);
 
   // Initialize chat on mount and when auth status changes
   useEffect(() => {
     initializeChat();
-  }, [authUser, authContextUsername, initializeChat]);
+  }, [initializeChat]);
 
   useEffect(() => {
     if (isInitializing || !chatDocId || !chatCollectionPath || chatOpen) {

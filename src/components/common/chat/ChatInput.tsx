@@ -305,7 +305,7 @@ export default function ChatInput({
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
       >
-        {dropBoxActive && (
+        {dropBoxActive && (user || isAdmin) && (
           <div className="absolute vertical inset-0 bg-black/50 z-[101] gap-3">
             <p className="text-white text-md">Drop here</p>
             <VscFileSymlinkFile size={20} className="text-white" />
