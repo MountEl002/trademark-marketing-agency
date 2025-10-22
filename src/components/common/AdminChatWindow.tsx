@@ -642,7 +642,7 @@ export default function AdminChatWindow() {
   return (
     <>
       {chatOpen ? (
-        <div className="chat-container">
+        <div className="fixed z-[100] bg-blue-100 top-2 bottom-10 max-[530px]:left-1 right-1 min-[530px]:right-3 w-[98vw] min-[530px]:w-[32rem] rounded-lg shadow-xl overflow-hidden">
           <div
             className="flex flex-col h-full"
             style={{
