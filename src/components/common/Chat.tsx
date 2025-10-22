@@ -796,8 +796,8 @@ export default function Chat() {
                                         className="mb-1"
                                       />
                                     )}
-                                    <div className="flex items-center justify-between bg-white/10 rounded p-2 gap-1">
-                                      <p className="text-xs truncate">
+                                    <div className="flex flex-row items-center justify-between bg-white/10 rounded p-2 gap-1">
+                                      <p className="text-xs truncate w-full">
                                         {file.fileName}
                                       </p>
                                       <Download

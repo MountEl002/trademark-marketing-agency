@@ -248,7 +248,7 @@ DownloadProps) {
   }, [fileKey, fileName, dbName, isDownloading]);
 
   return (
-    <div className="w-full">
+    <div className="w-fit">
       {/* Download Progress */}
       {downloadProgress ? (
         <div className="w-full z-10">

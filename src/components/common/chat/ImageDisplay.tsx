@@ -2,7 +2,9 @@ import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { MdImage, MdVisibility } from "react-icons/md";
 import { getFromIndexedDB, saveToIndexedDB } from "@/utils/client-indexeddb";
-import DownloadProgress, { DownloadProgressInfo } from "@/components/fileHandler/DownloadProgress";
+import DownloadProgress, {
+  DownloadProgressInfo,
+} from "@/components/fileHandler/DownloadProgress";
 import UniversalButton from "../UniversalButton";
 import { IoMdClose } from "react-icons/io";
 import { DatabaseName } from "@/lib/constants";
@@ -19,12 +21,12 @@ interface ImageData {
   loaded: boolean;
 }
 
-const ImageDisplay = ({
+export default function ImageDisplay({
   dbName,
   fileKey,
   fileName,
   className = "",
-}: ImageDisplayProps) => {
+}: ImageDisplayProps) {
   const [imageData, setImageData] = useState<ImageData | null>(null);
   const [downloadProgress, setDownloadProgress] =
     useState<DownloadProgressInfo | null>(null);
@@ -274,6 +276,4 @@ const ImageDisplay = ({
       )}
     </div>
   );
-};
-
-export default ImageDisplay;
+}
