@@ -8,6 +8,8 @@ import {
   collection,
   getDocs,
   query,
+  increment,
+  updateDoc,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { customAlphabet } from "nanoid";
@@ -290,6 +292,12 @@ async function updateFirebaseFileMetadata(
   try {
     // Generate a document ID for the file in the subcollection
     const documentId = uploadedFile.fileKey.replace(/\//g, "_");
+
+    // **ADD THIS: Increment pendingUploadedStatusReviews field**
+    const userDocRef = doc(db, "users", userId);
+    await updateDoc(userDocRef, {
+      pendingUploadedStatusReviews: increment(1),
+    });
 
     // Reference to the file document in the user's files subcollection
     const fileRef = doc(db, "users", userId, "files", documentId);

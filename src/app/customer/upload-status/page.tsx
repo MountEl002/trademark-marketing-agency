@@ -115,18 +115,7 @@ const WhatsappStatusUpload: React.FC = () => {
       const amount = calculateAmount(views);
 
       // Upload the image file to S3 with all required parameters
-      const uploadedFile = await uploadImageToS3(
-        selectedFile,
-        user.uid,
-        views,
-        "pending", // status defaults to "pending"
-        amount
-      );
-
-      console.log("File uploaded successfully:", uploadedFile);
-      console.log("Views requested:", views);
-      console.log("User packages:", userPackages);
-      console.log("Amount calculated:", amount);
+      await uploadImageToS3(selectedFile, user.uid, views, "pending", amount);
 
       // Reset form after successful upload
       setSelectedFile(null);

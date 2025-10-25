@@ -189,7 +189,7 @@ export default function UserUploadsPage({
                         key={index} // Consider using file.workId if unique and stable
                         onClick={() =>
                           router.push(
-                            `/admin/uploaded-views/${userId}/${file.workId}` // Changed to userId
+                            `/admin/uploaded-views/${userId}/${file.workId}`
                           )
                         }
                         className="hover:bg-gray-50 cursor-pointer transition-colors"
