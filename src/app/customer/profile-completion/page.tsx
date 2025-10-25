@@ -16,7 +16,7 @@ import LoadingAnimantion from "@/components/common/LoadingAnimantion";
 import Link from "next/link";
 import { processReferral, verifyUsername } from "@/contexts/userService";
 
-const UpdateProfile = () => {
+export default function UpdateProfile() {
   const router = useRouter();
   const { user: authUser, username: savedUsername } = useAuth();
   const [username, setUsername] = useState("");
@@ -391,6 +391,4 @@ const UpdateProfile = () => {
       </div>
     </section>
   );
-};
-
-export default UpdateProfile;
+}
