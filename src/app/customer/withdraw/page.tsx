@@ -520,20 +520,16 @@ export default function WithdrawComponent() {
 
     try {
       const timestamp = serverTimestamp();
+      const calculatedTransactionId = Date.now().toString();
       const userDocRef = doc(db, "users", user.uid);
       const transactionsCollectionRef = collection(userDocRef, "transactions");
-
-      const transactionsQuery = query(transactionsCollectionRef);
-      const transactionsSnapshot = await getDocs(transactionsQuery);
-      const entryNumber = transactionsSnapshot.size + 1;
-      const calculatedTransactionId = entryNumber * 134;
 
       const transactionData = {
         amount: parseInt(amount),
         time: timestamp,
         type: "Withdrawal",
         mpesaNumber: mpesaNumber,
-        TransactionId: calculatedTransactionId.toString(),
+        TransactionId: calculatedTransactionId,
         status: "pending",
         withdrawnFrom:
           selectedAccount === "balance" ? "balanceAccount" : "paymentsAccount",
@@ -547,6 +543,8 @@ export default function WithdrawComponent() {
           EarningWithdrawals: increment(parseInt(amount)),
           payments: increment(-parseInt(amount)),
           pendingTransactionReviews: increment(1),
+          latestPendingTransactionDate: timestamp,
+          // latestTransactionId: calculatedTransactionId,
         });
         const payments = await getUserPayments(user.uid);
         setUserPayments(payments);
@@ -555,48 +553,11 @@ export default function WithdrawComponent() {
           MyWithdrawals: increment(parseInt(amount)),
           balance: increment(-parseInt(amount)),
           pendingTransactionReviews: increment(1),
+          latestPendingTransactionDate: timestamp,
+          // latestTransactionId: calculatedTransactionId.toString(),
         });
         const balance = await getUserBalance(user.uid);
         setUserBalance(balance);
-      }
-
-      // Query transaction subcollection for pending status
-      const transactionsRef = collection(db, "users", user.uid, "transactions");
-      const newPendingQuery = query(
-        transactionsRef,
-        where("status", "==", "pending")
-      );
-      const newPendingSnapshot = await getDocs(newPendingQuery);
-
-      // Find the latest pending transaction date
-      let latestPendingTimestamp: Timestamp | null = null;
-      newPendingSnapshot.forEach((transDoc) => {
-        const transData = transDoc.data();
-        const transTime = transData.time;
-
-        // Check if transTime is a Firestore Timestamp
-        if (transTime instanceof Timestamp) {
-          if (
-            !latestPendingTimestamp ||
-            transTime.toMillis() > latestPendingTimestamp.toMillis()
-          ) {
-            latestPendingTimestamp = transTime;
-          }
-        }
-      });
-
-      const pendingCount = newPendingSnapshot.size;
-
-      // Properly typed update data
-      if (latestPendingTimestamp) {
-        updateDoc(userDocRef, {
-          pendingTransactionReviews: pendingCount,
-          latestPendingTransactionDate: latestPendingTimestamp || null,
-        });
-      } else {
-        updateDoc(userDocRef, {
-          pendingTransactionReviews: pendingCount,
-        });
       }
 
       setShowWithdrawalDialog(false);

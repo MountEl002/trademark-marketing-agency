@@ -70,7 +70,7 @@ export default function DepositComponent() {
       updateDoc(userDocRef, {
         pendingTransactionReviews: increment(1),
         latestPendingTransactionDate: timestamp,
-        latestTransactionId: calculatedTransactionId.toString(),
+        // latestTransactionId: calculatedTransactionId.toString(),
       });
 
       setTransactionId(calculatedTransactionId.toString());

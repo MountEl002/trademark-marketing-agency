@@ -173,10 +173,7 @@ export default function TransactionDetails({
 
       onStatusChange?.(newStatus);
       setStatusDialogOpen(false);
-
-      setTimeout(() => {
-        onClose?.();
-      }, 1500);
+      onClose?.();
     } catch (error) {
       console.error("Error updating status:", error);
     } finally {
