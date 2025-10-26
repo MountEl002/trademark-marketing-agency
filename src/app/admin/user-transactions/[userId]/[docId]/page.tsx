@@ -290,12 +290,15 @@ export default function TransactionDetailPage({
       const updateData: { status: string } = { status: newStatus };
       await updateDoc(fileDocRef, updateData);
 
+      const userDocRef = doc(db, "users", userId);
+      await updateDoc(userDocRef, {
+        pendingTransactionReviews: increment(-1),
+      });
+
       // If status is "confirmed", update user's balance
       if (newStatus === "confirmed" && transactionData.amount > 0) {
-        const userDocRef = doc(db, "users", userId);
         await updateDoc(userDocRef, {
           balance: increment(transactionData.amount),
-          pendingTransactionReviews: increment(-1),
         });
       }
 
