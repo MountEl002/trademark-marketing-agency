@@ -6,8 +6,6 @@ import {
   addDoc,
   doc,
   serverTimestamp,
-  getDocs,
-  query,
   increment,
   updateDoc,
 } from "firebase/firestore";
@@ -55,13 +53,8 @@ export default function DepositComponent() {
       const userDocRef = doc(db, "users", user.uid);
       const transactionsCollectionRef = collection(userDocRef, "transactions");
 
-      // Query to get current transaction count
-      const transactionsQuery = query(transactionsCollectionRef);
-      const transactionsSnapshot = await getDocs(transactionsQuery);
-      const entryNumber = transactionsSnapshot.size + 1; // Next entry will be current size + 1
-
       // Calculate the transactionId based on entry number
-      const calculatedTransactionId = entryNumber * 134;
+      const calculatedTransactionId = Date.now();
 
       const transactionData = {
         amount: amount,
@@ -74,10 +67,10 @@ export default function DepositComponent() {
 
       await addDoc(transactionsCollectionRef, transactionData);
 
-      //Update user document to increment pendingTransactionReviews
-      await updateDoc(userDocRef, {
+      updateDoc(userDocRef, {
         pendingTransactionReviews: increment(1),
         latestPendingTransactionDate: timestamp,
+        latestTransactionId: calculatedTransactionId.toString(),
       });
 
       setTransactionId(calculatedTransactionId.toString());

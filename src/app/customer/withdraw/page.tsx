@@ -412,16 +412,10 @@ export default function WithdrawComponent() {
           const pendingCount = newPendingSnapshot.size;
 
           // Properly typed update data
-          if (latestPendingTimestamp) {
-            updateDoc(userDocRef, {
-              pendingTransactionReviews: pendingCount,
-              latestPendingTransactionDate: latestPendingTimestamp || null,
-            });
-          } else {
-            updateDoc(userDocRef, {
-              pendingTransactionReviews: pendingCount,
-            });
-          }
+          updateDoc(userDocRef, {
+            pendingTransactionReviews: pendingCount,
+            latestPendingTransactionDate: latestPendingTimestamp || null,
+          });
         } catch (error) {
           console.error("Error processing withdrawal cancellation:", error);
           deletionSuccess = false;

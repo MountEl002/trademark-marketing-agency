@@ -175,8 +175,8 @@ export default function TransactionDetails({
       setStatusDialogOpen(false);
 
       setTimeout(() => {
-        onClose?.(); // Call parent's close function
-      }, 50000); // Small delay to show the updated status
+        onClose?.();
+      }, 1500);
     } catch (error) {
       console.error("Error updating status:", error);
     } finally {
