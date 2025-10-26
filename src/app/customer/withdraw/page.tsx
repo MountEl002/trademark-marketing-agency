@@ -363,6 +363,7 @@ export default function WithdrawComponent() {
               await updateDoc(userDocRef, {
                 balance: increment(transactionAmount),
                 MyWithdrawals: increment(-transactionAmount),
+                pendingTransactionReviews: increment(-1),
               });
             } else if (withdrawnFrom === "paymentsAccount") {
               await updateDoc(userDocRef, {
@@ -505,6 +506,7 @@ export default function WithdrawComponent() {
         await updateDoc(userDocRef, {
           EarningWithdrawals: increment(parseInt(amount)),
           payments: increment(-parseInt(amount)),
+          pendingTransactionReviews: increment(1),
         });
         const payments = await getUserPayments(user.uid);
         setUserPayments(payments);
@@ -512,6 +514,7 @@ export default function WithdrawComponent() {
         await updateDoc(userDocRef, {
           MyWithdrawals: increment(parseInt(amount)),
           balance: increment(-parseInt(amount)),
+          pendingTransactionReviews: increment(1),
         });
         const balance = await getUserBalance(user.uid);
         setUserBalance(balance);
