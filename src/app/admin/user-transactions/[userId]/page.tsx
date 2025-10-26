@@ -8,6 +8,7 @@ import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { FiChevronLeft, FiClock } from "react-icons/fi";
 import LoadingScreen from "@/components/common/LoadingScreen";
+import TransactionDetails from "@/components/admin/dashboard/TransactionDetails";
 
 interface TransactionData {
   docId: string;
@@ -35,6 +36,8 @@ export default function UserTransactionsPage({
     []
   );
   const [fetchingData, setFetchingData] = useState(true);
+  const [selectedTransaction, setSelectedTransaction] =
+    useState<TransactionData | null>(null);
 
   useEffect(() => {
     if (!loading && (!user || !isAdmin)) {
@@ -150,15 +153,9 @@ export default function UserTransactionsPage({
                     {userTransactions.map((transaction, index) => (
                       <tr
                         key={index}
-                        onClick={() =>
-                          router.push(
-                            `/admin/user-transactions/${userId}/${
-                              transaction.docId
-                            }?username=${encodeURIComponent(
-                              username ?? "customer"
-                            )}`
-                          )
-                        }
+                        onClick={() => {
+                          setSelectedTransaction(transaction);
+                        }}
                         className="hover:bg-gray-50 cursor-pointer transition-colors"
                       >
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -209,6 +206,33 @@ export default function UserTransactionsPage({
           </div>
         </div>
       </main>
+      {selectedTransaction && (
+        <TransactionDetails
+          transactionData={selectedTransaction}
+          userId={userId}
+          username={username}
+          onStatusChange={(newStatus) => {
+            if (selectedTransaction) {
+              // Update the selectedTransaction
+              const updatedTransaction = {
+                ...selectedTransaction,
+                status: newStatus,
+              };
+              setSelectedTransaction(updatedTransaction);
+
+              // Update the transaction in the userTransactions array
+              setUserTransactions((prevTransactions) =>
+                prevTransactions.map((transaction) =>
+                  transaction.docId === selectedTransaction.docId
+                    ? { ...transaction, status: newStatus }
+                    : transaction
+                )
+              );
+            }
+          }}
+          onClose={() => setSelectedTransaction(null)}
+        />
+      )}
     </div>
   );
 }

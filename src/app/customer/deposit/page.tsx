@@ -77,6 +77,7 @@ export default function DepositComponent() {
       //Update user document to increment pendingTransactionReviews
       await updateDoc(userDocRef, {
         pendingTransactionReviews: increment(1),
+        latestPendingTransactionDate: timestamp,
       });
 
       setTransactionId(calculatedTransactionId.toString());

@@ -48,6 +48,7 @@ export default function UserTransactionsPage() {
         const usersQuery = query(
           collection(db, "users"),
           where("pendingTransactionReviews", ">", 0),
+          orderBy("latestPendingTransactionDate", "desc"),
           limit(5)
         );
         const usersSnapshot = await getDocs(usersQuery);

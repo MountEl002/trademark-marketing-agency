@@ -8,6 +8,7 @@ import {
   where,
   writeBatch,
   doc,
+  Timestamp,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
@@ -47,21 +48,52 @@ export default function TransactionsMigrationScript() {
         for (const userDoc of batchDocs) {
           const userId = userDoc.id;
 
-          // Query files subcollection for pending status
-          const filesRef = collection(db, "users", userId, "transactions");
+          // Query transaction subcollection for pending status
+          const transactionsRef = collection(
+            db,
+            "users",
+            userId,
+            "transactions"
+          );
           const pendingQuery = query(
-            filesRef,
+            transactionsRef,
             where("status", "==", "pending")
           );
           const pendingSnapshot = await getDocs(pendingQuery);
+
+          // Find the latest pending transaction date
+          let latestPendingTimestamp: Timestamp | null = null;
+          pendingSnapshot.forEach((transDoc) => {
+            const transData = transDoc.data();
+            const transTime = transData.time;
+
+            // Check if transTime is a Firestore Timestamp
+            if (transTime instanceof Timestamp) {
+              if (
+                !latestPendingTimestamp ||
+                transTime.toMillis() > latestPendingTimestamp.toMillis()
+              ) {
+                latestPendingTimestamp = transTime;
+              }
+            }
+          });
 
           const pendingCount = pendingSnapshot.size;
 
           // Add update to batch
           const userDocRef = doc(db, "users", userId);
-          batch.update(userDocRef, {
-            pendingTransactionReviews: pendingCount,
-          });
+
+          // Properly typed update data
+          if (latestPendingTimestamp) {
+            batch.update(userDocRef, {
+              pendingTransactionReviews: pendingCount,
+              latestPendingTransactionDate: latestPendingTimestamp || null,
+            });
+          } else {
+            batch.update(userDocRef, {
+              pendingTransactionReviews: pendingCount,
+            });
+          }
 
           processedCount++;
           setProgress({ current: processedCount, total: totalUsers });

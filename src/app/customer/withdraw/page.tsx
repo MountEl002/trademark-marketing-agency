@@ -12,6 +12,7 @@ import {
   deleteDoc,
   updateDoc,
   increment,
+  Timestamp,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/contexts/AuthContext";
@@ -363,12 +364,13 @@ export default function WithdrawComponent() {
               await updateDoc(userDocRef, {
                 balance: increment(transactionAmount),
                 MyWithdrawals: increment(-transactionAmount),
-                pendingTransactionReviews: increment(-1),
+                // pendingTransactionReviews: increment(-1),
               });
             } else if (withdrawnFrom === "paymentsAccount") {
               await updateDoc(userDocRef, {
                 payments: increment(transactionAmount),
                 EarningWithdrawals: increment(-transactionAmount),
+                // pendingTransactionReviews: increment(-1),
               });
             }
             balanceUpdated = true;
@@ -376,6 +378,50 @@ export default function WithdrawComponent() {
 
           // Delete the document
           await deleteDoc(docSnapshot.ref);
+
+          // Query transaction subcollection for pending status
+          const transactionsRef = collection(
+            db,
+            "users",
+            user.uid,
+            "transactions"
+          );
+          const newPendingQuery = query(
+            transactionsRef,
+            where("status", "==", "pending")
+          );
+          const newPendingSnapshot = await getDocs(newPendingQuery);
+
+          // Find the latest pending transaction date
+          let latestPendingTimestamp: Timestamp | null = null;
+          newPendingSnapshot.forEach((transDoc) => {
+            const transData = transDoc.data();
+            const transTime = transData.time;
+
+            // Check if transTime is a Firestore Timestamp
+            if (transTime instanceof Timestamp) {
+              if (
+                !latestPendingTimestamp ||
+                transTime.toMillis() > latestPendingTimestamp.toMillis()
+              ) {
+                latestPendingTimestamp = transTime;
+              }
+            }
+          });
+
+          const pendingCount = newPendingSnapshot.size;
+
+          // Properly typed update data
+          if (latestPendingTimestamp) {
+            updateDoc(userDocRef, {
+              pendingTransactionReviews: pendingCount,
+              latestPendingTransactionDate: latestPendingTimestamp || null,
+            });
+          } else {
+            updateDoc(userDocRef, {
+              pendingTransactionReviews: pendingCount,
+            });
+          }
         } catch (error) {
           console.error("Error processing withdrawal cancellation:", error);
           deletionSuccess = false;
@@ -518,6 +564,45 @@ export default function WithdrawComponent() {
         });
         const balance = await getUserBalance(user.uid);
         setUserBalance(balance);
+      }
+
+      // Query transaction subcollection for pending status
+      const transactionsRef = collection(db, "users", user.uid, "transactions");
+      const newPendingQuery = query(
+        transactionsRef,
+        where("status", "==", "pending")
+      );
+      const newPendingSnapshot = await getDocs(newPendingQuery);
+
+      // Find the latest pending transaction date
+      let latestPendingTimestamp: Timestamp | null = null;
+      newPendingSnapshot.forEach((transDoc) => {
+        const transData = transDoc.data();
+        const transTime = transData.time;
+
+        // Check if transTime is a Firestore Timestamp
+        if (transTime instanceof Timestamp) {
+          if (
+            !latestPendingTimestamp ||
+            transTime.toMillis() > latestPendingTimestamp.toMillis()
+          ) {
+            latestPendingTimestamp = transTime;
+          }
+        }
+      });
+
+      const pendingCount = newPendingSnapshot.size;
+
+      // Properly typed update data
+      if (latestPendingTimestamp) {
+        updateDoc(userDocRef, {
+          pendingTransactionReviews: pendingCount,
+          latestPendingTransactionDate: latestPendingTimestamp || null,
+        });
+      } else {
+        updateDoc(userDocRef, {
+          pendingTransactionReviews: pendingCount,
+        });
       }
 
       setShowWithdrawalDialog(false);
