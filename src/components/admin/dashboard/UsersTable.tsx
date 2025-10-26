@@ -145,7 +145,7 @@ export default function UsersTable() {
   return (
     <div className="w-full">
       <div className="mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-        <h1 className="text-2xl font-semibold text-gray-800">Users</h1>
+        <h1 className="text-2xl font-semibold text-gray-800">All Customers</h1>
         <div className="relative w-full sm:w-64">
           <input
             type="text"

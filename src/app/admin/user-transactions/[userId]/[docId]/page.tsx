@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import React from "react";
 import { updateDoc, doc, getDoc, increment } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { FiChevronLeft, FiEdit, FiCheck, FiX } from "react-icons/fi";
 import LoadingScreen from "@/components/common/LoadingScreen";
+import LoadingAnimantion from "@/components/common/LoadingAnimantion";
 
 interface TransactionData {
   docId: string;
@@ -20,6 +21,7 @@ interface TransactionData {
 
 interface StatusDialogProps {
   isOpen: boolean;
+  statusUpdateInProgress: boolean;
   onClose: () => void;
   onStatusChange: (status: string) => void;
   currentStatus: string;
@@ -27,6 +29,7 @@ interface StatusDialogProps {
 
 function StatusDialog({
   isOpen,
+  statusUpdateInProgress,
   onClose,
   onStatusChange,
   currentStatus,
@@ -36,36 +39,50 @@ function StatusDialog({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
       <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 animate-fadeIn">
-        <h3 className="text-lg font-bold text-gray-800 mb-4">Change Status</h3>
-        <p className="text-gray-600 mb-6">
-          Current status: <span className="font-medium">{currentStatus}</span>
-        </p>
+        {statusUpdateInProgress ? (
+          <div className="w-full h-full flex flex-row items-center justify-center">
+            <LoadingAnimantion text="Status update in progress..." />
+          </div>
+        ) : (
+          <>
+            <h3 className="text-lg font-bold text-gray-800 mb-4">
+              Change Status
+            </h3>
+            <p className="text-gray-600 mb-6">
+              Current status:{" "}
+              <span className="font-medium">{currentStatus}</span>
+            </p>
 
-        <div className="space-y-3">
-          <button
-            onClick={() => onStatusChange("confirmed")}
-            className="w-full flex items-center justify-center px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-          >
-            <FiCheck className="mr-2" />
-            Mark as Confirmed
-          </button>
-          <button
-            onClick={() => onStatusChange("disputed")}
-            className="w-full flex items-center justify-center px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-          >
-            <FiX className="mr-2" />
-            Mark as Disputed
-          </button>
-        </div>
+            <div className="space-y-3">
+              <button
+                onClick={() => onStatusChange("confirmed")}
+                disabled={statusUpdateInProgress}
+                className="w-full flex items-center justify-center px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+              >
+                <FiCheck className="mr-2" />
+                Mark as Confirmed
+              </button>
+              <button
+                onClick={() => onStatusChange("disputed")}
+                disabled={statusUpdateInProgress}
+                className="w-full flex items-center justify-center px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              >
+                <FiX className="mr-2" />
+                Mark as Disputed
+              </button>
+            </div>
 
-        <div className="mt-6 flex justify-end">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
-          >
-            Cancel
-          </button>
-        </div>
+            <div className="mt-6 flex justify-end">
+              <button
+                disabled={statusUpdateInProgress}
+                onClick={onClose}
+                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
@@ -78,6 +95,8 @@ export default function TransactionDetailPage({
 }) {
   const resolvedParams = React.use(params);
   const { userId, docId } = resolvedParams;
+  const searchParams = useSearchParams();
+  const username = searchParams.get("username");
 
   const { user, isAdmin, loading } = useAuth();
   const router = useRouter();
@@ -86,7 +105,6 @@ export default function TransactionDetailPage({
   const [fetchingData, setFetchingData] = useState(true);
   const [statusDialogOpen, setStatusDialogOpen] = useState(false);
   const [updating, setUpdating] = useState(false);
-  const [displayUsername, setDisplayUsername] = useState<string | null>(null);
 
   useEffect(() => {
     async function handleDataFetch() {
@@ -104,16 +122,6 @@ export default function TransactionDetailPage({
             userId,
             docId,
           });
-          return;
-        }
-
-        const userDocRef = doc(db, "users", userId);
-        const userDocSnap = await getDoc(userDocRef);
-
-        if (userDocSnap.exists()) {
-          setDisplayUsername(userDocSnap.data().username || "User");
-        } else {
-          router.push("/admin/user-transactions");
           return;
         }
 
@@ -159,120 +167,6 @@ export default function TransactionDetailPage({
 
     handleDataFetch();
   }, [loading, user, isAdmin, userId, docId, router]);
-
-  // Alternative approach with better error handling and logging
-  // useEffect(() => {
-  //   let isMounted = true; // Prevent state updates if component unmounts
-
-  //   async function fetchData() {
-  //     console.log("=== Starting useEffect ===");
-  //     console.log("Auth state:", { loading, user: !!user, isAdmin });
-  //     console.log("Params:", { userId, docId });
-
-  //     try {
-  //       // Wait for auth to complete
-  //       if (loading) {
-  //         console.log("Still loading auth...");
-  //         return;
-  //       }
-
-  //       // Check authentication
-  //       if (!user || !isAdmin) {
-  //         console.log("User not authenticated or not admin, redirecting...");
-  //         if (isMounted) {
-  //           setFetchingData(false);
-  //         }
-  //         router.push("/login");
-  //         return;
-  //       }
-
-  //       // Check required params
-  //       if (!userId || !docId) {
-  //         console.log("Missing required parameters");
-  //         if (isMounted) {
-  //           setFetchingData(false);
-  //         }
-  //         return;
-  //       }
-
-  //       console.log("All checks passed, fetching data...");
-
-  //       // Fetch user data
-  //       const userDocRef = doc(db, "users", userId);
-  //       const userDocSnap = await getDoc(userDocRef);
-
-  //       if (!userDocSnap.exists()) {
-  //         console.error("User document not found:", userId);
-  //         if (isMounted) {
-  //           setFetchingData(false);
-  //         }
-  //         router.push("/admin/user-transactions");
-  //         return;
-  //       }
-
-  //       const userData = userDocSnap.data();
-  //       console.log("User data retrieved:", userData);
-
-  //       if (isMounted) {
-  //         setDisplayUsername(userData.username || "User");
-  //       }
-
-  //       // Fetch transaction data
-  //       const transactionDocRef = doc(
-  //         db,
-  //         "users",
-  //         userId,
-  //         "transactions",
-  //         docId
-  //       );
-  //       const transactionDocSnap = await getDoc(transactionDocRef);
-
-  //       if (!transactionDocSnap.exists()) {
-  //         console.error("Transaction document not found:", docId);
-  //         if (isMounted) {
-  //           setFetchingData(false);
-  //         }
-  //         router.push(`/admin/user-transactions/${userId}`);
-  //         return;
-  //       }
-
-  //       const transactionData = transactionDocSnap.data();
-  //       console.log("Transaction data retrieved:", transactionData);
-
-  //       const formattedData = {
-  //         docId: transactionDocSnap.id,
-  //         TransactionId: transactionData.TransactionId || "N/A",
-  //         time: transactionData.time?.toDate() || new Date(),
-  //         status: transactionData.status || "pending",
-  //         mpesaCode: transactionData.mpesaCode || "Not yet provided",
-  //         amount: transactionData.amount || 0,
-  //       };
-
-  //       if (isMounted) {
-  //         setTransactionData(formattedData);
-  //         console.log("Transaction data set successfully");
-  //       }
-  //     } catch (error) {
-  //       console.error("Error in fetchData:", error);
-  //       if (isMounted) {
-  //         setTransactionData(null);
-  //       }
-  //     } finally {
-  //       if (isMounted) {
-  //         setFetchingData(false);
-  //         console.log("=== fetchingData set to false ===");
-  //       }
-  //     }
-  //   }
-
-  //   fetchData();
-
-  //   // Cleanup function
-  //   return () => {
-  //     isMounted = false;
-  //   };
-  // }, [loading, user, isAdmin, userId, docId, router]);
-  // console.log("Transaction Data:", transactionData);
 
   const handleStatusChange = async (newStatus: string) => {
     if (!transactionData || !userId) return;
@@ -344,8 +238,8 @@ export default function TransactionDetailPage({
             onClick={() => router.push(`/admin/user-transactions/${userId}`)}
             className="flex items-center text-blue-600 hover:text-blue-800"
           >
-            <FiChevronLeft className="mr-1" /> Back to{" "}
-            {displayUsername || userId}’s transactions
+            <FiChevronLeft className="mr-1" /> Back to {username || userId}’s
+            transactions
           </button>
         </div>
 
@@ -424,6 +318,7 @@ export default function TransactionDetailPage({
         onClose={() => setStatusDialogOpen(false)}
         onStatusChange={handleStatusChange}
         currentStatus={transactionData.status}
+        statusUpdateInProgress={updating}
       />
     </div>
   );

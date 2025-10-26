@@ -21,6 +21,7 @@ import {
   getFileFromLocalStorage,
   cleanupOldFiles,
 } from "@/utils/download-user-files";
+import LoadingAnimantion from "@/components/common/LoadingAnimantion";
 
 interface FileData {
   docId: string;
@@ -36,6 +37,7 @@ interface FileData {
 
 interface StatusDialogProps {
   isOpen: boolean;
+  statusUpdateInProgress: boolean;
   onClose: () => void;
   onStatusChange: (status: string) => void;
   currentStatus: string;
@@ -43,6 +45,7 @@ interface StatusDialogProps {
 
 function StatusDialog({
   isOpen,
+  statusUpdateInProgress,
   onClose,
   onStatusChange,
   currentStatus,
@@ -52,36 +55,48 @@ function StatusDialog({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
       <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 animate-fadeIn">
-        <h3 className="text-lg font-bold text-gray-800 mb-4">Change Status</h3>
-        <p className="text-gray-600 mb-6">
-          Current status: <span className="font-medium">{currentStatus}</span>
-        </p>
-
-        <div className="space-y-3">
-          <button
-            onClick={() => onStatusChange("confirmed")}
-            className="w-full flex items-center justify-center px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-          >
-            <FiCheck className="mr-2" />
-            Mark as Confirmed
-          </button>
-          <button
-            onClick={() => onStatusChange("disputed")}
-            className="w-full flex items-center justify-center px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-          >
-            <FiX className="mr-2" />
-            Mark as Disputed
-          </button>
-        </div>
-
-        <div className="mt-6 flex justify-end">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
-          >
-            Cancel
-          </button>
-        </div>
+        {statusUpdateInProgress ? (
+          <div className="w-full h-full flex flex-row items-center justify-center">
+            <LoadingAnimantion text="Status update in progress..." />
+          </div>
+        ) : (
+          <>
+            <h3 className="text-lg font-bold text-gray-800 mb-4">
+              Change Status
+            </h3>
+            <p className="text-gray-600 mb-6">
+              Current status:{" "}
+              <span className="font-medium">{currentStatus}</span>
+            </p>
+            <div className="space-y-3">
+              <button
+                onClick={() => onStatusChange("confirmed")}
+                disabled={statusUpdateInProgress}
+                className="w-full flex items-center justify-center px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+              >
+                <FiCheck className="mr-2" />
+                Mark as Confirmed
+              </button>
+              <button
+                onClick={() => onStatusChange("disputed")}
+                disabled={statusUpdateInProgress}
+                className="w-full flex items-center justify-center px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              >
+                <FiX className="mr-2" />
+                Mark as Disputed
+              </button>
+            </div>
+            <div className="mt-6 flex justify-end">
+              <button
+                onClick={onClose}
+                disabled={statusUpdateInProgress}
+                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
@@ -415,6 +430,7 @@ export default function ImageDetailPage({
 
       <StatusDialog
         isOpen={statusDialogOpen}
+        statusUpdateInProgress={updating}
         onClose={() => setStatusDialogOpen(false)}
         onStatusChange={handleStatusChange}
         currentStatus={fileData.status}

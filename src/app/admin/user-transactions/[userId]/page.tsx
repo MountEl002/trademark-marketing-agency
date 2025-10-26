@@ -1,17 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import React from "react";
-import {
-  collection,
-  getDocs,
-  query,
-  orderBy,
-  doc,
-  getDoc,
-} from "firebase/firestore";
+import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { FiChevronLeft, FiClock } from "react-icons/fi";
 import LoadingScreen from "@/components/common/LoadingScreen";
@@ -33,6 +26,8 @@ export default function UserTransactionsPage({
 }) {
   const resolvedParams = React.use(params);
   const userId = resolvedParams.userId;
+  const searchParams = useSearchParams();
+  const username = searchParams.get("username");
 
   const { user, isAdmin, loading } = useAuth();
   const router = useRouter();
@@ -40,7 +35,6 @@ export default function UserTransactionsPage({
     []
   );
   const [fetchingData, setFetchingData] = useState(true);
-  const [displayUsername, setDisplayUsername] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading && (!user || !isAdmin)) {
@@ -51,15 +45,6 @@ export default function UserTransactionsPage({
     async function fetchUserTransactions() {
       try {
         setFetchingData(true);
-        const userDocRef = doc(db, "users", userId);
-        const userDocSnap = await getDoc(userDocRef);
-
-        if (userDocSnap.exists()) {
-          setDisplayUsername(userDocSnap.data().username || "User");
-        } else {
-          console.error("User not found:", userId);
-          setDisplayUsername("Unknown User");
-        }
 
         const transactionsQuery = query(
           collection(db, "users", userId, "transactions"),
@@ -67,7 +52,7 @@ export default function UserTransactionsPage({
         );
         const transactionsSnapshot = await getDocs(transactionsQuery);
 
-        if (transactionsSnapshot.empty && !userDocSnap.exists()) {
+        if (transactionsSnapshot.empty) {
           router.push("/admin/user-transactions");
           return;
         }
@@ -113,9 +98,7 @@ export default function UserTransactionsPage({
   };
 
   if (loading || fetchingData) {
-    return (
-      <LoadingScreen message={`Loading ${displayUsername}'s transactions`} />
-    );
+    return <LoadingScreen message={`Loading ${username}'s transactions`} />;
   }
 
   return (
@@ -126,17 +109,18 @@ export default function UserTransactionsPage({
             onClick={() => router.push("/admin/user-transactions")}
             className="flex items-center text-blue-600 hover:text-blue-800"
           >
-            <FiChevronLeft className="mr-1" /> Back to user transactions
+            <FiChevronLeft className="mr-1" /> Back to all customers
+            transactions
           </button>
         </div>
 
         <div className="bg-white rounded-lg shadow overflow-hidden">
           <div className="p-6">
             <h4 className="text-2xl font-bold text-gray-800">
-              {displayUsername}’s transactions
+              {username}’s transactions
             </h4>
             {userTransactions.length === 0 ? (
-              <h4>{displayUsername}’s has not done any transactions</h4>
+              <h4>{username}’s has not done any transactions</h4>
             ) : (
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
@@ -168,7 +152,11 @@ export default function UserTransactionsPage({
                         key={index}
                         onClick={() =>
                           router.push(
-                            `/admin/user-transactions/${userId}/${transaction.docId}`
+                            `/admin/user-transactions/${userId}/${
+                              transaction.docId
+                            }?username=${encodeURIComponent(
+                              username ?? "customer"
+                            )}`
                           )
                         }
                         className="hover:bg-gray-50 cursor-pointer transition-colors"
