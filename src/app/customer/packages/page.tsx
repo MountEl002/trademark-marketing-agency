@@ -9,8 +9,6 @@ import {
   setDoc,
   updateDoc,
   serverTimestamp,
-  query,
-  getDocs,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/contexts/AuthContext";
@@ -102,15 +100,8 @@ const PricingCard: React.FC<{ plan: PricingPlan }> = ({ plan }) => {
           userDocRef,
           "transactions"
         );
-
-        // Query to get current transaction count
-        const transactionsQuery = query(transactionsCollectionRef);
-        const transactionsSnapshot = await getDocs(transactionsQuery);
-        const entryNumber = transactionsSnapshot.size + 1; // Next entry will be current size + 1
-
-        // Calculate the transactionId based on entry number
-        const calculatedTransactionId = entryNumber * 134;
-        setTransactionId(calculatedTransactionId.toString());
+        const calculatedTransactionId = Date.now().toString();
+        setTransactionId(calculatedTransactionId);
 
         await setDoc(doc(transactionsCollectionRef), {
           amount: plan.price,
