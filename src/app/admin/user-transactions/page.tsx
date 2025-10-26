@@ -112,6 +112,8 @@ export default function UserTransactionsPage() {
     try {
       const usersQuery = query(
         collection(db, "users"),
+        where("pendingTransactionReviews", ">", 0), // Add this filter
+        orderBy("latestPendingTransactionDate", "desc"), // Add this ordering
         startAfter(lastVisible),
         limit(5)
       );

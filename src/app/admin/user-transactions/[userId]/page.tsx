@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import React from "react";
-import { collection, getDocs, query, orderBy } from "firebase/firestore";
+import { collection, getDocs, query, orderBy, limit } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { FiChevronLeft, FiClock } from "react-icons/fi";
 import LoadingScreen from "@/components/common/LoadingScreen";
@@ -51,7 +51,8 @@ export default function UserTransactionsPage({
 
         const transactionsQuery = query(
           collection(db, "users", userId, "transactions"),
-          orderBy("time", "desc")
+          orderBy("time", "desc"),
+          limit(20)
         );
         const transactionsSnapshot = await getDocs(transactionsQuery);
 
