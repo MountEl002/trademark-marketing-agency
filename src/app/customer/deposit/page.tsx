@@ -8,6 +8,8 @@ import {
   serverTimestamp,
   getDocs,
   query,
+  increment,
+  updateDoc,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/contexts/AuthContext";
@@ -71,6 +73,11 @@ export default function DepositComponent() {
       };
 
       await addDoc(transactionsCollectionRef, transactionData);
+
+      //Update user document to increment pendingTransactionReviews
+      await updateDoc(userDocRef, {
+        pendingTransactionReviews: increment(1),
+      });
 
       setTransactionId(calculatedTransactionId.toString());
 

@@ -295,6 +295,7 @@ export default function TransactionDetailPage({
         const userDocRef = doc(db, "users", userId);
         await updateDoc(userDocRef, {
           balance: increment(transactionData.amount),
+          pendingTransactionReviews: increment(-1),
         });
       }
 
