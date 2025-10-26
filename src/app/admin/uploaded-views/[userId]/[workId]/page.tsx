@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import React from "react";
 import {
@@ -11,7 +11,6 @@ import {
   where,
   updateDoc,
   doc,
-  getDoc,
   increment, // Import increment
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -91,10 +90,12 @@ function StatusDialog({
 export default function ImageDetailPage({
   params,
 }: {
-  params: Promise<{ userId: string; workId: string }>; // Changed username to userId
+  params: Promise<{ userId: string; workId: string }>;
 }) {
   const resolvedParams = React.use(params);
-  const { userId, workId } = resolvedParams; // Changed username to userId
+  const { userId, workId } = resolvedParams;
+  const searchParams = useSearchParams();
+  const username = searchParams.get("username");
 
   const { user, isAdmin, loading } = useAuth();
   const router = useRouter();
@@ -104,7 +105,6 @@ export default function ImageDetailPage({
   const [updating, setUpdating] = useState(false);
   const [localImageUrl, setLocalImageUrl] = useState<string | null>(null);
   const [downloadingImage, setDownloadingImage] = useState(false);
-  const [displayUsername, setDisplayUsername] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading && (!user || !isAdmin)) {
@@ -115,19 +115,6 @@ export default function ImageDetailPage({
     async function fetchFileDataAndUser() {
       try {
         setFetchingData(true);
-
-        // Fetch user's username for display
-        const userDocRef = doc(db, "users", userId);
-        const userDocSnap = await getDoc(userDocRef);
-
-        if (userDocSnap.exists()) {
-          setDisplayUsername(userDocSnap.data().username || "User");
-        } else {
-          console.error("User not found for image detail:", userId);
-          // If user not found, the file query below might also fail or be incorrect
-          router.push("/admin/uploaded-views"); // Redirect if user is essential
-          return;
-        }
 
         // Get the specific file with the workId using userId
         const filesQuery = query(
@@ -143,7 +130,7 @@ export default function ImageDetailPage({
             "for user:",
             userId
           );
-          router.push(`/admin/uploaded-views/${userId}`); // Go back to user's file list
+          router.push(`/admin/uploaded-views/${userId}`);
           return;
         }
 
@@ -224,9 +211,12 @@ export default function ImageDetailPage({
       const updateData: { status: string } = { status: newStatus };
       await updateDoc(fileDocRef, updateData);
 
+      const userDocRef = doc(db, "users", userId);
+      await updateDoc(userDocRef, {
+        pendingUploadedStatusReviews: increment(-1),
+      });
       // If status is "confirmed", update user's payments
       if (newStatus === "confirmed" && fileData.amount > 0) {
-        const userDocRef = doc(db, "users", userId);
         await updateDoc(userDocRef, {
           payments: increment(fileData.amount),
         });
@@ -293,8 +283,8 @@ export default function ImageDetailPage({
             onClick={() => router.push(`/admin/uploaded-views/${userId}`)} // Changed to userId
             className="flex items-center text-blue-600 hover:text-blue-800"
           >
-            <FiChevronLeft className="mr-1" /> Back to{" "}
-            {displayUsername || userId}’s Images
+            <FiChevronLeft className="mr-1" /> Back to {username || userId}’s
+            Images
           </button>
         </div>
 

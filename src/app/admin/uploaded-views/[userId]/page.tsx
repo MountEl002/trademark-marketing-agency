@@ -1,17 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import React from "react";
-import {
-  collection,
-  getDocs,
-  query,
-  orderBy,
-  doc,
-  getDoc,
-} from "firebase/firestore";
+import { collection, getDocs, query, orderBy, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { FiChevronLeft, FiImage, FiClock, FiEye } from "react-icons/fi";
 
@@ -27,16 +20,17 @@ interface FileData {
 export default function UserUploadsPage({
   params,
 }: {
-  params: Promise<{ userId: string }>; // Changed from username to userId
+  params: Promise<{ userId: string }>;
 }) {
   const resolvedParams = React.use(params);
-  const userId = resolvedParams.userId; // Changed from username to userId
+  const userId = resolvedParams.userId;
+  const searchParams = useSearchParams();
+  const username = searchParams.get("username");
 
   const { user, isAdmin, loading } = useAuth();
   const router = useRouter();
   const [userFiles, setUserFiles] = useState<FileData[]>([]);
   const [fetchingData, setFetchingData] = useState(true);
-  const [displayUsername, setDisplayUsername] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading && (!user || !isAdmin)) {
@@ -48,27 +42,18 @@ export default function UserUploadsPage({
       try {
         setFetchingData(true);
 
-        // Fetch user's username for display
-        const userDocRef = doc(db, "users", userId);
-        const userDocSnap = await getDoc(userDocRef);
-
-        if (userDocSnap.exists()) {
-          setDisplayUsername(userDocSnap.data().username || "User");
-        } else {
-          console.error("User not found:", userId);
-          setDisplayUsername("Unknown User");
-          // Optionally, redirect if user not found, though files might still be fetched if ID is valid for subcollection
-        }
-
         // Get all files for this user using userId
         const filesQuery = query(
           collection(db, "users", userId, "files"),
+          where("status", "==", "pending"),
           orderBy("uploadedAt", "desc")
         );
         const filesSnapshot = await getDocs(filesQuery);
 
-        if (filesSnapshot.empty && !userDocSnap.exists()) {
-          // If user doc doesn't exist and no files, likely invalid userId
+        if (filesSnapshot.empty) {
+          window.alert(
+            "No uploaded status found for this user. You will be redirected back to the Uploaded Views page."
+          );
           router.push("/admin/uploaded-views");
           return;
         }
@@ -150,7 +135,7 @@ export default function UserUploadsPage({
             <div className="flex items-center mb-6">
               <FiImage className="text-blue-600 mr-3 text-2xl" />
               <h2 className="text-2xl font-bold text-gray-800">
-                Images uploaded by {displayUsername || userId}
+                {username || userId}’s pending uploaded statuses reviews
               </h2>
             </div>
 
@@ -186,12 +171,16 @@ export default function UserUploadsPage({
                   <tbody className="bg-white divide-y divide-gray-200">
                     {userFiles.map((file, index) => (
                       <tr
-                        key={index} // Consider using file.workId if unique and stable
-                        onClick={() =>
+                        key={index}
+                        onClick={() => {
                           router.push(
-                            `/admin/uploaded-views/${userId}/${file.workId}`
-                          )
-                        }
+                            `/admin/uploaded-views/${userId}/${
+                              file.workId
+                            }?username=${encodeURIComponent(
+                              username ?? "customer"
+                            )}`
+                          );
+                        }}
                         className="hover:bg-gray-50 cursor-pointer transition-colors"
                       >
                         <td className="px-6 py-4 whitespace-nowrap">

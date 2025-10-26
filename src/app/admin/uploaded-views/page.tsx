@@ -12,6 +12,7 @@ import {
   startAfter,
   QueryDocumentSnapshot,
   DocumentData,
+  where,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { FiChevronLeft, FiImage, FiClock } from "react-icons/fi";
@@ -43,7 +44,11 @@ export default function UploadedViewsPage() {
     async function fetchUsersWithUploads() {
       try {
         setFetchingData(true);
-        const usersQuery = query(collection(db, "users"), limit(5));
+        const usersQuery = query(
+          collection(db, "users"),
+          where("pendingUploadedStatusReviews", ">", 0),
+          limit(5)
+        );
         const usersSnapshot = await getDocs(usersQuery);
         const usersWithFiles: UserWithUploads[] = [];
 
@@ -193,7 +198,7 @@ export default function UploadedViewsPage() {
             <div className="flex items-center mb-6">
               <FiImage className="text-blue-600 mr-3 text-2xl" />
               <h2 className="text-2xl font-bold text-gray-800">
-                Users with Uploaded Images
+                Customers with pending uploaded status reviews
               </h2>
             </div>
 
@@ -223,7 +228,11 @@ export default function UploadedViewsPage() {
                         <tr
                           key={u.userId}
                           onClick={() =>
-                            router.push(`/admin/uploaded-views/${u.userId}`)
+                            router.push(
+                              `/admin/uploaded-views/${
+                                u.userId
+                              }?username=${encodeURIComponent(u.username)}`
+                            )
                           }
                           className="hover:bg-gray-50 cursor-pointer transition-colors"
                         >
