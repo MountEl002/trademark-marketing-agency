@@ -4,6 +4,9 @@ import "./globals.css";
 import { Roboto, Lato } from "next/font/google";
 import { ClientLayoutWrapper } from "@/components/layout/ClientLayoutWrapper";
 import { Providers } from "./providers";
+import OfflineOverlay from "@/components/layout/OfflineOverlay";
+
+const isOffline = true;
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -48,6 +51,7 @@ export default function RootLayout({
         }`}
       >
         <Providers>
+          {isOffline && <OfflineOverlay />}
           <ClientLayoutWrapper>{children}</ClientLayoutWrapper>
           <Analytics />
         </Providers>
