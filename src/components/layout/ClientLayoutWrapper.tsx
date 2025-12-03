@@ -4,7 +4,6 @@ import { usePathname } from "next/navigation";
 // import Navbar from "@/components/layout/Navbar";
 import ScrollToTop from "@/components/common/BackToTop";
 import Chat from "../common/Chat";
-import OfflineOverlay from "./OfflineOverlay";
 
 export function ClientLayoutWrapper({
   children,
@@ -15,9 +14,8 @@ export function ClientLayoutWrapper({
   const hideComponentsOn = ["/login", "/signup", "/forgot-password"];
   const isAdminPage = pathname?.startsWith("/admin");
   const shouldHideComponents = hideComponentsOn.includes(pathname);
-  const isOffline = false;
 
-  if (isAdminPage && !isOffline) {
+  if (isAdminPage) {
     return (
       <>
         <ScrollToTop />
@@ -26,7 +24,7 @@ export function ClientLayoutWrapper({
     );
   }
 
-  if (shouldHideComponents && !isOffline) {
+  if (shouldHideComponents) {
     return (
       <>
         <Chat />
@@ -35,17 +33,13 @@ export function ClientLayoutWrapper({
       </>
     );
   }
-
-  if (!isOffline) {
-    return (
-      <>
-        <main className="min-h-screen mt-16 bg-white">
-          <Chat />
-          <ScrollToTop />
-          {children}
-        </main>
-      </>
-    );
-  }
-  return <OfflineOverlay />;
+  return (
+    <>
+      <main className="min-h-screen mt-16 bg-white">
+        <Chat />
+        <ScrollToTop />
+        {children}
+      </main>
+    </>
+  );
 }
