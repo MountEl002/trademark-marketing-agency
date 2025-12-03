@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   collection,
   getDocs,
   query,
   limit,
   startAfter,
+  where,
   DocumentData,
   QueryDocumentSnapshot,
 } from "firebase/firestore";
@@ -35,11 +36,13 @@ export default function UsersTable() {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [lastVisible, setLastVisible] =
     useState<QueryDocumentSnapshot<DocumentData> | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const router = useRouter();
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -91,56 +94,224 @@ export default function UsersTable() {
     fetchUsers();
   }, []);
 
+  useEffect(() => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    if (searchTerm.length > 0 && searchTerm.length < 3) {
+      setIsSearching(false);
+      return;
+    }
+
+    if (searchTerm.length === 0) {
+      setIsSearching(false);
+      async function resetUsers() {
+        setLoading(true);
+        try {
+          const usersCollectionRef = collection(db, "users");
+          const usersQuery = query(usersCollectionRef, limit(10));
+          const querySnapshot = await getDocs(usersQuery);
+
+          const usersData: User[] = [];
+          querySnapshot.forEach((doc) => {
+            const data = doc.data() as User;
+            usersData.push({
+              userId: data.userId || doc.id,
+              username: data.username || "N/A",
+              email: data.email || "N/A",
+              mobile: data.mobile || "N/A",
+              balance: typeof data.balance === "number" ? data.balance : 0,
+              payments: typeof data.payments === "number" ? data.payments : 0,
+            });
+          });
+
+          setUsers(usersData);
+
+          if (querySnapshot.docs.length > 0) {
+            setLastVisible(querySnapshot.docs[querySnapshot.docs.length - 1]);
+          }
+
+          if (querySnapshot.docs.length < 10) {
+            setHasMore(false);
+          } else {
+            setHasMore(true);
+          }
+        } catch (error) {
+          console.error("Error resetting users:", error);
+        } finally {
+          setLoading(false);
+        }
+      }
+      resetUsers();
+      return;
+    }
+
+    setIsSearching(true);
+
+    debounceTimerRef.current = setTimeout(() => {
+      performSearch(searchTerm, null);
+    }, 3000);
+
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, [searchTerm]);
+
+  const performSearch = async (
+    term: string,
+    lastDoc: QueryDocumentSnapshot<DocumentData> | null
+  ) => {
+    if (term.length < 3) return;
+
+    setIsSearching(true);
+    try {
+      const usersCollectionRef = collection(db, "users");
+      const searchTermLower = term.toLowerCase();
+      const searchTermEnd = searchTermLower + "\uf8ff";
+
+      const queries = [
+        lastDoc
+          ? query(
+              usersCollectionRef,
+              where("username", ">=", searchTermLower),
+              where("username", "<=", searchTermEnd),
+              startAfter(lastDoc),
+              limit(10)
+            )
+          : query(
+              usersCollectionRef,
+              where("username", ">=", searchTermLower),
+              where("username", "<=", searchTermEnd),
+              limit(10)
+            ),
+        lastDoc
+          ? query(
+              usersCollectionRef,
+              where("email", ">=", searchTermLower),
+              where("email", "<=", searchTermEnd),
+              startAfter(lastDoc),
+              limit(10)
+            )
+          : query(
+              usersCollectionRef,
+              where("email", ">=", searchTermLower),
+              where("email", "<=", searchTermEnd),
+              limit(10)
+            ),
+        lastDoc
+          ? query(
+              usersCollectionRef,
+              where("mobile", ">=", searchTermLower),
+              where("mobile", "<=", searchTermEnd),
+              startAfter(lastDoc),
+              limit(10)
+            )
+          : query(
+              usersCollectionRef,
+              where("mobile", ">=", searchTermLower),
+              where("mobile", "<=", searchTermEnd),
+              limit(10)
+            ),
+      ];
+
+      const querySnapshots = await Promise.all(queries.map((q) => getDocs(q)));
+
+      const userMap = new Map<string, User>();
+      const allDocs: QueryDocumentSnapshot<DocumentData>[] = [];
+
+      querySnapshots.forEach((snapshot) => {
+        snapshot.forEach((doc) => {
+          const data = doc.data() as User;
+          const userId = data.userId || doc.id;
+
+          if (!userMap.has(userId)) {
+            userMap.set(userId, {
+              userId,
+              username: data.username || "N/A",
+              email: data.email || "N/A",
+              mobile: data.mobile || "N/A",
+              balance: typeof data.balance === "number" ? data.balance : 0,
+              payments: typeof data.payments === "number" ? data.payments : 0,
+            });
+            allDocs.push(doc);
+          }
+        });
+      });
+
+      const usersData = Array.from(userMap.values());
+
+      if (lastDoc) {
+        setUsers((prevUsers) => [...prevUsers, ...usersData]);
+      } else {
+        setUsers(usersData);
+      }
+
+      if (allDocs.length > 0) {
+        setLastVisible(allDocs[allDocs.length - 1]);
+      }
+
+      if (usersData.length < 10) {
+        setHasMore(false);
+      } else {
+        setHasMore(true);
+      }
+    } catch (error) {
+      console.error("Error searching users:", error);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
   const loadMoreUsers = async () => {
     if (!lastVisible || !hasMore) return;
 
     setLoadingMore(true);
-    try {
-      const usersCollectionRef = collection(db, "users");
-      const usersQuery = query(
-        usersCollectionRef,
-        startAfter(lastVisible),
-        limit(10)
-      );
-      const querySnapshot = await getDocs(usersQuery);
 
-      const newUsersData: User[] = [];
-      querySnapshot.forEach((doc) => {
-        const data = doc.data() as User;
-        newUsersData.push({
-          userId: data.userId || doc.id,
-          username: data.username || "N/A",
-          email: data.email || "N/A",
-          mobile: data.mobile || "N/A",
-          balance: typeof data.balance === "number" ? data.balance : 0,
-          payments: typeof data.payments === "number" ? data.payments : 0,
-        });
-      });
-
-      setUsers((prevUsers) => [...prevUsers, ...newUsersData]);
-
-      if (querySnapshot.docs.length > 0) {
-        setLastVisible(querySnapshot.docs[querySnapshot.docs.length - 1]);
-      }
-
-      if (querySnapshot.docs.length < 10) {
-        setHasMore(false);
-      }
-    } catch (error) {
-      console.error("Error loading more users:", error);
-    } finally {
+    if (searchTerm.length >= 3) {
+      await performSearch(searchTerm, lastVisible);
       setLoadingMore(false);
+    } else {
+      try {
+        const usersCollectionRef = collection(db, "users");
+        const usersQuery = query(
+          usersCollectionRef,
+          startAfter(lastVisible),
+          limit(10)
+        );
+        const querySnapshot = await getDocs(usersQuery);
+
+        const newUsersData: User[] = [];
+        querySnapshot.forEach((doc) => {
+          const data = doc.data() as User;
+          newUsersData.push({
+            userId: data.userId || doc.id,
+            username: data.username || "N/A",
+            email: data.email || "N/A",
+            mobile: data.mobile || "N/A",
+            balance: typeof data.balance === "number" ? data.balance : 0,
+            payments: typeof data.payments === "number" ? data.payments : 0,
+          });
+        });
+
+        setUsers((prevUsers) => [...prevUsers, ...newUsersData]);
+
+        if (querySnapshot.docs.length > 0) {
+          setLastVisible(querySnapshot.docs[querySnapshot.docs.length - 1]);
+        }
+
+        if (querySnapshot.docs.length < 10) {
+          setHasMore(false);
+        }
+      } catch (error) {
+        console.error("Error loading more users:", error);
+      } finally {
+        setLoadingMore(false);
+      }
     }
   };
-
-  const filteredUsers = users.filter((user) => {
-    const searchTermLower = searchTerm.toLowerCase();
-    return (
-      user.username.toLowerCase().includes(searchTermLower) ||
-      user.email.toLowerCase().includes(searchTermLower) ||
-      user.mobile.toLowerCase().includes(searchTermLower)
-    );
-  });
 
   return (
     <div className="w-full">
@@ -154,6 +325,11 @@ export default function UsersTable() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
+          {isSearching && (
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500"></div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -164,7 +340,7 @@ export default function UsersTable() {
       ) : (
         <>
           {isMobile ? (
-            <UsersTableMobile users={filteredUsers} />
+            <UsersTableMobile users={users} />
           ) : (
             <div className="overflow-x-auto bg-white rounded-lg shadow">
               <table className="min-w-full divide-y divide-gray-200">
@@ -198,8 +374,8 @@ export default function UsersTable() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredUsers.length > 0 ? (
-                    filteredUsers.map((user) => (
+                  {users.length > 0 ? (
+                    users.map((user) => (
                       <tr
                         key={user.userId}
                         className="hover:bg-gray-50 cursor-pointer"
@@ -255,7 +431,7 @@ export default function UsersTable() {
             </div>
           )}
 
-          {hasMore && !searchTerm && (
+          {hasMore && (
             <div className="mt-4 flex justify-center">
               <button
                 onClick={loadMoreUsers}
