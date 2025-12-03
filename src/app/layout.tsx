@@ -43,19 +43,32 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <html lang="en" className={`${roboto.variable} ${lato.variable}`}>
-      <body
-        className={`font-sans ${
-          process.env.NODE_ENV === "development" ? "debug-screens" : ""
-        }`}
-      >
-        <Providers>
-          {isOffline && <OfflineOverlay />}
-          <ClientLayoutWrapper>{children}</ClientLayoutWrapper>
-          <Analytics />
-        </Providers>
-      </body>
-    </html>
-  );
+  if (isOffline) {
+    return (
+      <html lang="en" className={`${roboto.variable} ${lato.variable}`}>
+        <body
+          className={`font-sans ${
+            process.env.NODE_ENV === "development" ? "debug-screens" : ""
+          }`}
+        >
+          <OfflineOverlay />
+        </body>
+      </html>
+    );
+  } else {
+    return (
+      <html lang="en" className={`${roboto.variable} ${lato.variable}`}>
+        <body
+          className={`font-sans ${
+            process.env.NODE_ENV === "development" ? "debug-screens" : ""
+          }`}
+        >
+          <Providers>
+            <ClientLayoutWrapper>{children}</ClientLayoutWrapper>
+            <Analytics />
+          </Providers>
+        </body>
+      </html>
+    );
+  }
 }
