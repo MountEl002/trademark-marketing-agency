@@ -15,7 +15,7 @@ export function ClientLayoutWrapper({
   const hideComponentsOn = ["/login", "/signup", "/forgot-password"];
   const isAdminPage = pathname?.startsWith("/admin");
   const shouldHideComponents = hideComponentsOn.includes(pathname);
-  const isOffline = true;
+  const isOffline = false;
 
   if (isAdminPage && !isOffline) {
     return (
