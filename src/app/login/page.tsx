@@ -11,6 +11,7 @@ import LightLogo from "@/components/common/LightLogo";
 import ContinueWithGoogle from "@/components/common/login/ContinueWithGoogle";
 
 const Login = () => {
+  console.log("Login: Component rendered");
   const router = useRouter();
   const { login } = useAuth();
   const [email, setEmail] = useState("");
@@ -21,13 +22,6 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [emialFieldActive, setEmailFieldActive] = useState(false);
   const [passwordFieldActive, setPasswordFieldActive] = useState(false);
-
-  console.log("[Login] Component rendered", {
-    email,
-    hasPassword: !!password,
-    loading,
-    error,
-  });
 
   const emialFieldBorder = `transition-all duration-500 border ${
     emialFieldActive
@@ -43,71 +37,50 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("[Login] handleSubmit called", {
-      email,
-      hasPassword: !!password,
-      stayLoggedIn,
-    });
-
+    console.log("Login: handleSubmit triggered");
     setError("");
     setLoading(true);
-    console.log("[Login] Loading state set to true");
-
     try {
-      console.log("[Login] Calling login function");
+      console.log("Login: Calling login function with email:", email);
       await login(email, password);
-      console.log("[Login] Login function completed successfully");
-
-      console.log("[Login] Attempting manual redirect to dashboard");
+      console.log(
+        "Login: Login function successful, redirecting to /customer/dashboards"
+      );
       router.push("/customer/dashboards");
-      console.log("[Login] Manual redirect called");
-
       console.log("Login attempted with:", { email, stayLoggedIn });
     } catch (error) {
-      console.error("[Login] Error during login:", error);
-
+      console.error("Login: An error occurred during login:", error);
       if (error instanceof FirebaseError) {
-        console.log("[Login] Firebase error detected", {
-          code: error.code,
-          message: error.message,
-        });
-
+        console.log("Login: FirebaseError code:", error.code);
+        console.log("Login: FirebaseError message:", error.message);
         setError(error.message);
         switch (error.message) {
           case "auth/user-not-found":
           case "auth/wrong-password":
-            console.log("[Login] Invalid credentials");
             setError("Invalid email or password");
             break;
           case "auth/invalid-email":
-            console.log("[Login] Invalid email format");
             setError("Invalid email address");
             break;
           case "auth/too-many-requests":
-            console.log("[Login] Too many requests");
             setError("Too many failed attempts. Please try again later");
             break;
           case "Firebase: Error (auth/invalid-credential).":
-            console.log("[Login] Invalid credential");
             setError("Wrong email or password.");
             break;
           default:
-            console.log("[Login] Unhandled Firebase error", error.message);
         }
         setTimeout(() => {
-          console.log("[Login] Clearing error after timeout");
           setError("");
         }, 5000);
       } else {
-        console.error("[Login] Non-Firebase error:", error);
         setError("Failed to log in! Please try again");
         setTimeout(() => {
-          console.log("[Login] Clearing error after timeout");
           setError("");
         }, 5000);
       }
     } finally {
-      console.log("[Login] Setting loading to false");
+      console.log("Login: Setting loading to false");
       setLoading(false);
     }
   };
@@ -117,7 +90,7 @@ const Login = () => {
       <div className="centered-content-on-screen">
         <LightLogo />
         <div className="w-full px-4">
-          <h3 className="text-center">Let's get started</h3>
+          <h3 className="text-center">Let’s get started</h3>
           <p className="text-center mb-6">
             Sign in to continue to Trademark Marketing
           </p>
@@ -145,17 +118,12 @@ const Login = () => {
                   type="email"
                   value={email}
                   onFocus={() => {
-                    console.log("[Login] Email field focused");
                     setEmailFieldActive(true);
                   }}
                   onBlur={() => {
-                    console.log("[Login] Email field blurred");
                     setEmailFieldActive(false);
                   }}
-                  onChange={(e) => {
-                    console.log("[Login] Email changed:", e.target.value);
-                    setEmail(e.target.value);
-                  }}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email"
                   className="input-email-password"
                 />
@@ -172,30 +140,19 @@ const Login = () => {
                   id="password"
                   type={showPassword ? "text" : "password"}
                   onFocus={() => {
-                    console.log("[Login] Password field focused");
                     setPasswordFieldActive(true);
                   }}
                   onBlur={() => {
-                    console.log("[Login] Password field blurred");
                     setPasswordFieldActive(false);
                   }}
                   value={password}
-                  onChange={(e) => {
-                    console.log(
-                      "[Login] Password changed, length:",
-                      e.target.value.length
-                    );
-                    setPassword(e.target.value);
-                  }}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
                   className="input-email-password"
                 />
                 <button
                   type="button"
-                  onClick={() => {
-                    console.log("[Login] Toggle password visibility");
-                    setShowPassword(!showPassword);
-                  }}
+                  onClick={() => setShowPassword(!showPassword)}
                   data-tooltip-id="password-tooltip"
                   data-tooltip-content="Click to show or hide password"
                   className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600 focus:outline-none"
@@ -215,13 +172,7 @@ const Login = () => {
                   id="rememberMe"
                   type="checkbox"
                   checked={stayLoggedIn}
-                  onChange={(e) => {
-                    console.log(
-                      "[Login] Stay logged in changed:",
-                      e.target.checked
-                    );
-                    setStayLoggedIn(e.target.checked);
-                  }}
+                  onChange={(e) => setStayLoggedIn(e.target.checked)}
                   className="w-4 h-4 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
                 />
                 <span className="text-base text-gray-600">Stay logged in</span>
@@ -230,9 +181,6 @@ const Login = () => {
               <Link
                 href="/forgot-password"
                 className="text-base font-semibold text-blue-500 hover:text-blue-700 transition-colors"
-                onClick={() =>
-                  console.log("[Login] Forgot password link clicked")
-                }
               >
                 Forgot password?
               </Link>
@@ -244,7 +192,6 @@ const Login = () => {
                 className={`button-blue w-full ${
                   loading ? "cursor-not-allowed" : ""
                 }`}
-                onClick={() => console.log("[Login] Submit button clicked")}
               >
                 {loading ? (
                   <div className="animate-spin h-5 w-5 border-4 text-gray-100 rounded-[50%] border-t-transparent mx-auto" />
@@ -260,7 +207,6 @@ const Login = () => {
               <Link
                 href="/signup"
                 className="font-semibold text-blue-500 hover:text-blue-700 transition-colors"
-                onClick={() => console.log("[Login] Sign up link clicked")}
               >
                 Sign up
               </Link>

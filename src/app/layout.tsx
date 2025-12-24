@@ -43,14 +43,9 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  console.log("[RootLayout] Component rendered", {
-    isOffline,
-    environment: process.env.NODE_ENV,
-    hasChildren: !!children,
-  });
-
+  console.log("RootLayout: Rendering RootLayout component");
   if (isOffline) {
-    console.log("[RootLayout] Offline mode detected, rendering OfflineOverlay");
+    console.log("RootLayout: Rendering in offline mode");
     return (
       <html lang="en" className={`${roboto.variable} ${lato.variable}`}>
         <body
@@ -63,9 +58,7 @@ export default function RootLayout({
       </html>
     );
   } else {
-    console.log(
-      "[RootLayout] Online mode, rendering main layout with Providers and ClientLayoutWrapper"
-    );
+    console.log("RootLayout: Rendering in online mode");
     return (
       <html lang="en" className={`${roboto.variable} ${lato.variable}`}>
         <body

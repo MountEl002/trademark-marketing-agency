@@ -28,6 +28,7 @@ import { FIREBASE_COLLECTIONS } from "@/lib/constants";
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  console.log("AuthProvider: Initializing");
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [userData, setUserData] = useState<UserDoc | null>({
@@ -46,54 +47,45 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
   const pathname = usePathname();
+  console.log("AuthProvider: Current pathname:", pathname);
 
-  // Routes that should handle their own redirections
   const routesWithCustomRedirection = [
     "/signup",
     "/customer/profile-completion",
   ];
 
-  console.log("[AuthContext] Component rendered with pathname:", pathname);
-
-  // Consolidated effect for auth state and real-time user data
   useEffect(() => {
-    console.log("[AuthContext] useEffect initialized");
+    console.log("AuthProvider: useEffect for auth state change triggered");
     let unsubscribeFromUserDoc: (() => void) | undefined;
     const unsubscribeFromAuth = onAuthStateChanged(auth, async (authUser) => {
-      console.log("[AuthContext] onAuthStateChanged triggered", {
-        hasAuthUser: !!authUser,
-        userId: authUser?.uid,
-        email: authUser?.email,
-      });
-
-      // Clean up previous user's snapshot listener if it exists
+      console.log("AuthProvider: onAuthStateChanged callback fired");
       if (unsubscribeFromUserDoc) {
-        console.log("[AuthContext] Cleaning up previous user doc listener");
+        console.log(
+          "AuthProvider: Unsubscribing from previous user doc listener"
+        );
         unsubscribeFromUserDoc();
       }
 
       if (authUser) {
-        console.log("[AuthContext] User is authenticated, setting user state");
+        console.log("AuthProvider: User is authenticated:", authUser);
         setUser(authUser);
 
-        // Set up real-time listener for the user document
         const userDocRef = doc(db, FIREBASE_COLLECTIONS.USERS, authUser.uid);
         console.log(
-          "[AuthContext] Setting up snapshot listener for user doc:",
-          authUser.uid
+          "AuthProvider: Setting up real-time listener for user document:",
+          userDocRef.path
         );
-
         unsubscribeFromUserDoc = onSnapshot(
           userDocRef,
           (docSnapshot) => {
-            console.log("[AuthContext] User doc snapshot received", {
-              exists: docSnapshot.exists(),
-              data: docSnapshot.exists() ? docSnapshot.data() : null,
-            });
-
             if (docSnapshot.exists()) {
+              console.log(
+                "AuthProvider: User document snapshot received:",
+                docSnapshot.data()
+              );
               setUserData(docSnapshot.data() as UserDoc);
             } else {
+              console.log("AuthProvider: User document does not exist.");
               setUserData(null);
               setErrorFetchingUserData(
                 "Error fetching user data: User document does not exist."
@@ -101,39 +93,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             }
           },
           (error) => {
-            console.error("[AuthContext] Error in user doc snapshot:", error);
+            console.error("AuthProvider: Error fetching user document:", error);
             setErrorFetchingUserData(`Error fetching user document: ${error}`);
             setUserData(null);
           }
         );
 
-        // Check for admin claims
         try {
-          console.log("[AuthContext] Checking admin claims");
+          console.log("AuthProvider: Getting ID token result for admin check");
           const idTokenResult = await getIdTokenResult(authUser, true);
-          console.log("[AuthContext] ID token result:", {
-            isAdmin: idTokenResult.claims.admin === true,
-            claims: idTokenResult.claims,
-          });
+          console.log(
+            "AuthProvider: ID token result claims:",
+            idTokenResult.claims
+          );
           setIsAdmin(idTokenResult.claims.admin === true);
         } catch (error) {
-          console.error("[AuthContext] Error getting ID token result:", error);
+          console.error("AuthProvider: Error getting ID token result:", error);
           setIsAdmin(false);
         }
       } else {
-        // No user is signed in
-        console.log("[AuthContext] No user signed in, clearing state");
+        console.log("AuthProvider: No user is signed in.");
         setUser(null);
         setUserData(null);
         setIsAdmin(false);
       }
-
-      console.log("[AuthContext] Setting loading to false");
+      console.log("AuthProvider: Setting loading to false");
       setLoading(false);
     });
 
     return () => {
-      console.log("[AuthContext] Cleanup function called");
+      console.log("AuthProvider: Cleaning up auth and user doc subscriptions");
       unsubscribeFromAuth();
       if (unsubscribeFromUserDoc) {
         unsubscribeFromUserDoc();
@@ -142,32 +131,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [user]);
 
   const signInWithGoogle = async () => {
-    console.log("[AuthContext] signInWithGoogle called");
+    console.log("signInWithGoogle: Attempting to sign in with Google");
     try {
       const provider = new GoogleAuthProvider();
-      console.log("[AuthContext] Opening Google sign-in popup");
-
       const userCredential: UserCredential = await signInWithPopup(
         auth,
         provider
       );
       const authUser = userCredential.user;
-      console.log("[AuthContext] Google sign-in successful", {
-        userId: authUser.uid,
-        email: authUser.email,
-      });
+      console.log(
+        "signInWithGoogle: Successfully signed in with Google:",
+        authUser
+      );
 
-      console.log("[AuthContext] Fetching user document");
-      const userDoc = await getDoc(doc(db, "users", authUser.uid));
-      console.log("[AuthContext] User doc exists:", userDoc.exists());
+      const userDocRef = doc(db, "users", authUser.uid);
+      console.log(
+        "signInWithGoogle: Checking for user document at:",
+        userDocRef.path
+      );
+      const userDoc = await getDoc(userDocRef);
+
+      console.log("signInWithGoogle: Current pathname:", pathname);
+      console.log(
+        "signInWithGoogle: Is current path in routesWithCustomRedirection?",
+        routesWithCustomRedirection.includes(pathname)
+      );
 
       if (!routesWithCustomRedirection.includes(pathname)) {
-        console.log(
-          "[AuthContext] Current pathname not in custom redirection list"
-        );
-
         if (!userDoc.exists()) {
-          console.log("[AuthContext] New user, initializing documents");
+          console.log(
+            "signInWithGoogle: New user. Initializing documents and redirecting to profile completion."
+          );
           await initializeUserDocuments(
             authUser.uid,
             authUser.email,
@@ -175,22 +169,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             null,
             null
           );
-          console.log("[AuthContext] Redirecting to profile completion");
           router.push("/customer/profile-completion");
         } else {
-          // Existing user
-          console.log("[AuthContext] Existing user, redirecting to dashboard");
+          console.log(
+            "signInWithGoogle: Existing user. Redirecting to dashboard."
+          );
           router.push("/customer/dashboards");
         }
       } else {
         console.log(
-          "[AuthContext] Current pathname in custom redirection list, skipping redirect"
+          "signInWithGoogle: On a route with custom redirection. Initializing documents if they don't exist, but not redirecting."
         );
-        // Initialize user documents if they don't exist, but don't redirect
         if (!userDoc.exists()) {
-          console.log(
-            "[AuthContext] Initializing user documents without redirect"
-          );
           await initializeUserDocuments(
             authUser.uid,
             authUser.email,
@@ -201,7 +191,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       }
     } catch (error) {
-      console.error("[AuthContext] Error signing in with Google:", error);
+      console.error("signInWithGoogle: Error signing in with Google:", error);
       throw error;
     }
   };
@@ -215,22 +205,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     referralCode: string | null,
     isCodeValid: boolean | null
   ) => {
-    console.log("[AuthContext] signup called", {
-      email,
-      mobile,
-      usernameInput,
-      country,
-    });
-
+    console.log("signup: Attempting to sign up with email:", email);
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       email,
       password
     );
     const authUser = userCredential.user;
-    console.log("[AuthContext] User created:", authUser.uid);
+    console.log("signup: User created successfully:", authUser);
 
-    console.log("[AuthContext] Initializing user documents");
+    console.log("signup: Initializing user documents");
     await initializeUserDocuments(
       authUser.uid,
       authUser.email,
@@ -239,7 +223,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       country
     );
 
-    console.log("[AuthContext] Processing referral");
+    console.log("signup: Processing referral");
     await processReferral(
       authUser.uid,
       usernameInput,
@@ -247,68 +231,54 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       isCodeValid
     );
 
-    // Only redirect if not on a route with custom redirection logic
     if (!routesWithCustomRedirection.includes(pathname)) {
-      console.log("[AuthContext] Redirecting to dashboard after signup");
+      console.log("signup: Redirecting to dashboard");
       router.push("/customer/dashboards");
     } else {
       console.log(
-        "[AuthContext] Skipping redirect after signup (custom redirection route)"
+        "signup: On a route with custom redirection, not redirecting."
       );
     }
   };
 
   const login = async (email: string, password: string) => {
-    console.log("[AuthContext] login called", { email });
-
+    console.log("login: Attempting to log in with email:", email);
     const userCredential = await signInWithEmailAndPassword(
       auth,
       email,
       password
     );
     const authUser = userCredential.user;
-    console.log("[AuthContext] User signed in:", authUser.uid);
+    console.log("login: User logged in successfully:", authUser);
 
-    console.log("[AuthContext] Fetching user document for login");
-    const userDoc = await getDoc(doc(db, "users", authUser.uid));
-    console.log("[AuthContext] User doc exists:", userDoc.exists());
-    console.log(
-      "[AuthContext] User doc data:",
-      userDoc.exists() ? userDoc.data() : null
-    );
-
+    const userDocRef = doc(db, "users", authUser.uid);
+    console.log("login: Checking for user document at:", userDocRef.path);
+    const userDoc = await getDoc(userDocRef);
     if (userDoc.exists() && userDoc.data()?.username) {
-      console.log("[AuthContext] User has username, redirecting to dashboard");
+      console.log(
+        "login: User document exists and has a username. Redirecting to dashboard."
+      );
       router.push("/customer/dashboards");
     } else {
       console.log(
-        "[AuthContext] User missing username, redirecting to profile completion"
+        "login: User document does not exist or has no username. Redirecting to profile completion."
       );
       router.push("/customer/profile-completion");
     }
   };
 
   const logout = async () => {
-    console.log("[AuthContext] logout called");
+    console.log("logout: Attempting to log out");
     await signOut(auth);
     setIsAdmin(false);
-    console.log("[AuthContext] Redirecting to login");
+    console.log("logout: User signed out. Redirecting to login page.");
     router.push("/login");
   };
 
   const resetPassword = async (email: string) => {
-    console.log("[AuthContext] resetPassword called", { email });
+    console.log("resetPassword: Sending password reset email to:", email);
     return await sendPasswordResetEmail(auth, email);
   };
-
-  console.log("[AuthContext] Rendering provider with state:", {
-    hasUser: !!user,
-    hasUserData: !!userData,
-    username: userData?.username,
-    isAdmin,
-    loading,
-    errorFetchingUserData,
-  });
 
   return (
     <AuthContext.Provider
