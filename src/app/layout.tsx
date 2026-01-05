@@ -6,7 +6,7 @@ import { ClientLayoutWrapper } from "@/components/layout/ClientLayoutWrapper";
 import { Providers } from "./providers";
 import OfflineOverlay from "@/components/layout/OfflineOverlay";
 
-const isOffline = true;
+const isOffline = false;
 
 const roboto = Roboto({
   subsets: ["latin"],
