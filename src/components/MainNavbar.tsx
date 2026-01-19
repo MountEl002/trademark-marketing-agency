@@ -77,19 +77,25 @@ const mainNavbarItems: MainNavbarItem[] = [
   },
 ];
 
-const MainNavbar = ({ isOpen, onClose }: MainNavbarProps) => {
+export default function MainNavbar({ isOpen, onClose }: MainNavbarProps) {
   const pathname = usePathname();
   const { username } = useAuth();
 
   return (
+// 1. Add click handler to the outer div
     <div
       className={
         isOpen
           ? "fixed top-0 left-0 right-0 bottom-0 z-[60] bg-black/50"
           : "hidden"
       }
+      onClick={onClose}
     >
-      <div className="relative bg-white w-fit pl-6 pr-28 h-[100vh] pb-6">
+      {/* 2. Stop propagation on the inner content div so clicking it doesn't close the navbar */}
+      <div 
+        className="relative bg-white w-fit pl-6 pr-28 h-[100vh] pb-6"
+        onClick={(e) => e.stopPropagation()}
+      >
         <IoMdClose
           size={25}
           className="absolute top-3 right-3 cursor-pointer hover:scale-110 transition-all duration-500"
@@ -101,6 +107,7 @@ const MainNavbar = ({ isOpen, onClose }: MainNavbarProps) => {
               <Link
                 key={item.name}
                 href={item.linkTo}
+                onClick={onClose} // 3. Close navbar when a link is clicked
                 className={`relative group horizontal-start w-full gap-2 cursor-pointer transition-all duration-500 px-2 py-3
                 } ${
                   pathname === item.linkTo
@@ -132,6 +139,4 @@ const MainNavbar = ({ isOpen, onClose }: MainNavbarProps) => {
     </div>
   );
 };
-
-export default MainNavbar;
 //

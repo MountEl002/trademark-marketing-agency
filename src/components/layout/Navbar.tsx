@@ -5,7 +5,7 @@ import MainNavbar from "../MainNavbar";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 
-const Navbar = () => {
+export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { isAdmin } = useAuth();
   const toggleNavbar = () => {
@@ -57,5 +57,3 @@ const Navbar = () => {
     </>
   );
 };
-
-export default Navbar;
