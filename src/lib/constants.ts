@@ -15,6 +15,8 @@ export const FIREBASE_COLLECTIONS = {
   REGISTERED_USERS_CHATS: "registeredUsersChats",
   UNREGISTERED_USERS_CHATS: "unregisteredUsersChats",
   CHAT_MESSAGES: "messages",
+  USER_ROLES: "userRoles",
+  SUPER_ADMIN_OPERATIONS: "superAdminOperations",
 } as const;
 
 export type FirestoreCollection =
