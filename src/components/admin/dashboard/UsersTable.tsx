@@ -169,53 +169,86 @@ export default function UsersTable() {
     setIsSearching(true);
     try {
       const usersCollectionRef = collection(db, "users");
-      const searchTermLower = term.toLowerCase();
-      const searchTermEnd = searchTermLower + "\uf8ff";
+      
+      // Generate search term variations
+      const variations = new Set<string>();
+      variations.add(term); // Exact match
+      variations.add(term.toLowerCase()); // Lowercase
+      variations.add(term.charAt(0).toUpperCase() + term.slice(1).toLowerCase()); // Capitalized (e.g. "saint" -> "Saint")
 
-      const queries = [
-        lastDoc
-          ? query(
+      const searchTerms = Array.from(variations);
+      const queries:any[] = [];
+
+      // Create queries for each variation for username
+      searchTerms.forEach((searchTerm) => {
+        const searchTermEnd = searchTerm + "\uf8ff";
+        
+        if (lastDoc) {
+             queries.push(query(
               usersCollectionRef,
-              where("username", ">=", searchTermLower),
+              where("username", ">=", searchTerm),
               where("username", "<=", searchTermEnd),
               startAfter(lastDoc),
               limit(10)
-            )
-          : query(
+            ));
+        } else {
+            queries.push(query(
               usersCollectionRef,
-              where("username", ">=", searchTermLower),
+              where("username", ">=", searchTerm),
               where("username", "<=", searchTermEnd),
               limit(10)
-            ),
+            ));
+        }
+      });
+
+      // Add email and mobile searches (using lowercase as distinct from above if needed, 
+      // but usually email/mobile are stored consistent or we just try lowercase for these)
+      // The original code only searched lowercase for email/mobile. Let's keep that but maybe also exact?
+      // For safety, let's just stick to the original behavior for email/mobile (lowercase) + exact 
+      // if it differs, but to keep it simple and match the request "search for fields that matches...", 
+      // I will apply the variations to these fields too or just specific ones?
+      // The user specifically pointed out "Saint" (username) was missing.
+      // Let's stick to adding the variations primarily.
+      
+      // Original email/mobile logic used lowercase.
+      const searchTermLower = term.toLowerCase();
+      const searchTermLowerEnd = searchTermLower + "\uf8ff";
+
+      // Add Email query (standard lowercase search as per previous logic, but maybe we should add exact too?)
+      // Let's just keep the original email/mobile queries in addition to the username variations
+      queries.push(
         lastDoc
           ? query(
               usersCollectionRef,
               where("email", ">=", searchTermLower),
-              where("email", "<=", searchTermEnd),
+              where("email", "<=", searchTermLowerEnd),
               startAfter(lastDoc),
               limit(10)
             )
           : query(
               usersCollectionRef,
               where("email", ">=", searchTermLower),
-              where("email", "<=", searchTermEnd),
+              where("email", "<=", searchTermLowerEnd),
               limit(10)
-            ),
+            )
+      );
+
+      queries.push(
         lastDoc
           ? query(
               usersCollectionRef,
               where("mobile", ">=", searchTermLower),
-              where("mobile", "<=", searchTermEnd),
+              where("mobile", "<=", searchTermLowerEnd),
               startAfter(lastDoc),
               limit(10)
             )
           : query(
               usersCollectionRef,
               where("mobile", ">=", searchTermLower),
-              where("mobile", "<=", searchTermEnd),
+              where("mobile", "<=", searchTermLowerEnd),
               limit(10)
-            ),
-      ];
+            )
+      );
 
       const querySnapshots = await Promise.all(queries.map((q) => getDocs(q)));
 
