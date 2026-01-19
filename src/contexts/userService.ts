@@ -12,6 +12,7 @@ import {
   increment,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { PACKAGE_PRICES } from "@/lib/constants";
 
 export async function verifyUsername(username: string): Promise<boolean> {
   if (!username || username.trim() === "") {
@@ -269,12 +270,12 @@ export async function getUserSpecialPackageNames(
 
 // Package values
 const PACKAGE_VALUES: { [key: string]: number } = {
-  "Premium Code": 600,
+  "Premium Code": PACKAGE_PRICES.PREMIUM_CODE,
   Bronze: 850,
-  Gold: 3000,
-  Silver: 1750,
-  "Early Payment": 450,
-  Basic: 350,
+  Gold: PACKAGE_PRICES.GOLD_PACKAGE,
+  Silver: PACKAGE_PRICES.SILVER_PACKAGE,
+  "Early Payment": PACKAGE_PRICES.EARLY_PAYMENT,
+  Basic: PACKAGE_PRICES.BASIC_PACKAGE,
 };
 
 export async function getUserPackageValue(userId: string): Promise<number> {

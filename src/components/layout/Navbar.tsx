@@ -34,7 +34,7 @@ const Navbar = () => {
               href={"/admin"}
               className={
                 isAdmin
-                  ? "flex items-center justify-center animate-bounce bg-blue-500 hover:bg-blue-600 rounded-lg px-4 py-2 text-white font-semibold transition-all duration-500"
+                  ? "flex items-center justify-center bg-blue-500 hover:bg-blue-600 rounded-lg px-4 py-2 text-white font-semibold transition-all duration-500"
                   : "hidden"
               }
             >

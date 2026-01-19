@@ -14,6 +14,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import PaymentDialog from "@/components/customer/PaymentDialog";
 import TransactionVerification from "@/components/customer/TransactionVerification";
 import { getUserBalance } from "@/contexts/userService";
+import { PACKAGE_PRICES } from "@/lib/constants";
 import { IoCheckmarkDoneSharp } from "react-icons/io5";
 import { IoMdClose } from "react-icons/io";
 
@@ -28,7 +29,7 @@ const pricingPlansData: PricingPlan[] = [
   {
     id: "Early Payment",
     title: "Early Payment",
-    price: 550,
+    price: PACKAGE_PRICES.EARLY_PAYMENT,
     bgColor: "bg-gradient-to-r from-slate-400 via-gray-400 to-slate-500",
   },
 ];

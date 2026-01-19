@@ -16,6 +16,7 @@ import PaymentDialog from "@/components/customer/PaymentDialog";
 import TransactionVerification from "@/components/customer/TransactionVerification";
 import { addPackageToReferral } from "@/utils/referrals";
 import { getUserBalance } from "@/contexts/userService";
+import { PACKAGE_PRICES } from "@/lib/constants";
 import { IoCheckmarkDoneSharp } from "react-icons/io5";
 import { IoMdClose } from "react-icons/io";
 
@@ -31,23 +32,23 @@ const pricingPlansData: PricingPlan[] = [
   {
     id: "Basic",
     title: "Basic",
-    price: 350,
+    price: PACKAGE_PRICES.BASIC_PACKAGE,
     features: [
       "Advertise With us",
       "Cashback",
-      "Cashback Ksh 700",
-      "Whatsapp Earning (ksh 15 per view)",
+      "Cashback Ksh 1000",
+      "Whatsapp Earning (ksh 25 per view)",
     ],
     bgColor: "bg-gradient-to-r from-orange-400 via-amber-600 to-orange-700",
   },
   {
     id: "Silver",
     title: "Silver",
-    price: 1350,
+    price: PACKAGE_PRICES.SILVER_PACKAGE,
     features: [
       "Advertise With us",
       "Cashback",
-      "Cashback Ksh 2,700",
+      "Cashback Ksh 3200",
       "Whatsapp Earning (ksh 50 per view)",
     ],
     bgColor: "bg-gradient-to-r from-slate-300 via-gray-400 to-slate-500",
@@ -55,7 +56,7 @@ const pricingPlansData: PricingPlan[] = [
   {
     id: "Gold",
     title: "Gold",
-    price: 3000,
+    price: PACKAGE_PRICES.GOLD_PACKAGE,
     features: [
       "Advertise With us",
       "Cashback",
@@ -355,7 +356,7 @@ const PricingCard: React.FC<{ plan: PricingPlan }> = ({ plan }) => {
   );
 };
 
-const PricingSectionPage: React.FC = () => {
+export default function PricingSectionPage() {
   return (
     <div className="min-h-screen mx-auto bg-slate-100 flex items-center justify-center p-4 sm:p-8 ">
       <div className="container max-w-6xl mx-auto">
@@ -369,4 +370,3 @@ const PricingSectionPage: React.FC = () => {
   );
 };
 
-export default PricingSectionPage;

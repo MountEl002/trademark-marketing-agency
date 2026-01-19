@@ -24,10 +24,10 @@ const WhatsappStatusUpload: React.FC = () => {
 
   // Package rates
   const PACKAGE_RATES: { [key: string]: number } = {
-    Basic: 15,
-    Bronze: 25,
-    Silver: 50,
-    Gold: 100,
+    Basic: 25,
+    Bronze: 50,
+    Silver: 100,
+    Gold: 200,
     "Early Payment": 40,
     "Premium Code": 50,
   };

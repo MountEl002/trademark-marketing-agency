@@ -14,6 +14,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import PaymentDialog from "@/components/customer/PaymentDialog";
 import TransactionVerification from "@/components/customer/TransactionVerification";
 import { getUserBalance } from "@/contexts/userService";
+import { PACKAGE_PRICES } from "@/lib/constants";
 import { IoCheckmarkDoneSharp } from "react-icons/io5";
 import { IoMdClose } from "react-icons/io";
 
@@ -28,7 +29,7 @@ const pricingPlansData: PricingPlan[] = [
   {
     id: "Premium Code",
     title: "Premium Code",
-    price: 800,
+    price: PACKAGE_PRICES.PREMIUM_CODE,
     bgColor: "bg-gradient-to-r from-yellow-300 via-amber-500 to-yellow-600",
   },
 ];
@@ -299,7 +300,7 @@ const PricingCard: React.FC<{ plan: PricingPlan }> = ({ plan }) => {
   );
 };
 
-const PricingSectionPage: React.FC = () => {
+export default function PricingSectionPage() {
   return (
     <div className="mx-auto flex items-center justify-center p-4 sm:p-8 ">
       <div className="container max-w-6xl mx-auto">
@@ -312,5 +313,3 @@ const PricingSectionPage: React.FC = () => {
     </div>
   );
 };
-
-export default PricingSectionPage;
