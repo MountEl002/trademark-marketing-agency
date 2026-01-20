@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/AuthContext"; // Use client-auth context
 import { db } from "@/lib/firebase";
 import { doc, onSnapshot } from "firebase/firestore";
 import { FIREBASE_COLLECTIONS } from "@/lib/constants";
+import DevelopersCut from "@/components/admin/super-admin/DevelopersCut";
 
 export default function SuperAdminPage() {
   const { user } = useAuth(); // We need the user to get the ID token
@@ -61,6 +62,8 @@ export default function SuperAdminPage() {
       <h1 className="text-3xl font-bold mb-8 text-gray-800">
         Super Admin Controls
       </h1>
+
+      <DevelopersCut />
 
       <div className="bg-white p-6 rounded-lg shadow-md mb-6">
         <h2 className="text-xl font-semibold mb-4 text-gray-700">
