@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { doc, writeBatch } from "firebase/firestore";
+import { doc, writeBatch, collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { FiTrash2 } from "react-icons/fi";
 import LoadingAnimantion from "../common/LoadingAnimantion";
 import { useRouter } from "next/navigation";
+import { updateAnalytics } from "@/lib/analytics";
 
 interface DeleteUserAccountProps {
   userId: string;
@@ -24,6 +25,42 @@ export default function DeleteUserAccount({
     setIsDeleting(true);
 
     try {
+      // 1. Calculate Analytics Decrements
+      const analyticsUpdate: any = { totalUsers: -1 };
+
+      // Fetch standard packages
+      const packagesRef = collection(db, "users", userId, "packages");
+      const extraPackagesRef = collection(db, "users", userId, "extraPackages");
+
+      const [packagesSnap, extraPackagesSnap] = await Promise.all([
+        getDocs(packagesRef),
+        getDocs(extraPackagesRef),
+      ]);
+
+      const packageNames = new Set<string>();
+
+      packagesSnap.forEach((doc) => {
+        const data = doc.data();
+        if (data.packageName) packageNames.add(data.packageName);
+      });
+
+      extraPackagesSnap.forEach((doc) => {
+        const data = doc.data();
+        if (data.packageName) packageNames.add(data.packageName);
+      });
+
+      if (packageNames.has("Basic")) analyticsUpdate.usersWithBasicPackage = -1;
+      if (packageNames.has("Silver"))
+        analyticsUpdate.usersWithSilverPackage = -1;
+      if (packageNames.has("Gold")) analyticsUpdate.usersWithGoldPackage = -1;
+      if (packageNames.has("Early Payment"))
+        analyticsUpdate.usersWithEarlyPayment = -1;
+      if (packageNames.has("Premium Code"))
+        analyticsUpdate.usersWithPremiumCode = -1;
+
+      // Update analytics
+      await updateAnalytics(analyticsUpdate);
+
       const batch = writeBatch(db);
 
       // Delete from referrals collection
@@ -46,7 +83,7 @@ export default function DeleteUserAccount({
       await batch.commit();
 
       window.alert(
-        `Successfully deleted ${username}'s account and all associated data.`
+        `Successfully deleted ${username}'s account and all associated data.`,
       );
       setShowDialog(false);
       setTimeout(() => {

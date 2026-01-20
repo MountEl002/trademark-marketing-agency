@@ -17,6 +17,7 @@ import { getUserBalance } from "@/contexts/userService";
 import { PACKAGE_PRICES } from "@/lib/constants";
 import { IoCheckmarkDoneSharp } from "react-icons/io5";
 import { IoMdClose } from "react-icons/io";
+import { updateAnalytics } from "@/lib/analytics";
 
 interface PricingPlan {
   id: string;
@@ -66,7 +67,7 @@ const PricingCard: React.FC<{ plan: PricingPlan }> = ({ plan }) => {
         const userDocRef = doc(db, "users", user.uid);
         const transactionsCollectionRef = collection(
           userDocRef,
-          "transactions"
+          "transactions",
         );
 
         const calculatedTransactionId = Date.now().toString();
@@ -121,6 +122,11 @@ const PricingCard: React.FC<{ plan: PricingPlan }> = ({ plan }) => {
         type: "Package Purchase",
         description: `Purchase of ${plan.title} Package`,
         status: "completed",
+      });
+
+      // 4. Update Analytics
+      await updateAnalytics({
+        usersWithPremiumCode: 1,
       });
 
       // 4. Close dialog and redirect to dashboard
@@ -312,4 +318,4 @@ export default function PricingSectionPage() {
       </div>
     </div>
   );
-};
+}

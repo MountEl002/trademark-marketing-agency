@@ -12,6 +12,7 @@ import {
 import { db } from "@/lib/firebase";
 import { FiTrash2 } from "react-icons/fi";
 import { Timestamp } from "firebase-admin/firestore";
+import { updateAnalytics } from "@/lib/analytics";
 
 interface ExtraPackage {
   id: string;
@@ -63,7 +64,7 @@ export default function ExtraPackagesManager({
           db,
           "users",
           userId,
-          "extraPackages"
+          "extraPackages",
         );
         const snapshot = await getDocs(extraPackagesRef);
         const extraPackagesData: ExtraPackage[] = [];
@@ -106,7 +107,7 @@ export default function ExtraPackagesManager({
     try {
       // Delete extra package document
       await deleteDoc(
-        doc(db, "users", userId, "extraPackages", confirmDialog.packageId)
+        doc(db, "users", userId, "extraPackages", confirmDialog.packageId),
       );
 
       // Update user balance
@@ -114,9 +115,18 @@ export default function ExtraPackagesManager({
         balance: increment(confirmDialog.packagePrice),
       });
 
+      // Update Analytics
+      const analyticsUpdate: any = {};
+      const pkgName = confirmDialog.packageName;
+      if (pkgName === "Early Payment")
+        analyticsUpdate.usersWithEarlyPayment = -1;
+      if (pkgName === "Premium Code") analyticsUpdate.usersWithPremiumCode = -1;
+
+      await updateAnalytics(analyticsUpdate);
+
       // Update local state
       setExtraPackages(
-        extraPackages.filter((pkg) => pkg.id !== confirmDialog.packageId)
+        extraPackages.filter((pkg) => pkg.id !== confirmDialog.packageId),
       );
 
       setAlertDialog({

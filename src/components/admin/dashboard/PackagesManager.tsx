@@ -12,6 +12,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { FiTrash2 } from "react-icons/fi";
+import { updateAnalytics } from "@/lib/analytics";
 
 interface Package {
   id: string;
@@ -100,13 +101,22 @@ export default function PackagesManager({ userId }: PackagesManagerProps) {
     try {
       // Delete package document
       await deleteDoc(
-        doc(db, "users", userId, "packages", confirmDialog.packageId)
+        doc(db, "users", userId, "packages", confirmDialog.packageId),
       );
 
       // Update user balance
       await updateDoc(doc(db, "users", userId), {
         balance: increment(confirmDialog.packagePrice),
       });
+
+      // Update Analytics
+      const analyticsUpdate: any = {};
+      const pkgName = confirmDialog.packageName;
+      if (pkgName === "Basic") analyticsUpdate.usersWithBasicPackage = -1;
+      if (pkgName === "Silver") analyticsUpdate.usersWithSilverPackage = -1;
+      if (pkgName === "Gold") analyticsUpdate.usersWithGoldPackage = -1;
+
+      await updateAnalytics(analyticsUpdate);
 
       // Update local state
       setPackages(packages.filter((pkg) => pkg.id !== confirmDialog.packageId));

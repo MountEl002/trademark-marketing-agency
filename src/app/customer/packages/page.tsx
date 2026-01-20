@@ -19,6 +19,7 @@ import { getUserBalance } from "@/contexts/userService";
 import { PACKAGE_PRICES } from "@/lib/constants";
 import { IoCheckmarkDoneSharp } from "react-icons/io5";
 import { IoMdClose } from "react-icons/io";
+import { updateAnalytics } from "@/lib/analytics";
 
 interface PricingPlan {
   id: string;
@@ -99,7 +100,7 @@ const PricingCard: React.FC<{ plan: PricingPlan }> = ({ plan }) => {
         const userDocRef = doc(db, "users", user.uid);
         const transactionsCollectionRef = collection(
           userDocRef,
-          "transactions"
+          "transactions",
         );
         const calculatedTransactionId = Date.now().toString();
         setTransactionId(calculatedTransactionId);
@@ -160,13 +161,21 @@ const PricingCard: React.FC<{ plan: PricingPlan }> = ({ plan }) => {
         const success = await addPackageToReferral(username, plan.title);
         if (!success) {
           console.warn(
-            `Could not add package to referrals for username: ${username}`
+            `Could not add package to referrals for username: ${username}`,
           );
           // You can decide whether to continue or throw an error here
         }
       } else {
         console.warn("Username is null, skipping referral package update");
       }
+
+      // 6. Update Analytics
+      const analyticsUpdate: any = {};
+      if (plan.title === "Basic") analyticsUpdate.usersWithBasicPackage = 1;
+      if (plan.title === "Silver") analyticsUpdate.usersWithSilverPackage = 1;
+      if (plan.title === "Gold") analyticsUpdate.usersWithGoldPackage = 1;
+
+      await updateAnalytics(analyticsUpdate);
 
       // 5. Close dialog and redirect to dashboard
       setShowConfirmDialog(false);
@@ -368,5 +377,4 @@ export default function PricingSectionPage() {
       </div>
     </div>
   );
-};
-
+}

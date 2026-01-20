@@ -7,6 +7,7 @@ import { db } from "@/lib/firebase";
 import { doc, onSnapshot } from "firebase/firestore";
 import { FIREBASE_COLLECTIONS } from "@/lib/constants";
 import DevelopersCut from "@/components/admin/super-admin/DevelopersCut";
+import UpdateAnalytics from "@/components/admin/super-admin/UpdateAnalytics";
 
 export default function SuperAdminPage() {
   const { user } = useAuth(); // We need the user to get the ID token
@@ -64,6 +65,7 @@ export default function SuperAdminPage() {
       </h1>
 
       <DevelopersCut />
+      <UpdateAnalytics />
 
       <div className="bg-white p-6 rounded-lg shadow-md mb-6">
         <h2 className="text-xl font-semibold mb-4 text-gray-700">
