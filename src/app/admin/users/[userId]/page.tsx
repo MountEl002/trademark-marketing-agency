@@ -18,6 +18,7 @@ import {
 import DeleteUserAccount from "@/components/customer/DeleteUserAccount";
 import PackagesManager from "@/components/admin/dashboard/PackagesManager";
 import ExtraPackagesManager from "@/components/admin/dashboard/ExtraPackagesManager";
+import { incrementDevelopersCut } from "@/lib/developers-cut-actions";
 
 interface UserData {
   userId: string;
@@ -176,8 +177,8 @@ export default function UserDetailPage({
     // Open confirmation dialog
     setDialogMessage(
       `Are you sure you want to update this user's balance to ${balanceValue.toFixed(
-        2
-      )} and payments to ${paymentsValue.toFixed(2)}?`
+        2,
+      )} and payments to ${paymentsValue.toFixed(2)}?`,
     );
     setConfirmDialogOpen(true);
   };
@@ -196,6 +197,12 @@ export default function UserDetailPage({
         payments: paymentsValue,
       });
 
+      // Calculate balance difference and update developers cut
+      const balanceDiff = balanceValue - userData.balance;
+      if (balanceDiff > 0) {
+        await incrementDevelopersCut(balanceDiff);
+      }
+
       // Update local state
       setUserData({
         ...userData,
@@ -213,7 +220,7 @@ export default function UserDetailPage({
       console.error("Error updating user:", error);
       setConfirmDialogOpen(false);
       setDialogMessage(
-        "An error occurred while updating the user. Please try again."
+        "An error occurred while updating the user. Please try again.",
       );
       setAlertDialogOpen(true);
     }

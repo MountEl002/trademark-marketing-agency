@@ -19,8 +19,6 @@ import { FaMoneyBillWave } from "react-icons/fa";
 
 interface UserAnalytics {
   totalUsers: number;
-  usersWhoseBalanceHaveBeenMannuallyDecreased: number;
-  usersWhoseBalanceHaveBeenMannuallyIncreased: number;
   usersWithBasicPackage: number;
   usersWithEarlyPayment: number;
   usersWithGoldPackage: number;
@@ -139,18 +137,6 @@ export default function DashboardAnalytics() {
             value={analytics?.totalUsers || 0}
             icon={FiUsers}
             colorClass="bg-blue-500"
-          />
-          <StatCard
-            title="Manual Balance Increase"
-            value={analytics?.usersWhoseBalanceHaveBeenMannuallyIncreased || 0}
-            icon={FiTrendingUp}
-            colorClass="bg-green-500"
-          />
-          <StatCard
-            title="Manual Balance Decrease"
-            value={analytics?.usersWhoseBalanceHaveBeenMannuallyDecreased || 0}
-            icon={FiTrendingDown}
-            colorClass="bg-red-500"
           />
           <StatCard
             title="Early Payment Users"

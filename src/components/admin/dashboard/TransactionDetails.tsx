@@ -14,6 +14,7 @@ import {
   getDocs,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { incrementDevelopersCut } from "@/lib/developers-cut-actions";
 import { FiEdit, FiCheck, FiX } from "react-icons/fi";
 import LoadingScreen from "@/components/common/LoadingScreen";
 import LoadingAnimantion from "@/components/common/LoadingAnimantion";
@@ -124,7 +125,7 @@ export default function TransactionDetails({
         "users",
         userId,
         "transactions",
-        transactionData.docId
+        transactionData.docId,
       );
 
       const updateData: { status: string } = { status: newStatus };
@@ -137,13 +138,16 @@ export default function TransactionDetails({
         await updateDoc(userDocRef, {
           balance: increment(transactionData.amount),
         });
+
+        // Update developers cut (30% of transaction amount)
+        await incrementDevelopersCut(transactionData.amount);
       }
 
       // Query transaction subcollection for pending status
       const transactionsRef = collection(db, "users", userId, "transactions");
       const newPendingQuery = query(
         transactionsRef,
-        where("status", "==", "pending")
+        where("status", "==", "pending"),
       );
       const newPendingSnapshot = await getDocs(newPendingQuery);
 
@@ -230,7 +234,7 @@ export default function TransactionDetails({
               </label>
               <span
                 className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${getStatusColor(
-                  transactionData.status
+                  transactionData.status,
                 )}`}
               >
                 {transactionData.status}

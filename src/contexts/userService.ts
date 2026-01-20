@@ -13,6 +13,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { PACKAGE_PRICES } from "@/lib/constants";
+import { updateAnalytics } from "@/lib/analytics";
 
 export async function verifyUsername(username: string): Promise<boolean> {
   if (!username || username.trim() === "") {
@@ -25,7 +26,7 @@ export async function verifyUsername(username: string): Promise<boolean> {
 }
 
 export async function verifyReferralCode(
-  referralCode: string
+  referralCode: string,
 ): Promise<boolean> {
   const normalizedReferralCode = referralCode;
   const referralCodeDocRef = doc(db, "userNames", normalizedReferralCode);
@@ -38,7 +39,7 @@ export async function initializeUserDocuments(
   email: string | null,
   mobile: string | null,
   username: string | null,
-  country: string | null
+  country: string | null,
 ) {
   const batch = writeBatch(db);
 
@@ -61,12 +62,15 @@ export async function initializeUserDocuments(
     batch.set(userNameDocRef, { userId: userId });
   }
   await batch.commit();
+
+  // Update total users analytics
+  await updateAnalytics({ totalUsers: 1 });
 }
 
 // --- Functions for the new profile completion page ---
 export async function updateUserProfileAndUsername(
   userId: string,
-  newData: { username: string; mobile: string; country: string }
+  newData: { username: string; mobile: string; country: string },
 ): Promise<void> {
   const batch = writeBatch(db);
   const userDocRef = doc(db, "users", userId);
@@ -101,7 +105,7 @@ export async function getUserBalance(userId: string): Promise<number> {
     } else {
       // User document does not exist
       console.warn(
-        `User document not found for userId: ${userId}. Returning 0.00 balance.`
+        `User document not found for userId: ${userId}. Returning 0.00 balance.`,
       );
       return 0;
     }
@@ -129,7 +133,7 @@ export async function getUserPayments(userId: string): Promise<number> {
       return parseFloat(paymentValue.toFixed(2));
     } else {
       console.warn(
-        `User document not found for userId: ${userId}. Returning 0.00 payments.`
+        `User document not found for userId: ${userId}. Returning 0.00 payments.`,
       );
       return 0;
     }
@@ -140,7 +144,7 @@ export async function getUserPayments(userId: string): Promise<number> {
 }
 
 export async function getUserEarningWithdrawals(
-  userId: string
+  userId: string,
 ): Promise<number> {
   if (!userId) {
     console.error("getUserEarningWithdrawals: userId is required.");
@@ -160,7 +164,7 @@ export async function getUserEarningWithdrawals(
       return parseFloat(earningWithdrawalsValue.toFixed(2));
     } else {
       console.warn(
-        `User document not found for userId: ${userId}. Returning 0.00 EarningWithdrawals.`
+        `User document not found for userId: ${userId}. Returning 0.00 EarningWithdrawals.`,
       );
       return 0;
     }
@@ -168,7 +172,7 @@ export async function getUserEarningWithdrawals(
     console.error(
       "Error fetching user EarningWithdrawals for userId:",
       userId,
-      error
+      error,
     );
     return 0;
   }
@@ -191,7 +195,7 @@ export async function getUserMyWithdrawals(userId: string): Promise<number> {
       return parseFloat(myWithdrawalsValue.toFixed(2));
     } else {
       console.warn(
-        `User document not found for userId: ${userId}. Returning 0.00 payments.`
+        `User document not found for userId: ${userId}. Returning 0.00 payments.`,
       );
       return 0;
     }
@@ -230,7 +234,7 @@ export async function getUserPackageNames(userId: string): Promise<string[]> {
 }
 
 export async function getUserSpecialPackageNames(
-  userId: string
+  userId: string,
 ): Promise<string[]> {
   if (!userId) {
     console.error("getUserSpecialPackageNames: userId is required.");
@@ -243,7 +247,7 @@ export async function getUserSpecialPackageNames(
       db,
       "users",
       userId,
-      "extraPackages"
+      "extraPackages",
     );
     const packagesQuery = query(packagesCollectionRef);
     const querySnapshot = await getDocs(packagesQuery);
@@ -262,7 +266,7 @@ export async function getUserSpecialPackageNames(
     console.error(
       "Error fetching special package names for userId:",
       userId,
-      error
+      error,
     );
     return [];
   }
@@ -311,7 +315,7 @@ export async function processReferral(
   currentUserId: string | undefined,
   currentUserUsername: string | null,
   referralCode: string | null,
-  isCodeValid: boolean | null
+  isCodeValid: boolean | null,
 ) {
   if (!currentUserUsername) {
     console.error("Username is required to process referral");
@@ -353,7 +357,7 @@ export async function processReferral(
           "referrals",
           normalizedCode,
           "referred",
-          currentUserUsername
+          currentUserUsername,
         );
 
         await setDoc(referredUserDocRef, {
@@ -363,11 +367,11 @@ export async function processReferral(
         });
 
         window.alert(
-          `Referral processed successfully for ${normalizedCode}. Thank you for believing in us!`
+          `Referral processed successfully for ${normalizedCode}. Thank you for believing in us!`,
         );
       } catch (referralError) {
         window.alert(
-          `Error processing referral: ${referralError}. Please contact the admin through the chat to fix the issue.`
+          `Error processing referral: ${referralError}. Please contact the admin through the chat to fix the issue.`,
         );
       }
     }
