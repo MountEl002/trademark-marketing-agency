@@ -39,9 +39,10 @@ export default function ChatDeleteButton({
   const [showOptions, setShowOptions] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteMessage, setDeleteMessage] = useState<DeleteMessage | null>(
-    null
+    null,
   );
   const [isDeleting, setIsDeleting] = useState(false);
+  const deleteButtonIsCurrentlyDisabled = true;
 
   const { deleteMultipleFiles } = useFileDelete({
     onDeleteComplete: () => {},
@@ -67,7 +68,7 @@ export default function ChatDeleteButton({
       if (chat.chatType === CHAT_TYPES.REGISTERED_USERS_CHATS) {
         const filesRef = collection(
           db,
-          `${collectionPath}/${chat.id}/${FIREBASE_COLLECTIONS.CHAT_FILES}`
+          `${collectionPath}/${chat.id}/${FIREBASE_COLLECTIONS.CHAT_FILES}`,
         );
         const filesSnapshot = await getDocs(query(filesRef));
 
@@ -90,7 +91,7 @@ export default function ChatDeleteButton({
 
       // Step 2: Delete the message subcollection the  chat document
       await deleteCollection(
-        `${collectionPath}/${chat.id}/${FIREBASE_COLLECTIONS.CHAT_MESSAGES}`
+        `${collectionPath}/${chat.id}/${FIREBASE_COLLECTIONS.CHAT_MESSAGES}`,
       );
       // Step 4: Remove from cache
       await deleteCompleteChatFromCache(chat.id);
@@ -147,7 +148,7 @@ export default function ChatDeleteButton({
               setShowDeleteConfirm(true);
               setShowOptions(false);
             }}
-            disabled={isDeleting}
+            disabled={isDeleting || deleteButtonIsCurrentlyDisabled}
           >
             {isDeleting ? "Deleting..." : "Delete"}
           </button>
